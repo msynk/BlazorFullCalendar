@@ -11,7 +11,7 @@
         var width = hasOverlap ? style.WidthPercent : 100.0;
         var left = hasOverlap ? style.LeftPercent : 0.0;
 
-        <div style="position:absolute;top:@(style.TopPercent.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;width:@(width.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;left:@(left.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;z-index:2;">
+        <div style="position:absolute;top:@(style.TopPx.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))px;width:@(width.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;left:@(left.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;z-index:2;">
             <EventBlock Event="ev" />
         </div>
     }

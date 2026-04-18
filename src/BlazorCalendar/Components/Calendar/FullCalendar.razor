@@ -16,10 +16,8 @@
 
     protected override void OnInitialized()
     {
-        State.Initialize(
-            Events ?? MockData.GetEvents(),
-            Users ?? MockData.GetUsers()
-        );
+        State.Initialize(Events ?? [], Users ?? []);
+
         State.OnStateChanged += HandleStateChanged;
     }
 

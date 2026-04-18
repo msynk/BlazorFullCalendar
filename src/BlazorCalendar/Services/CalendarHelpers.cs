@@ -146,16 +146,22 @@ public static class CalendarHelpers
         return groups;
     }
 
-    public static (double TopPercent, double WidthPercent, double LeftPercent) GetEventBlockStyle(
+    public static (double TopPx, double WidthPercent, double LeftPercent) GetEventBlockStyle(
         CalendarEvent ev, DateTime day, int groupIndex, int groupSize)
     {
         var dayStart = day.Date;
         var eventStart = ev.StartDate < dayStart ? dayStart : ev.StartDate;
         double startMinutes = (eventStart - dayStart).TotalMinutes;
-        double top = (startMinutes / 1440.0) * 100;
+        double topPx = startMinutes / 60.0 * HourHeightPx;
         double width = 100.0 / groupSize;
         double left = groupIndex * width;
-        return (top, width, left);
+        return (topPx, width, left);
+    }
+
+    private static (int Year, int Month, int Day) MonthGridDayKey(DateTime d)
+    {
+        d = d.Date;
+        return (d.Year, d.Month, d.Day);
     }
 
     public static Dictionary<int, int> CalculateMonthEventPositions(
@@ -167,10 +173,10 @@ public static class CalendarHelpers
         var monthEnd = monthStart.AddMonths(1).AddDays(-1);
 
         var eventPositions = new Dictionary<int, int>();
-        var occupiedPositions = new Dictionary<string, bool[]>();
+        var occupiedPositions = new Dictionary<(int Year, int Month, int Day), bool[]>();
 
         for (var d = monthStart; d <= monthEnd; d = d.AddDays(1))
-            occupiedPositions[d.ToString("O")] = new bool[3];
+            occupiedPositions[MonthGridDayKey(d)] = new bool[3];
 
         var sorted = multiDayEvents
             .OrderByDescending(e => (e.EndDate - e.StartDate).TotalDays)
@@ -194,8 +200,8 @@ public static class CalendarHelpers
             {
                 if (eventDays.All(d =>
                 {
-                    var key = d.ToString("O");
-                    return occupiedPositions.ContainsKey(key) && !occupiedPositions[key][i];
+                    var key = MonthGridDayKey(d);
+                    return occupiedPositions.TryGetValue(key, out var slots) && !slots[i];
                 }))
                 {
                     position = i;
@@ -207,7 +213,7 @@ public static class CalendarHelpers
             {
                 foreach (var d in eventDays)
                 {
-                    var key = d.ToString("O");
+                    var key = MonthGridDayKey(d);
                     if (occupiedPositions.TryGetValue(key, out var slots))
                         slots[position] = true;
                 }
@@ -229,14 +235,61 @@ public static class CalendarHelpers
             return (dayStart >= s && dayStart <= e) || s == dayStart || e == dayStart;
         }).ToList();
 
-        return eventsForDate
+        var raw = eventsForDate
             .Select(ev => (
                 Event: ev,
                 Position: eventPositions.GetValueOrDefault(ev.Id, -1),
                 IsMultiDay: ev.IsMultiDay
             ))
             .OrderByDescending(x => x.IsMultiDay)
-            .ThenBy(x => x.Position)
+            .ThenBy(x => x.Position < 0 ? 100 : x.Position)
+            .ThenBy(x => x.Event.StartDate)
+            .ToList();
+
+        return AssignMonthCellDisplayRows(raw);
+    }
+
+    private static List<(CalendarEvent Event, int Position, bool IsMultiDay)> AssignMonthCellDisplayRows(
+        List<(CalendarEvent Event, int Position, bool IsMultiDay)> raw)
+    {
+        var occupied = new bool[3];
+        var result = new List<(CalendarEvent Event, int Position, bool IsMultiDay)>();
+
+        foreach (var x in raw)
+        {
+            var p = x.Position;
+            if (p is >= 0 and < 3 && !occupied[p])
+            {
+                occupied[p] = true;
+                result.Add((x.Event, p, x.IsMultiDay));
+                continue;
+            }
+
+            var free = -1;
+            for (var i = 0; i < 3; i++)
+            {
+                if (!occupied[i])
+                {
+                    free = i;
+                    break;
+                }
+            }
+
+            if (free >= 0)
+            {
+                occupied[free] = true;
+                result.Add((x.Event, free, x.IsMultiDay));
+            }
+            else
+            {
+                result.Add((x.Event, -1, x.IsMultiDay));
+            }
+        }
+
+        return result
+            .OrderByDescending(x => x.IsMultiDay)
+            .ThenBy(x => x.Position < 0 ? 100 : x.Position)
+            .ThenBy(x => x.Event.StartDate)
             .ToList();
     }
 
@@ -305,11 +358,10 @@ public static class CalendarHelpers
         _ => "cal-bg-blue"
     };
 
-    public static double GetCurrentTimePosition()
+    public static double GetCurrentTimeLineTopPx()
     {
-        var now = DateTime.Now;
-        double minutes = now.Hour * 60 + now.Minute;
-        return (minutes / 1440.0) * 100;
+        double minutes = DateTime.Now.TimeOfDay.TotalMinutes;
+        return minutes / 60.0 * HourHeightPx;
     }
 
     public static string Capitalize(string str)

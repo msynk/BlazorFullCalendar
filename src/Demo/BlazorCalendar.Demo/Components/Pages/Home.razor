@@ -98,7 +98,7 @@
         <p>A fully interactive calendar right here. Try switching views, clicking events, and navigating dates.</p>
     </div>
     <div class="demo-calendar-container">
-        <FullCalendar @rendermode="InteractiveServer" />
+        <FullCalendar Events="_demoEvents" Users="_demoUsers" @rendermode="InteractiveServer" />
     </div>
 </section>
 
@@ -114,11 +114,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             MyPage.razor
         </div>
-        <pre><span class="cmt">@* Default: uses built-in mock data *@</span>
-<span class="tag">&lt;FullCalendar /&gt;</span>
-
-<span class="cmt">@* With your own data *@</span>
-<span class="tag">&lt;FullCalendar</span> <span class="attr">Events</span>=<span class="str">"myEvents"</span> <span class="attr">Users</span>=<span class="str">"myUsers"</span> <span class="tag">/&gt;</span>
+        <pre><span class="tag">&lt;FullCalendar</span> <span class="attr">Events</span>=<span class="str">"myEvents"</span> <span class="attr">Users</span>=<span class="str">"myUsers"</span> <span class="tag">/&gt;</span>
 
 <span class="kw">@@code</span> {
     <span class="kw">private</span> <span class="type">List&lt;CalendarEvent&gt;</span> myEvents = <span class="kw">new</span>()
@@ -150,3 +146,8 @@
         to Blazor/.NET
     </p>
 </footer>
+
+@code {
+    private static readonly List<CalendarUser> _demoUsers = DemoSampleData.CreateUsers();
+    private static readonly List<CalendarEvent> _demoEvents = DemoSampleData.CreateEvents(_demoUsers);
+}
