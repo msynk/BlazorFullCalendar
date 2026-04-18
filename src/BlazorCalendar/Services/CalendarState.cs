@@ -1,6 +1,6 @@
-using BlazorCalendar.Client.Models;
+using BlazorCalendar.Models;
 
-namespace BlazorCalendar.Client.Services;
+namespace BlazorCalendar.Services;
 
 public class CalendarState
 {

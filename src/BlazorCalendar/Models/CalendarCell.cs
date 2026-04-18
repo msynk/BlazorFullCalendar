@@ -1,4 +1,4 @@
-namespace BlazorCalendar.Client.Models;
+namespace BlazorCalendar.Models;
 
 public class CalendarCell
 {
