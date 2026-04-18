@@ -1,0 +1,30 @@
+@{
+    var weekDays = CalendarHelpers.GetWeekDates(Date);
+    var weekEvents = CalendarHelpers.GetEventsForWeek(MultiDayEvents, Date)
+        .Where(e => e.IsMultiDay).ToList();
+}
+
+@if (weekEvents.Count > 0)
+{
+    <div class="cal-multiday-row" style="padding-left:60px;">
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;">
+            @foreach (var day in weekDays)
+            {
+                <div style="display:flex;flex-direction:column;gap:1px;">
+                    @foreach (var ev in weekEvents.Where(e => e.StartDate.Date <= day.Date && e.EndDate.Date >= day.Date))
+                    {
+                        var position = ev.StartDate.Date == day.Date ? "first"
+                            : ev.EndDate.Date == day.Date ? "last" : "middle";
+                        <MonthEventBadge Event="ev" CellDate="day" Position="@position" />
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
+    [Parameter] public DateTime Date { get; set; }
+}

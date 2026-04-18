@@ -1,0 +1,18 @@
+<div class="cal-filter-chips">
+    @foreach (var color in Enum.GetValues<EventColor>())
+    {
+        <button class="cal-filter-chip @(State.SelectedColors.Contains(color) ? "active" : "")"
+                @onclick="() => State.FilterByColor(color)">
+            <span class="cal-bullet cal-bg-@(color.ToString().ToLowerInvariant())" style="width:8px;height:8px;"></span>
+            @color
+        </button>
+    }
+    @if (State.SelectedColors.Count > 0)
+    {
+        <button class="cal-filter-chip" @onclick="State.ClearFilter">Clear</button>
+    }
+</div>
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+}

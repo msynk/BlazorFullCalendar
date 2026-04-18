@@ -1,0 +1,30 @@
+@if (_multiDayForDay.Count > 0)
+{
+    <div class="cal-multiday-row">
+        @foreach (var ev in _multiDayForDay)
+        {
+            var position = GetPosition(ev);
+            <MonthEventBadge Event="ev" CellDate="Date" Position="@position" />
+        }
+    </div>
+}
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
+    [Parameter] public DateTime Date { get; set; }
+
+    private List<CalendarEvent> _multiDayForDay = [];
+
+    protected override void OnParametersSet()
+    {
+        _multiDayForDay = CalendarHelpers.GetEventsForDay(MultiDayEvents, Date, true);
+    }
+
+    private string GetPosition(CalendarEvent ev)
+    {
+        if (ev.StartDate.Date == Date.Date) return "first";
+        if (ev.EndDate.Date == Date.Date) return "last";
+        return "middle";
+    }
+}

@@ -1,0 +1,129 @@
+<div class="cal-overlay" @onclick="OnClose">
+    <div class="cal-dialog" @onclick:stopPropagation="true">
+        <div class="cal-dialog-header">
+            <h3>@(_isEditing ? "Edit Event" : "Add New Event")</h3>
+            <p>@(_isEditing ? "Modify your existing event." : "Create a new event for your calendar.")</p>
+        </div>
+        <div class="cal-dialog-body">
+            <div class="cal-field">
+                <label>Title</label>
+                <input type="text" @bind="_title" placeholder="Event title" />
+                @if (_errors.ContainsKey("title"))
+                {
+                    <div class="cal-field-error">@_errors["title"]</div>
+                }
+            </div>
+
+            <div class="cal-field">
+                <label>Start Date & Time</label>
+                <input type="datetime-local" @bind="_startDate" />
+            </div>
+
+            <div class="cal-field">
+                <label>End Date & Time</label>
+                <input type="datetime-local" @bind="_endDate" />
+                @if (_errors.ContainsKey("endDate"))
+                {
+                    <div class="cal-field-error">@_errors["endDate"]</div>
+                }
+            </div>
+
+            <div class="cal-field">
+                <label>Color</label>
+                <div class="cal-color-picker">
+                    @foreach (var color in Enum.GetValues<EventColor>())
+                    {
+                        <span class="cal-color-swatch cal-swatch-@(color.ToString().ToLowerInvariant()) @(_color == color ? "selected" : "")"
+                              @onclick="() => _color = color"></span>
+                    }
+                </div>
+            </div>
+
+            <div class="cal-field">
+                <label>Description</label>
+                <textarea @bind="_description" placeholder="Event description"></textarea>
+                @if (_errors.ContainsKey("description"))
+                {
+                    <div class="cal-field-error">@_errors["description"]</div>
+                }
+            </div>
+        </div>
+        <div class="cal-dialog-footer">
+            <button class="cal-btn" @onclick="OnClose">Cancel</button>
+            <button class="cal-btn cal-btn-primary" @onclick="Submit">
+                @(_isEditing ? "Save Changes" : "Create Event")
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [Parameter] public CalendarEvent? ExistingEvent { get; set; }
+    [Parameter] public DateTime? StartDate { get; set; }
+    [Parameter] public int? StartHour { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private bool _isEditing;
+    private string _title = "";
+    private string _description = "";
+    private DateTime _startDate;
+    private DateTime _endDate;
+    private EventColor _color = EventColor.Blue;
+    private Dictionary<string, string> _errors = new();
+
+    protected override void OnInitialized()
+    {
+        _isEditing = ExistingEvent != null;
+
+        if (_isEditing)
+        {
+            _title = ExistingEvent!.Title;
+            _description = ExistingEvent.Description;
+            _startDate = ExistingEvent.StartDate;
+            _endDate = ExistingEvent.EndDate;
+            _color = ExistingEvent.Color;
+        }
+        else
+        {
+            var baseDate = StartDate ?? State.SelectedDate;
+            _startDate = baseDate.Date.AddHours(StartHour ?? DateTime.Now.Hour);
+            _endDate = _startDate.AddMinutes(30);
+        }
+    }
+
+    private void Submit()
+    {
+        _errors.Clear();
+        if (string.IsNullOrWhiteSpace(_title))
+            _errors["title"] = "Title is required";
+        if (string.IsNullOrWhiteSpace(_description))
+            _errors["description"] = "Description is required";
+        if (_endDate <= _startDate)
+            _errors["endDate"] = "End date must be after start date";
+
+        if (_errors.Count > 0) return;
+
+        var ev = new CalendarEvent
+        {
+            Id = _isEditing ? ExistingEvent!.Id : Random.Shared.Next(100000, 999999),
+            Title = _title,
+            Description = _description,
+            StartDate = _startDate,
+            EndDate = _endDate,
+            Color = _color,
+            User = _isEditing ? ExistingEvent!.User : new CalendarUser
+            {
+                Id = Random.Shared.Next(1000, 9999).ToString(),
+                Name = "Current User"
+            }
+        };
+
+        if (_isEditing)
+            State.UpdateEvent(ev);
+        else
+            State.AddEvent(ev);
+
+        OnClose.InvokeAsync();
+    }
+}

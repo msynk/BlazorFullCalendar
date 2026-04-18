@@ -1,0 +1,49 @@
+<div class="cal-overlay" @onclick="OnClose">
+    <div class="cal-dialog" @onclick:stopPropagation="true">
+        <div class="cal-dialog-header">
+            <h3>Events on @Date.ToString("dddd, MMM d, yyyy")</h3>
+            <p>@Events.Count event(s)</p>
+        </div>
+        <div class="cal-dialog-body" style="max-height:400px;overflow-y:auto;">
+            @foreach (var ev in Events)
+            {
+                <div class="cal-agenda-item" @onclick="() => SelectEvent(ev)">
+                    <div class="cal-agenda-avatar @CalendarHelpers.GetBgColorCss(ev.Color)">
+                        @ev.User.Initials
+                    </div>
+                    <div class="cal-agenda-info">
+                        <div class="cal-agenda-title">@ev.Title</div>
+                        <div class="cal-agenda-desc">@ev.Description</div>
+                    </div>
+                    <div class="cal-agenda-time">
+                        @CalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="cal-dialog-footer">
+            <button class="cal-btn" @onclick="OnClose">Close</button>
+        </div>
+    </div>
+</div>
+
+@if (_showDetails && _selectedEvent != null)
+{
+    <EventDetailsDialog Event="_selectedEvent" OnClose="() => _showDetails = false" />
+}
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [Parameter] public DateTime Date { get; set; }
+    [Parameter] public List<CalendarEvent> Events { get; set; } = [];
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private bool _showDetails;
+    private CalendarEvent? _selectedEvent;
+
+    private void SelectEvent(CalendarEvent ev)
+    {
+        _selectedEvent = ev;
+        _showDetails = true;
+    }
+}

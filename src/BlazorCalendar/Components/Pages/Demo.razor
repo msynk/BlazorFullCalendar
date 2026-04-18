@@ -1,0 +1,25 @@
+@page "/demo"
+
+<PageTitle>Live Demo - Blazor Calendar</PageTitle>
+
+<div style="display:flex;flex-direction:column;height:calc(100vh - 56px);">
+    <div style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div>
+            <h1 style="font-size:20px;font-weight:700;margin:0;">Live Demo</h1>
+            <p style="font-size:13px;color:var(--demo-text-secondary);margin:0;">
+                Fully interactive &mdash; create events, switch views, drag &amp; drop, toggle settings.
+            </p>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <a href="/" class="demo-btn demo-btn-secondary" style="padding:8px 16px;font-size:13px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Home
+            </a>
+        </div>
+    </div>
+    <div style="flex:1;padding:0 24px 24px;min-height:0;">
+        <div style="height:100%;border:1px solid var(--demo-border);border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+            <BlazorCalendar.Client.Components.Calendar.FullCalendar @rendermode="InteractiveWebAssembly" />
+        </div>
+    </div>
+</div>

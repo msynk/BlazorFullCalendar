@@ -1,0 +1,106 @@
+@{
+    var dayEvents = SingleDayEvents.Where(e =>
+        e.StartDate.Date == State.SelectedDate.Date).ToList();
+    var groupedEvents = CalendarHelpers.GroupEvents(dayEvents);
+    var currentEvents = SingleDayEvents.Where(e =>
+        DateTime.Now >= e.StartDate && DateTime.Now <= e.EndDate).ToList();
+}
+
+<div class="cal-day-layout">
+    <div class="cal-day-main">
+        <div class="cal-day-header">
+            <span style="color:var(--cal-text-secondary);font-size:14px;">
+                @State.SelectedDate.ToString("ddd", System.Globalization.CultureInfo.InvariantCulture)
+            </span>
+            <span class="cal-day-header-date @(State.SelectedDate.Date == DateTime.Today ? "today" : "")">
+                @State.SelectedDate.Day
+            </span>
+        </div>
+
+        <DayViewMultiDayEventsRow MultiDayEvents="MultiDayEvents" Date="State.SelectedDate" />
+
+        <div class="cal-timegrid-wrapper" style="scroll-behavior:smooth;">
+            <TimeColumn />
+            <div class="cal-timegrid">
+                @for (int h = 0; h < 24; h++)
+                {
+                    var hour = h;
+                    <div class="cal-hour-row cal-droppable"
+                         @ondragover:preventDefault="true"
+                         @ondrop="() => OnDropHour(hour, 0)"
+                         @onclick="() => OnHourClick(hour)">
+                        @if (h > 0)
+                        {
+                            <div style="position:absolute;top:0;left:0;right:0;border-top:1px solid var(--cal-border);"></div>
+                        }
+                        <div class="cal-hour-row-half cal-droppable"
+                             @ondragover:preventDefault="true"
+                             @ondrop="() => OnDropHour(hour, 30)"></div>
+                    </div>
+                }
+
+                <RenderGroupedEvents GroupedEvents="groupedEvents" Day="State.SelectedDate" />
+                <CalendarTimeline />
+            </div>
+        </div>
+    </div>
+
+    <div class="cal-day-sidebar">
+        <MiniCalendar />
+
+        <div class="cal-happening-now">
+            <div class="cal-happening-now-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Happening now
+            </div>
+            @if (currentEvents.Count == 0)
+            {
+                <div class="cal-happening-now-empty">No appointments at the moment</div>
+            }
+            else
+            {
+                @foreach (var ev in currentEvents)
+                {
+                    <div class="cal-happening-event">
+                        <div class="cal-happening-event-title">@ev.Title</div>
+                        <div class="cal-happening-event-meta">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            @ev.User.Name
+                        </div>
+                        <div class="cal-happening-event-meta">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            @CalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat) - @CalendarHelpers.FormatTime(ev.EndDate, State.Use24HourFormat)
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@if (_showAddDialog)
+{
+    <AddEditEventDialog StartDate="_addStartDate" StartHour="_addStartHour" OnClose="() => _showAddDialog = false" />
+}
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [Parameter] public List<CalendarEvent> SingleDayEvents { get; set; } = [];
+    [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
+
+    private bool _showAddDialog;
+    private DateTime _addStartDate;
+    private int _addStartHour;
+
+    private void OnHourClick(int hour)
+    {
+        _addStartDate = State.SelectedDate;
+        _addStartHour = hour;
+        _showAddDialog = true;
+    }
+
+    private void OnDropHour(int hour, int minute)
+    {
+        State.HandleDrop(State.SelectedDate, hour, minute);
+    }
+}

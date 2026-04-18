@@ -1,0 +1,74 @@
+@{
+    var allEvents = MultiDayEvents.Concat(SingleDayEvents).ToList();
+    var currentYear = State.SelectedDate.Year;
+    var months = Enumerable.Range(1, 12).Select(m => new DateTime(currentYear, m, 1)).ToArray();
+}
+
+<div class="cal-year">
+    @foreach (var monthDate in months)
+    {
+        var cells = CalendarHelpers.GetCalendarCells(monthDate);
+        <div class="cal-year-month">
+            <div class="cal-year-month-title" @onclick="() => GoToMonth(monthDate)">
+                @monthDate.ToString("MMMM")
+            </div>
+            <div class="cal-year-weekdays">
+                @foreach (var wd in new[] { "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" })
+                {
+                    <div class="cal-year-weekday">@wd</div>
+                }
+            </div>
+            <div class="cal-year-days">
+                @foreach (var cell in cells)
+                {
+                    var isCurrentMonth = cell.Date.Month == monthDate.Month && cell.Date.Year == monthDate.Year;
+                    var isToday = cell.Date.Date == DateTime.Today;
+                    var dayEvents = allEvents.Where(e => e.StartDate.Date == cell.Date.Date).ToList();
+                    var hasEvents = isCurrentMonth && dayEvents.Count > 0;
+
+                    <div class="cal-year-day @(!isCurrentMonth ? "other-month" : "") @(isToday ? "today" : "") @(hasEvents ? "has-events" : "")"
+                         @onclick="() => { if (hasEvents) ShowEventsForDay(cell.Date, dayEvents); }">
+                        @cell.Day
+                        @if (hasEvents)
+                        {
+                            <div class="cal-year-day-bullets">
+                                @foreach (var ev in dayEvents.Take(3))
+                                {
+                                    <EventBullet Color="ev.Color" />
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@if (_showEventList)
+{
+    <EventListDialog Date="_eventListDate" Events="_eventListEvents" OnClose="() => _showEventList = false" />
+}
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [Parameter] public List<CalendarEvent> SingleDayEvents { get; set; } = [];
+    [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
+
+    private bool _showEventList;
+    private DateTime _eventListDate;
+    private List<CalendarEvent> _eventListEvents = [];
+
+    private void GoToMonth(DateTime month)
+    {
+        State.SetSelectedDate(month);
+        State.SetView(CalendarView.Month);
+    }
+
+    private void ShowEventsForDay(DateTime date, List<CalendarEvent> events)
+    {
+        _eventListDate = date;
+        _eventListEvents = events;
+        _showEventList = true;
+    }
+}

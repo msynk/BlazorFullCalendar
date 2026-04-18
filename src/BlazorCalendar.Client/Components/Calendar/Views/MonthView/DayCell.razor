@@ -1,0 +1,85 @@
+@{
+    var isToday = Cell.Date.Date == DateTime.Today;
+    var cellEvents = CalendarHelpers.GetMonthCellEvents(Cell.Date, Events, EventPositions);
+}
+
+<div class="cal-month-cell @(!Cell.CurrentMonth ? "other-month" : "") cal-droppable"
+     @ondragover="OnDragOver"
+     @ondragover:preventDefault="true"
+     @ondrop="OnDrop"
+     @onclick="() => OnCellClick()">
+
+    <div class="cal-month-cell-day @(isToday ? "today" : "")">@Cell.Day</div>
+
+    <div class="cal-month-events">
+        @for (int i = 0; i < 3; i++)
+        {
+            var pos = i;
+            var item = cellEvents.FirstOrDefault(e => e.Position == pos);
+            @if (item.Event != null)
+            {
+                var position = GetBadgePosition(item.Event, Cell.Date);
+                <div class="cal-month-event-slot">
+                    <MonthEventBadge Event="item.Event" CellDate="Cell.Date" Position="@position" />
+                </div>
+            }
+            else
+            {
+                <div class="cal-month-event-slot"></div>
+            }
+        }
+    </div>
+
+    @{
+        var moreCount = cellEvents.Count - 3;
+    }
+    @if (Cell.CurrentMonth && moreCount > 0)
+    {
+        <div class="cal-month-more" @onclick="() => _showEventList = true" @onclick:stopPropagation="true">
+            +@moreCount more
+        </div>
+    }
+</div>
+
+@if (_showEventList)
+{
+    <EventListDialog Date="Cell.Date" Events="cellEvents.Select(e => e.Event).ToList()" OnClose="() => _showEventList = false" />
+}
+
+@if (_showAddDialog)
+{
+    <AddEditEventDialog StartDate="Cell.Date" OnClose="() => _showAddDialog = false" />
+}
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [Parameter] public CalendarCell Cell { get; set; } = default!;
+    [Parameter] public List<CalendarEvent> Events { get; set; } = [];
+    [Parameter] public Dictionary<int, int> EventPositions { get; set; } = new();
+
+    private bool _showEventList;
+    private bool _showAddDialog;
+
+    private void OnCellClick()
+    {
+        State.SetSelectedDate(Cell.Date);
+        var cellEvents = CalendarHelpers.GetMonthCellEvents(Cell.Date, Events, EventPositions);
+        if (cellEvents.Count == 0)
+            _showAddDialog = true;
+    }
+
+    private string GetBadgePosition(CalendarEvent ev, DateTime cellDate)
+    {
+        if (ev.IsSingleDay) return "none";
+        if (ev.StartDate.Date == cellDate.Date) return "first";
+        if (ev.EndDate.Date == cellDate.Date) return "last";
+        return "middle";
+    }
+
+    private void OnDragOver() { }
+
+    private void OnDrop()
+    {
+        State.HandleDrop(Cell.Date);
+    }
+}

@@ -1,0 +1,64 @@
+@{
+    var cells = CalendarHelpers.GetCalendarCells(_displayMonth);
+}
+
+<div class="cal-mini-calendar">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <button class="cal-btn cal-btn-icon cal-btn-sm" @onclick="PrevMonth">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span style="font-size:13px;font-weight:600;">@_displayMonth.ToString("MMMM yyyy")</span>
+        <button class="cal-btn cal-btn-icon cal-btn-sm" @onclick="NextMonth">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                @foreach (var d in new[] { "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" })
+                {
+                    <th>@d</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (int row = 0; row < cells.Count / 7; row++)
+            {
+                <tr>
+                    @for (int col = 0; col < 7; col++)
+                    {
+                        var cell = cells[row * 7 + col];
+                        var isToday = cell.Date.Date == DateTime.Today;
+                        var isSelected = cell.Date.Date == State.SelectedDate.Date;
+                        var cls = !cell.CurrentMonth ? "other-month" : isToday ? "today" : isSelected ? "selected" : "";
+                        <td>
+                            <span class="cal-mini-calendar-day @cls" @onclick="() => SelectDate(cell.Date)">
+                                @cell.Day
+                            </span>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+
+    private DateTime _displayMonth;
+
+    protected override void OnInitialized()
+    {
+        _displayMonth = new DateTime(State.SelectedDate.Year, State.SelectedDate.Month, 1);
+    }
+
+    private void PrevMonth() => _displayMonth = _displayMonth.AddMonths(-1);
+    private void NextMonth() => _displayMonth = _displayMonth.AddMonths(1);
+
+    private void SelectDate(DateTime date)
+    {
+        State.SetSelectedDate(date);
+        _displayMonth = new DateTime(date.Year, date.Month, 1);
+    }
+}

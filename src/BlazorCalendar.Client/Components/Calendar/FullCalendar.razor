@@ -1,0 +1,29 @@
+@implements IDisposable
+
+<CascadingValue Value="State">
+    <div class="cal-root @(State.IsDarkMode ? "cal-dark" : "")">
+        <CalendarHeader />
+        <CalendarBody />
+        <CalendarToast />
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter] public List<CalendarEvent>? Events { get; set; }
+    [Parameter] public List<CalendarUser>? Users { get; set; }
+
+    public CalendarState State { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        State.Initialize(
+            Events ?? MockData.GetEvents(),
+            Users ?? MockData.GetUsers()
+        );
+        State.OnStateChanged += HandleStateChanged;
+    }
+
+    private void HandleStateChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => State.OnStateChanged -= HandleStateChanged;
+}

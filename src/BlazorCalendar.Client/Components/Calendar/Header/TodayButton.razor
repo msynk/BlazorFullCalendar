@@ -1,0 +1,5 @@
+<button class="cal-btn cal-btn-sm" @onclick="State.GoToToday">Today</button>
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+}

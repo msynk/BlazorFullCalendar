@@ -1,0 +1,92 @@
+@implements IDisposable
+@{
+    var monthEvents = CalendarHelpers.GetEventsForMonth(State.Events.ToList(), State.SelectedDate);
+    if (!string.IsNullOrWhiteSpace(_search))
+    {
+        var q = _search.ToLowerInvariant();
+        monthEvents = monthEvents.Where(e =>
+            e.Title.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+            e.Description.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
+    var grouped = State.AgendaModeGroupBy == AgendaGroupBy.Date
+        ? monthEvents.GroupBy(e => e.StartDate.ToString("yyyy-MM-dd"))
+            .OrderBy(g => g.Key)
+            .ToList()
+        : monthEvents.GroupBy(e => e.Color.ToString())
+            .OrderBy(g => g.Key)
+            .ToList();
+}
+
+<div class="cal-agenda">
+    <div class="cal-agenda-search">
+        <input type="text" placeholder="Search events..." @bind="_search" @bind:event="oninput" />
+    </div>
+
+    @if (grouped.Count == 0)
+    {
+        <div class="cal-agenda-empty">No events found.</div>
+    }
+    else
+    {
+        @foreach (var group in grouped)
+        {
+            var title = State.AgendaModeGroupBy == AgendaGroupBy.Date
+                ? (DateTime.TryParse(group.Key, out var dt) ? dt.ToString("dddd, MMM d, yyyy") : group.Key)
+                : CalendarHelpers.Capitalize(group.Key);
+
+            <div class="cal-agenda-group">
+                <div class="cal-agenda-group-title">@title</div>
+                @foreach (var ev in group)
+                {
+                    <div class="cal-agenda-item" @onclick="() => ShowDetails(ev)">
+                        <div class="cal-agenda-avatar @CalendarHelpers.GetBgColorCss(ev.Color)">
+                            @ev.User.Initials
+                        </div>
+                        <div class="cal-agenda-info">
+                            <div class="cal-agenda-title">@ev.Title</div>
+                            <div class="cal-agenda-desc">@ev.Description</div>
+                        </div>
+                        <div class="cal-agenda-time">
+                            @if (State.AgendaModeGroupBy == AgendaGroupBy.Date)
+                            {
+                                @CalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
+                                <span> - </span>
+                                @CalendarHelpers.FormatTime(ev.EndDate, State.Use24HourFormat)
+                            }
+                            else
+                            {
+                                @ev.StartDate.ToString("MM/dd/yyyy")
+                                <span> at </span>
+                                @CalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@if (_showDetails && _selectedEvent != null)
+{
+    <EventDetailsDialog Event="_selectedEvent" OnClose="() => _showDetails = false" />
+}
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+
+    private string _search = "";
+    private bool _showDetails;
+    private CalendarEvent? _selectedEvent;
+
+    protected override void OnInitialized() => State.OnStateChanged += Refresh;
+    private void Refresh() => InvokeAsync(StateHasChanged);
+    public void Dispose() => State.OnStateChanged -= Refresh;
+
+    private void ShowDetails(CalendarEvent ev)
+    {
+        _selectedEvent = ev;
+        _showDetails = true;
+    }
+}

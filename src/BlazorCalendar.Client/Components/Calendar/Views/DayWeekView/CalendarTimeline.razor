@@ -1,0 +1,31 @@
+@implements IDisposable
+
+<div class="cal-timeline" style="top:@(_position.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;">
+    <span class="cal-timeline-label">@CalendarHelpers.FormatTime(DateTime.Now, State.Use24HourFormat)</span>
+    <span class="cal-timeline-dot"></span>
+    <span class="cal-timeline-line"></span>
+</div>
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+
+    private double _position;
+    private Timer? _timer;
+
+    protected override void OnInitialized()
+    {
+        UpdatePosition();
+        _timer = new Timer(_ =>
+        {
+            UpdatePosition();
+            InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+    }
+
+    private void UpdatePosition()
+    {
+        _position = CalendarHelpers.GetCurrentTimePosition();
+    }
+
+    public void Dispose() => _timer?.Dispose();
+}

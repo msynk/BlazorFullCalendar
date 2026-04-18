@@ -1,0 +1,18 @@
+<div class="cal-view-tabs">
+    @foreach (var view in _views)
+    {
+        <button class="cal-view-tab @(State.View == view ? "active" : "")"
+                @onclick="() => State.SetView(view)">
+            @view.ToString()
+        </button>
+    }
+</div>
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+
+    private static readonly CalendarView[] _views = [
+        CalendarView.Day, CalendarView.Week, CalendarView.Month,
+        CalendarView.Year, CalendarView.Agenda
+    ];
+}

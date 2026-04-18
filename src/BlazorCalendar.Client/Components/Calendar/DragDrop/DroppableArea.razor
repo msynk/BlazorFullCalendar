@@ -1,0 +1,27 @@
+<div class="cal-droppable @(_isOver ? "drag-over" : "") @Class"
+     @ondragover="OnDragOver"
+     @ondragover:preventDefault="true"
+     @ondragleave="OnDragLeave"
+     @ondrop="OnDrop">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [Parameter] public DateTime Date { get; set; }
+    [Parameter] public int? Hour { get; set; }
+    [Parameter] public int? Minute { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private bool _isOver;
+
+    private void OnDragOver() => _isOver = true;
+    private void OnDragLeave() => _isOver = false;
+
+    private void OnDrop()
+    {
+        _isOver = false;
+        State.HandleDrop(Date, Hour, Minute);
+    }
+}

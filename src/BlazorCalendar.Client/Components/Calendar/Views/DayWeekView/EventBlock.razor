@@ -1,0 +1,58 @@
+@{
+    var start = Event.StartDate;
+    var end = Event.EndDate;
+    var durationMin = (end - start).TotalMinutes;
+    var heightPx = (durationMin / 60.0) * CalendarHelpers.HourHeightPx - 4;
+    var isDotVariant = State.BadgeVariant == BadgeVariant.Dot;
+    var colorClass = isDotVariant ? "dot-variant" : CalendarHelpers.GetColorCss(Event.Color);
+}
+
+<div class="cal-event-block @colorClass"
+     style="height:@(heightPx.ToString("F0", System.Globalization.CultureInfo.InvariantCulture))px;"
+     draggable="true"
+     @ondragstart="OnDragStart"
+     @ondragend="OnDragEnd"
+     @onclick="() => _showDetails = true"
+     @onclick:stopPropagation="true">
+
+    <div class="cal-resize-handle cal-resize-handle-top"
+         @onpointerdown="OnResizeTopStart"
+         @onpointerdown:stopPropagation="true"></div>
+
+    <div style="display:flex;align-items:center;gap:4px;">
+        @if (isDotVariant)
+        {
+            <EventBullet Color="Event.Color" />
+        }
+        <span class="cal-event-block-title">@Event.Title</span>
+    </div>
+
+    @if (durationMin > 25)
+    {
+        <div class="cal-event-block-time">
+            @CalendarHelpers.FormatTime(start, State.Use24HourFormat) - @CalendarHelpers.FormatTime(end, State.Use24HourFormat)
+        </div>
+    }
+
+    <div class="cal-resize-handle cal-resize-handle-bottom"
+         @onpointerdown="OnResizeBottomStart"
+         @onpointerdown:stopPropagation="true"></div>
+</div>
+
+@if (_showDetails)
+{
+    <EventDetailsDialog Event="Event" OnClose="() => _showDetails = false" />
+}
+
+@code {
+    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [Parameter] public CalendarEvent Event { get; set; } = default!;
+
+    private bool _showDetails;
+
+    private void OnDragStart() => State.StartDrag(Event);
+    private void OnDragEnd() => State.EndDrag();
+
+    private void OnResizeTopStart() { /* JS interop placeholder */ }
+    private void OnResizeBottomStart() { /* JS interop placeholder */ }
+}
