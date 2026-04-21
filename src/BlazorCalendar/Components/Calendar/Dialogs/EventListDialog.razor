@@ -9,7 +9,7 @@
             {
                 <div class="cal-agenda-item" @onclick="() => SelectEvent(ev)">
                     <div class="cal-agenda-avatar @CalendarHelpers.GetBgColorCss(ev.Color)">
-                        @ev.User.Initials
+                        @(ev.Attendees.Count > 0 ? ev.Attendees[0].Initials : "")
                     </div>
                     <div class="cal-agenda-info">
                         <div class="cal-agenda-title">@ev.Title</div>

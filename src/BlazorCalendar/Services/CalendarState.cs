@@ -10,8 +10,6 @@ public class CalendarState
 
     public DateTime SelectedDate { get; private set; } = DateTime.Today;
     public CalendarView View { get; private set; } = CalendarView.Month;
-    public List<CalendarUser> Users { get; private set; } = [];
-    public string SelectedUserId { get; private set; } = "all";
     public List<EventColor> SelectedColors { get; private set; } = [];
     public bool Use24HourFormat { get; private set; } = true;
     public BadgeVariant BadgeVariant { get; private set; } = BadgeVariant.Colored;
@@ -31,11 +29,10 @@ public class CalendarState
 
     public event Action? OnStateChanged;
 
-    public void Initialize(List<CalendarEvent> events, List<CalendarUser> users, CultureInfo? culture = null)
+    public void Initialize(List<CalendarEvent> events, CultureInfo? culture = null)
     {
         _allEvents = [.. events];
         _filteredEvents = [.. events];
-        Users = users;
         if (culture != null)
             Culture = culture;
         NotifyStateChanged();
@@ -148,17 +145,9 @@ public class CalendarState
         NotifyStateChanged();
     }
 
-    public void FilterByUser(string userId)
-    {
-        SelectedUserId = userId;
-        ApplyFilters();
-        NotifyStateChanged();
-    }
-
     public void ClearFilter()
     {
         SelectedColors.Clear();
-        SelectedUserId = "all";
         _filteredEvents = [.. _allEvents];
         NotifyStateChanged();
     }
@@ -169,9 +158,6 @@ public class CalendarState
 
         if (SelectedColors.Count > 0)
             result = result.Where(e => SelectedColors.Contains(e.Color));
-
-        if (SelectedUserId != "all")
-            result = result.Where(e => e.User.Id == SelectedUserId);
 
         _filteredEvents = result.ToList();
     }
@@ -208,7 +194,7 @@ public class CalendarState
             StartDate = newStart,
             EndDate = newStart + duration,
             Color = DraggedEvent.Color,
-            User = DraggedEvent.User
+            Attendees = [.. DraggedEvent.Attendees]
         };
 
         UpdateEvent(updated);

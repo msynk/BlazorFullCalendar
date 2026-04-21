@@ -47,6 +47,36 @@
                     <div class="cal-field-error">@_errors["description"]</div>
                 }
             </div>
+
+            <div class="cal-field">
+                <label>Attendees</label>
+                @if (_attendees.Count > 0)
+                {
+                    <div class="cal-attendees-chips">
+                        @foreach (var a in _attendees)
+                        {
+                            var attendee = a;
+                            <span class="cal-attendee-chip">
+                                <span class="cal-attendee-chip-avatar">@attendee.Initials</span>
+                                @attendee.FullName
+                                <button class="cal-attendee-chip-remove" type="button" @onclick="() => RemoveAttendee(attendee)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </button>
+                            </span>
+                        }
+                    </div>
+                }
+                <div class="cal-attendee-add-row">
+                    <input type="text" @bind="_newFirstName" placeholder="First name" />
+                    <input type="text" @bind="_newLastName" placeholder="Last name" />
+                    <input type="text" @bind="_newId" placeholder="ID (optional)" />
+                    <button class="cal-btn cal-btn-sm" type="button" @onclick="AddAttendee">Add</button>
+                </div>
+                @if (_errors.ContainsKey("attendee"))
+                {
+                    <div class="cal-field-error">@_errors["attendee"]</div>
+                }
+            </div>
         </div>
         <div class="cal-dialog-footer">
             <button class="cal-btn" @onclick="OnClose">Cancel</button>
@@ -70,6 +100,10 @@
     private DateTime _startDate;
     private DateTime _endDate;
     private EventColor _color = EventColor.Blue;
+    private List<CalendarAttendee> _attendees = [];
+    private string _newFirstName = "";
+    private string _newLastName = "";
+    private string _newId = "";
     private Dictionary<string, string> _errors = new();
 
     protected override void OnInitialized()
@@ -83,6 +117,7 @@
             _startDate = ExistingEvent.StartDate;
             _endDate = ExistingEvent.EndDate;
             _color = ExistingEvent.Color;
+            _attendees = [.. ExistingEvent.Attendees];
         }
         else
         {
@@ -91,6 +126,30 @@
             _endDate = _startDate.AddMinutes(30);
         }
     }
+
+    private void AddAttendee()
+    {
+        _errors.Remove("attendee");
+
+        if (string.IsNullOrWhiteSpace(_newFirstName) && string.IsNullOrWhiteSpace(_newLastName))
+        {
+            _errors["attendee"] = "First name or last name is required";
+            return;
+        }
+
+        _attendees.Add(new CalendarAttendee
+        {
+            FirstName = _newFirstName.Trim(),
+            LastName = _newLastName.Trim(),
+            Id = string.IsNullOrWhiteSpace(_newId) ? null : _newId.Trim()
+        });
+
+        _newFirstName = "";
+        _newLastName = "";
+        _newId = "";
+    }
+
+    private void RemoveAttendee(CalendarAttendee attendee) => _attendees.Remove(attendee);
 
     private void Submit()
     {
@@ -112,11 +171,7 @@
             StartDate = _startDate,
             EndDate = _endDate,
             Color = _color,
-            User = _isEditing ? ExistingEvent!.User : new CalendarUser
-            {
-                Id = Random.Shared.Next(1000, 9999).ToString(),
-                Name = "Current User"
-            }
+            Attendees = [.. _attendees]
         };
 
         if (_isEditing)

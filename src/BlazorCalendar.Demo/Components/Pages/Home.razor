@@ -79,8 +79,8 @@
         <div class="demo-feature-icon" style="background:#faf5ff;color:#9333ea;">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
-        <h3>Multi-User</h3>
-        <p>Filter events by user or color. Each event is assigned to a user with avatar initials and color badges.</p>
+        <h3>Attendees</h3>
+        <p>Add optional attendees to each event. Each attendee has a first name, last name, and an optional ID.</p>
     </div>
     <div class="demo-feature-card">
         <div class="demo-feature-icon" style="background:#fff7ed;color:#ea580c;">
@@ -98,7 +98,7 @@
         <p>A fully interactive calendar right here. Try switching views, clicking events, and navigating dates.</p>
     </div>
     <div class="demo-calendar-container">
-        <BlazorCalendar Events="_demoEvents" Users="_demoUsers" @rendermode="InteractiveServer" />
+        <BlazorCalendar Events="_demoEvents" @rendermode="InteractiveServer" />
     </div>
 </section>
 
@@ -114,7 +114,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             MyPage.razor
         </div>
-        <pre><span class="tag">&lt;BlazorCalendar</span> <span class="attr">Events</span>=<span class="str">"myEvents"</span> <span class="attr">Users</span>=<span class="str">"myUsers"</span> <span class="tag">/&gt;</span>
+        <pre><span class="tag">&lt;BlazorCalendar</span> <span class="attr">Events</span>=<span class="str">"myEvents"</span> <span class="tag">/&gt;</span>
 
 <span class="kw">@@code</span> {
     <span class="kw">private</span> <span class="type">List&lt;CalendarEvent&gt;</span> myEvents = <span class="kw">new</span>()
@@ -126,13 +126,11 @@
             StartDate = <span class="type">DateTime</span>.Today.AddHours(<span class="str">10</span>),
             EndDate = <span class="type">DateTime</span>.Today.AddHours(<span class="str">11</span>),
             Color = <span class="type">EventColor</span>.Blue,
-            User = <span class="kw">new</span>() { Id = <span class="str">"1"</span>, Name = <span class="str">"Alice"</span> }
+            Attendees =
+            [
+                <span class="kw">new</span>() { FirstName = <span class="str">"Alice"</span>, LastName = <span class="str">"Johnson"</span>, Id = <span class="str">"1"</span> }
+            ]
         }
-    };
-
-    <span class="kw">private</span> <span class="type">List&lt;CalendarUser&gt;</span> myUsers = <span class="kw">new</span>()
-    {
-        <span class="kw">new</span>() { Id = <span class="str">"1"</span>, Name = <span class="str">"Alice Johnson"</span> }
     };
 }</pre>
     </div>
@@ -147,6 +145,5 @@
 </footer>
 
 @code {
-    private static readonly List<CalendarUser> _demoUsers = DemoSampleData.CreateUsers();
-    private static readonly List<CalendarEvent> _demoEvents = DemoSampleData.CreateEvents(_demoUsers);
+    private static readonly List<CalendarEvent> _demoEvents = DemoSampleData.CreateEvents();
 }

@@ -8,7 +8,7 @@ public class CalendarEvent
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public EventColor Color { get; set; } = EventColor.Blue;
-    public CalendarUser User { get; set; } = new();
+    public List<CalendarAttendee> Attendees { get; set; } = [];
 
     public bool IsSingleDay => StartDate.Date == EndDate.Date;
     public bool IsMultiDay => !IsSingleDay;

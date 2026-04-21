@@ -817,6 +817,84 @@
 .cal-swatch-purple { background: #a855f7; }
 .cal-swatch-orange { background: #f97316; }
 
+/* ===== Attendee Chips ===== */
+.cal-attendees-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.cal-attendee-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px 3px 4px;
+    background: var(--cal-bg-hover);
+    border: 1px solid var(--cal-border);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--cal-text);
+}
+.cal-attendee-chip-readonly {
+    padding: 3px 10px 3px 4px;
+}
+.cal-attendee-chip-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--cal-primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.cal-attendee-chip-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 2px;
+    cursor: pointer;
+    color: var(--cal-text-muted);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    transition: background 0.1s, color 0.1s;
+}
+.cal-attendee-chip-remove:hover {
+    background: var(--cal-danger);
+    color: #fff;
+}
+
+/* Attendee add row */
+.cal-attendee-add-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.cal-attendee-add-row input {
+    flex: 1;
+    min-width: 80px;
+    padding: 6px 8px;
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-radius-sm);
+    background: var(--cal-bg);
+    color: var(--cal-text);
+    font-size: 12px;
+    outline: none;
+    box-sizing: border-box;
+}
+.cal-attendee-add-row input:focus {
+    border-color: var(--cal-primary);
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+}
+
 /* ===== Event Details Dialog ===== */
 .cal-event-detail-row {
     display: flex;

@@ -34,14 +34,13 @@
 
     <div style="flex:1;padding:16px 24px 24px;min-height:0;">
         <div style="height:100%;border:1px solid var(--demo-border);border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-            <BlazorCalendar Events="_demoEvents" Users="_demoUsers" CultureName="@_selectedCultureName" />
+            <BlazorCalendar Events="_demoEvents" CultureName="@_selectedCultureName" />
         </div>
     </div>
 </div>
 
 @code {
-    private static readonly List<CalendarUser> _demoUsers = DemoSampleData.CreateUsers();
-    private static readonly List<CalendarEvent> _demoEvents = DemoSampleData.CreateEvents(_demoUsers);
+    private static readonly List<CalendarEvent> _demoEvents = DemoSampleData.CreateEvents();
 
     private record CultureOption(string Label, string Name);
 

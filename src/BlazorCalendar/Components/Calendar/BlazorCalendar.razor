@@ -11,7 +11,6 @@
 
 @code {
     [Parameter] public List<CalendarEvent>? Events { get; set; }
-    [Parameter] public List<CalendarUser>? Users { get; set; }
 
     /// <summary>
     /// Culture for the calendar. Accepts any CultureInfo, e.g. new CultureInfo("fa-IR").
@@ -38,7 +37,7 @@
 
     protected override void OnInitialized()
     {
-        State.Initialize(Events ?? [], Users ?? [], ResolveCulture());
+        State.Initialize(Events ?? [], ResolveCulture());
         State.OnStateChanged += HandleStateChanged;
     }
 
