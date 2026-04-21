@@ -1,6 +1,6 @@
 @implements IDisposable
 @{
-    var monthEvents = CalendarHelpers.GetEventsForMonth(State.Events.ToList(), State.SelectedDate);
+    var monthEvents = CalendarHelpers.GetEventsForMonth(State.Events.ToList(), State.SelectedDate, State.Culture);
     if (!string.IsNullOrWhiteSpace(_search))
     {
         var q = _search.ToLowerInvariant();
@@ -32,7 +32,9 @@
         @foreach (var group in grouped)
         {
             var title = State.AgendaModeGroupBy == AgendaGroupBy.Date
-                ? (DateTime.TryParse(group.Key, out var dt) ? dt.ToString("dddd, MMM d, yyyy") : group.Key)
+                ? (DateTime.TryParse(group.Key, out var dt)
+                    ? $"{dt.ToString("dddd", State.Culture)}, {CalendarHelpers.FormatCultureDate(dt, State.Culture)}"
+                    : group.Key)
                 : CalendarHelpers.Capitalize(group.Key);
 
             <div class="cal-agenda-group">
@@ -56,8 +58,8 @@
                             }
                             else
                             {
-                                @ev.StartDate.ToString("MM/dd/yyyy")
-                                <span> at </span>
+                                @CalendarHelpers.FormatCultureDate(ev.StartDate, State.Culture)
+                                <span> · </span>
                                 @CalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
                             }
                         </div>

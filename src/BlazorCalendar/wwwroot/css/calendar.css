@@ -1082,3 +1082,46 @@
 .cal-body ::-webkit-scrollbar-track { background: transparent; }
 .cal-body ::-webkit-scrollbar-thumb { background: var(--cal-border); border-radius: 4px; }
 .cal-body ::-webkit-scrollbar-thumb:hover { background: var(--cal-text-muted); }
+
+/* ===== RTL (Right-to-Left) support ===== */
+
+/* Flip horizontal navigation arrows (prev/next) for RTL */
+[dir="rtl"] .cal-btn-nav svg { transform: scaleX(-1); }
+
+/* Header zones: reverse the logical order of sections */
+[dir="rtl"] .cal-header { flex-direction: row-reverse; }
+[dir="rtl"] .cal-header-left  { flex: 1; justify-content: flex-end; }
+[dir="rtl"] .cal-header-right { flex: 1; justify-content: flex-start; }
+
+/* Month grid: columns flow right-to-left */
+[dir="rtl"] .cal-month-header { direction: rtl; }
+[dir="rtl"] .cal-month-grid   { direction: rtl; }
+
+/* Week header + timegrid */
+[dir="rtl"] .cal-week-header { direction: rtl; }
+[dir="rtl"] .cal-week-layout { direction: rtl; }
+[dir="rtl"] .cal-timegrid-days { direction: rtl; }
+
+/* Day view: sidebar moves to the left side */
+[dir="rtl"] .cal-day-layout  { direction: rtl; }
+
+/* Year view mini-grids */
+[dir="rtl"] .cal-year         { direction: rtl; }
+[dir="rtl"] .cal-year-weekdays { direction: rtl; }
+[dir="rtl"] .cal-year-days     { direction: rtl; }
+
+/* Agenda view */
+[dir="rtl"] .cal-agenda-item  { direction: rtl; }
+[dir="rtl"] .cal-agenda-time  { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .cal-agenda-info  { text-align: right; }
+
+/* Mini-calendar */
+[dir="rtl"] .cal-mini-calendar { direction: rtl; }
+
+/* Dialog / toast */
+[dir="rtl"] .cal-dialog        { direction: rtl; }
+[dir="rtl"] .cal-toast         { direction: rtl; }
+
+/* Text alignment helpers */
+[dir="rtl"] .cal-day-header    { direction: rtl; }
+[dir="rtl"] .cal-happening-now { direction: rtl; }

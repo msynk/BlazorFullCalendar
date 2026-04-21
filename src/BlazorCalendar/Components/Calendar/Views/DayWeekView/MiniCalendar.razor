@@ -1,23 +1,29 @@
 @{
-    var cells = CalendarHelpers.GetCalendarCells(_displayMonth);
+    var cells = CalendarHelpers.GetCalendarCells(_displayMonth, State.Culture);
+    var miniCal = State.Culture.Calendar;
+    var miniDtf = State.Culture.DateTimeFormat;
+    int miniYear = miniCal.GetYear(_displayMonth);
+    int miniMonth = miniCal.GetMonth(_displayMonth);
+    string miniTitle = $"{miniDtf.GetMonthName(miniMonth)} {miniYear}";
+    var miniHeaders = CalendarHelpers.GetAbbreviatedWeekDayHeaders(State.Culture);
 }
 
 <div class="cal-mini-calendar">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <button class="cal-btn cal-btn-icon cal-btn-sm" @onclick="PrevMonth">
+        <button class="cal-btn cal-btn-icon cal-btn-sm cal-btn-nav" @onclick="PrevMonth">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
-        <span style="font-size:13px;font-weight:600;">@_displayMonth.ToString("MMMM yyyy")</span>
-        <button class="cal-btn cal-btn-icon cal-btn-sm" @onclick="NextMonth">
+        <span style="font-size:13px;font-weight:600;">@miniTitle</span>
+        <button class="cal-btn cal-btn-icon cal-btn-sm cal-btn-nav" @onclick="NextMonth">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
     </div>
     <table>
         <thead>
             <tr>
-                @foreach (var d in new[] { "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" })
+                @foreach (var d in miniHeaders)
                 {
-                    <th>@d</th>
+                    <th>@(d.Length > 2 ? d[..2] : d)</th>
                 }
             </tr>
         </thead>
@@ -50,15 +56,19 @@
 
     protected override void OnInitialized()
     {
-        _displayMonth = new DateTime(State.SelectedDate.Year, State.SelectedDate.Month, 1);
+        _displayMonth = State.Culture.Calendar.ToDateTime(
+            State.Culture.Calendar.GetYear(State.SelectedDate),
+            State.Culture.Calendar.GetMonth(State.SelectedDate),
+            1, 0, 0, 0, 0);
     }
 
-    private void PrevMonth() => _displayMonth = _displayMonth.AddMonths(-1);
-    private void NextMonth() => _displayMonth = _displayMonth.AddMonths(1);
+    private void PrevMonth() => _displayMonth = State.Culture.Calendar.AddMonths(_displayMonth, -1);
+    private void NextMonth() => _displayMonth = State.Culture.Calendar.AddMonths(_displayMonth, 1);
 
     private void SelectDate(DateTime date)
     {
         State.SetSelectedDate(date);
-        _displayMonth = new DateTime(date.Year, date.Month, 1);
+        var cal = State.Culture.Calendar;
+        _displayMonth = cal.ToDateTime(cal.GetYear(date), cal.GetMonth(date), 1, 0, 0, 0, 0);
     }
 }

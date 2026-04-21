@@ -1,12 +1,13 @@
 @{
-    var cells = CalendarHelpers.GetCalendarCells(State.SelectedDate);
+    var cells = CalendarHelpers.GetCalendarCells(State.SelectedDate, State.Culture);
     var allEvents = MultiDayEvents.Concat(SingleDayEvents).ToList();
-    var eventPositions = CalendarHelpers.CalculateMonthEventPositions(MultiDayEvents, SingleDayEvents, State.SelectedDate);
+    var eventPositions = CalendarHelpers.CalculateMonthEventPositions(MultiDayEvents, SingleDayEvents, State.SelectedDate, State.Culture);
+    var weekDayHeaders = CalendarHelpers.GetWeekDayHeaders(State.Culture);
 }
 
 <div class="cal-month">
     <div class="cal-month-header">
-        @foreach (var day in _weekDays)
+        @foreach (var day in weekDayHeaders)
         {
             <div class="cal-month-header-cell">@day</div>
         }
@@ -24,6 +25,4 @@
     [CascadingParameter] public CalendarState State { get; set; } = default!;
     [Parameter] public List<CalendarEvent> SingleDayEvents { get; set; } = [];
     [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
-
-    private static readonly string[] _weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 }

@@ -12,10 +12,10 @@
     <div class="cal-day-main">
         <div class="cal-day-header">
             <span style="color:var(--cal-text-secondary);font-size:14px;">
-                @State.SelectedDate.ToString("ddd", System.Globalization.CultureInfo.InvariantCulture)
+                @State.SelectedDate.ToString("ddd", State.Culture)
             </span>
             <span class="cal-day-header-date @(State.SelectedDate.Date == DateTime.Today ? "today" : "")">
-                @State.SelectedDate.Day
+                @CalendarHelpers.GetCulturalDayOfMonth(State.SelectedDate, State.Culture)
             </span>
         </div>
 

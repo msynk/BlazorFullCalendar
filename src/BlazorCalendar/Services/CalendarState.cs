@@ -1,3 +1,4 @@
+using System.Globalization;
 using BlazorCalendar.Models;
 
 namespace BlazorCalendar.Services;
@@ -18,6 +19,9 @@ public class CalendarState
     public AgendaGroupBy AgendaModeGroupBy { get; private set; } = AgendaGroupBy.Date;
     public bool IsDarkMode { get; private set; }
 
+    public CultureInfo Culture { get; private set; } = CultureInfo.CurrentUICulture;
+    public bool IsRtl => Culture.TextInfo.IsRightToLeft;
+
     // Drag state
     public CalendarEvent? DraggedEvent { get; set; }
     public bool IsDragging => DraggedEvent != null;
@@ -27,11 +31,19 @@ public class CalendarState
 
     public event Action? OnStateChanged;
 
-    public void Initialize(List<CalendarEvent> events, List<CalendarUser> users)
+    public void Initialize(List<CalendarEvent> events, List<CalendarUser> users, CultureInfo? culture = null)
     {
         _allEvents = [.. events];
         _filteredEvents = [.. events];
         Users = users;
+        if (culture != null)
+            Culture = culture;
+        NotifyStateChanged();
+    }
+
+    public void SetCulture(CultureInfo culture)
+    {
+        Culture = culture;
         NotifyStateChanged();
     }
 
@@ -88,13 +100,13 @@ public class CalendarState
 
     public void NavigatePrevious()
     {
-        SelectedDate = CalendarHelpers.NavigateDate(SelectedDate, View, false);
+        SelectedDate = CalendarHelpers.NavigateDate(SelectedDate, View, false, Culture);
         NotifyStateChanged();
     }
 
     public void NavigateNext()
     {
-        SelectedDate = CalendarHelpers.NavigateDate(SelectedDate, View, true);
+        SelectedDate = CalendarHelpers.NavigateDate(SelectedDate, View, true, Culture);
         NotifyStateChanged();
     }
 

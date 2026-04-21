@@ -8,103 +8,203 @@ public static class CalendarHelpers
     public const int HourHeightPx = 96;
     private const string FormatString = "MMM d, yyyy";
 
-    public static string RangeText(CalendarView view, DateTime date)
+    // ── Culture-aware: Range text ────────────────────────────────────────────
+
+    public static string RangeText(CalendarView view, DateTime date, CultureInfo? culture = null)
     {
-        DateTime start, end;
+        culture ??= CultureInfo.CurrentUICulture;
+        var cal = culture.Calendar;
+        var dtf = culture.DateTimeFormat;
+
         switch (view)
         {
             case CalendarView.Month:
-                start = new DateTime(date.Year, date.Month, 1);
-                end = start.AddMonths(1).AddDays(-1);
-                break;
-            case CalendarView.Week:
-                start = StartOfWeek(date);
-                end = start.AddDays(6);
-                break;
-            case CalendarView.Day:
-                return date.ToString(FormatString, CultureInfo.InvariantCulture);
-            case CalendarView.Year:
-                start = new DateTime(date.Year, 1, 1);
-                end = new DateTime(date.Year, 12, 31);
-                break;
             case CalendarView.Agenda:
-                start = new DateTime(date.Year, date.Month, 1);
-                end = start.AddMonths(1).AddDays(-1);
-                break;
+            {
+                int y = cal.GetYear(date);
+                int m = cal.GetMonth(date);
+                string monthName = dtf.GetMonthName(m);
+                return $"{monthName} {y}";
+            }
+            case CalendarView.Week:
+            {
+                var start = StartOfWeek(date, culture);
+                var end = start.AddDays(6);
+                return $"{FormatCultureDate(start, culture)} – {FormatCultureDate(end, culture)}";
+            }
+            case CalendarView.Day:
+                return FormatCultureDate(date, culture);
+            case CalendarView.Year:
+            {
+                int y = cal.GetYear(date);
+                return y.ToString(culture);
+            }
             default:
                 return "Error";
         }
-
-        return $"{start.ToString(FormatString, CultureInfo.InvariantCulture)} - {end.ToString(FormatString, CultureInfo.InvariantCulture)}";
     }
 
-    public static DateTime NavigateDate(DateTime date, CalendarView view, bool forward)
+    /// <summary>Formats a date as "Mon d, Year" using the supplied culture's calendar.</summary>
+    public static string FormatCultureDate(DateTime date, CultureInfo? culture = null)
     {
+        culture ??= CultureInfo.CurrentUICulture;
+        var cal = culture.Calendar;
+        var dtf = culture.DateTimeFormat;
+        int y = cal.GetYear(date);
+        int m = cal.GetMonth(date);
+        int d = cal.GetDayOfMonth(date);
+        string abbr = dtf.GetAbbreviatedMonthName(m);
+        return $"{abbr} {d}, {y}";
+    }
+
+    // ── Culture-aware: Navigation ────────────────────────────────────────────
+
+    public static DateTime NavigateDate(DateTime date, CalendarView view, bool forward, CultureInfo? culture = null)
+    {
+        culture ??= CultureInfo.CurrentUICulture;
+        var cal = culture.Calendar;
+        int delta = forward ? 1 : -1;
         return view switch
         {
-            CalendarView.Month => date.AddMonths(forward ? 1 : -1),
-            CalendarView.Week => date.AddDays(forward ? 7 : -7),
-            CalendarView.Day => date.AddDays(forward ? 1 : -1),
-            CalendarView.Year => date.AddYears(forward ? 1 : -1),
-            CalendarView.Agenda => date.AddMonths(forward ? 1 : -1),
-            _ => date
+            CalendarView.Month  => cal.AddMonths(date, delta),
+            CalendarView.Week   => date.AddDays(forward ? 7 : -7),
+            CalendarView.Day    => date.AddDays(delta),
+            CalendarView.Year   => cal.AddYears(date, delta),
+            CalendarView.Agenda => cal.AddMonths(date, delta),
+            _                   => date
         };
     }
 
-    public static DateTime StartOfWeek(DateTime date, DayOfWeek startDay = DayOfWeek.Sunday)
+    // ── Culture-aware: Week helpers ──────────────────────────────────────────
+
+    public static DateTime StartOfWeek(DateTime date, CultureInfo? culture = null)
+    {
+        var startDay = culture?.DateTimeFormat.FirstDayOfWeek ?? DayOfWeek.Sunday;
+        return StartOfWeek(date, startDay);
+    }
+
+    public static DateTime StartOfWeek(DateTime date, DayOfWeek startDay)
     {
         int diff = (7 + (date.DayOfWeek - startDay)) % 7;
         return date.Date.AddDays(-diff);
     }
 
-    public static List<CalendarCell> GetCalendarCells(DateTime selectedDate)
+    public static DateTime[] GetWeekDates(DateTime date, CultureInfo? culture = null)
     {
-        var year = selectedDate.Year;
-        var month = selectedDate.Month;
-        var firstDay = new DateTime(year, month, 1);
-        var daysInMonth = DateTime.DaysInMonth(year, month);
-        int firstDayOfWeek = (int)firstDay.DayOfWeek;
+        var start = StartOfWeek(date, culture);
+        return Enumerable.Range(0, 7).Select(i => start.AddDays(i)).ToArray();
+    }
 
-        var prevMonth = firstDay.AddMonths(-1);
-        int daysInPrevMonth = DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month);
+    // ── Culture-aware: Weekday header names ─────────────────────────────────
+
+    /// <summary>
+    /// Returns 7 shortest day-name strings (1 char) starting from
+    /// culture.DateTimeFormat.FirstDayOfWeek.
+    /// </summary>
+    public static string[] GetWeekDayHeaders(CultureInfo? culture = null)
+    {
+        culture ??= CultureInfo.CurrentUICulture;
+        var dtf = culture.DateTimeFormat;
+        var first = (int)dtf.FirstDayOfWeek;
+        return Enumerable.Range(0, 7)
+            .Select(i => dtf.GetShortestDayName((DayOfWeek)((first + i) % 7)))
+            .ToArray();
+    }
+
+    /// <summary>
+    /// Returns 7 abbreviated day-name strings (2–3 chars) starting from
+    /// culture.DateTimeFormat.FirstDayOfWeek.
+    /// </summary>
+    public static string[] GetAbbreviatedWeekDayHeaders(CultureInfo? culture = null)
+    {
+        culture ??= CultureInfo.CurrentUICulture;
+        var dtf = culture.DateTimeFormat;
+        var first = (int)dtf.FirstDayOfWeek;
+        return Enumerable.Range(0, 7)
+            .Select(i => dtf.GetAbbreviatedDayName((DayOfWeek)((first + i) % 7)))
+            .ToArray();
+    }
+
+    // ── Culture-aware: Calendar grid cells ──────────────────────────────────
+
+    public static List<CalendarCell> GetCalendarCells(DateTime selectedDate, CultureInfo? culture = null)
+    {
+        culture ??= CultureInfo.CurrentUICulture;
+        var cal = culture.Calendar;
+        var dtf = culture.DateTimeFormat;
+
+        int culturalYear  = cal.GetYear(selectedDate);
+        int culturalMonth = cal.GetMonth(selectedDate);
+
+        // First day of this cultural month as a Gregorian DateTime
+        DateTime firstDay = cal.ToDateTime(culturalYear, culturalMonth, 1, 0, 0, 0, 0);
+        int daysInMonth   = cal.GetDaysInMonth(culturalYear, culturalMonth);
+
+        // Leading blank cells (days from prev cultural month)
+        int firstDow      = (int)cal.GetDayOfWeek(firstDay);
+        int culturalFirst = (int)dtf.FirstDayOfWeek;
+        int leadingDays   = (firstDow - culturalFirst + 7) % 7;
+
+        // Previous cultural month
+        int prevCulturalMonth = culturalMonth == 1
+            ? cal.GetMonthsInYear(culturalYear - 1)
+            : culturalMonth - 1;
+        int prevCulturalYear = culturalMonth == 1 ? culturalYear - 1 : culturalYear;
+        int daysInPrevMonth  = cal.GetDaysInMonth(prevCulturalYear, prevCulturalMonth);
 
         var cells = new List<CalendarCell>();
 
-        for (int i = 0; i < firstDayOfWeek; i++)
+        for (int i = 0; i < leadingDays; i++)
         {
-            int day = daysInPrevMonth - firstDayOfWeek + i + 1;
-            cells.Add(new CalendarCell
-            {
-                Day = day,
-                CurrentMonth = false,
-                Date = new DateTime(prevMonth.Year, prevMonth.Month, day)
-            });
+            int d = daysInPrevMonth - leadingDays + i + 1;
+            DateTime date = cal.ToDateTime(prevCulturalYear, prevCulturalMonth, d, 0, 0, 0, 0);
+            cells.Add(new CalendarCell { Day = d, CurrentMonth = false, Date = date });
         }
 
         for (int i = 1; i <= daysInMonth; i++)
         {
-            cells.Add(new CalendarCell
-            {
-                Day = i,
-                CurrentMonth = true,
-                Date = new DateTime(year, month, i)
-            });
+            DateTime date = cal.ToDateTime(culturalYear, culturalMonth, i, 0, 0, 0, 0);
+            cells.Add(new CalendarCell { Day = i, CurrentMonth = true, Date = date });
         }
 
-        int totalDays = firstDayOfWeek + daysInMonth;
-        int remaining = (7 - (totalDays % 7)) % 7;
-        var nextMonth = firstDay.AddMonths(1);
-        for (int i = 1; i <= remaining; i++)
+        int totalDays  = leadingDays + daysInMonth;
+        int trailing   = (7 - (totalDays % 7)) % 7;
+        int nextCulturalMonth = culturalMonth == cal.GetMonthsInYear(culturalYear)
+            ? 1
+            : culturalMonth + 1;
+        int nextCulturalYear = culturalMonth == cal.GetMonthsInYear(culturalYear)
+            ? culturalYear + 1
+            : culturalYear;
+
+        for (int i = 1; i <= trailing; i++)
         {
-            cells.Add(new CalendarCell
-            {
-                Day = i,
-                CurrentMonth = false,
-                Date = new DateTime(nextMonth.Year, nextMonth.Month, i)
-            });
+            DateTime date = cal.ToDateTime(nextCulturalYear, nextCulturalMonth, i, 0, 0, 0, 0);
+            cells.Add(new CalendarCell { Day = i, CurrentMonth = false, Date = date });
         }
 
         return cells;
+    }
+
+    // ── Culture-aware: Day-of-month display ─────────────────────────────────
+
+    public static int GetCulturalDayOfMonth(DateTime date, CultureInfo? culture = null)
+    {
+        culture ??= CultureInfo.CurrentUICulture;
+        return culture.Calendar.GetDayOfMonth(date);
+    }
+
+    // ── Culture-aware: Events for year ──────────────────────────────────────
+
+    public static List<CalendarEvent> GetEventsForYear(List<CalendarEvent> events, DateTime date, CultureInfo? culture = null)
+    {
+        culture ??= CultureInfo.CurrentUICulture;
+        var cal = culture.Calendar;
+        int culturalYear  = cal.GetYear(date);
+        DateTime yearStart = cal.ToDateTime(culturalYear, 1, 1, 0, 0, 0, 0);
+        int monthsInYear   = cal.GetMonthsInYear(culturalYear);
+        int lastDayOfYear  = cal.GetDaysInMonth(culturalYear, monthsInYear);
+        DateTime yearEnd   = cal.ToDateTime(culturalYear, monthsInYear, lastDayOfYear, 23, 59, 59, 0);
+        return events.Where(ev => ev.StartDate.Date <= yearEnd && ev.EndDate.Date >= yearStart).ToList();
     }
 
     public static string FormatTime(DateTime date, bool use24Hour)
@@ -167,10 +267,15 @@ public static class CalendarHelpers
     public static Dictionary<int, int> CalculateMonthEventPositions(
         List<CalendarEvent> multiDayEvents,
         List<CalendarEvent> singleDayEvents,
-        DateTime selectedDate)
+        DateTime selectedDate,
+        CultureInfo? culture = null)
     {
-        var monthStart = new DateTime(selectedDate.Year, selectedDate.Month, 1);
-        var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+        culture ??= CultureInfo.CurrentUICulture;
+        var cal = culture.Calendar;
+        int y = cal.GetYear(selectedDate);
+        int m = cal.GetMonth(selectedDate);
+        DateTime monthStart = cal.ToDateTime(y, m, 1, 0, 0, 0, 0);
+        DateTime monthEnd   = cal.AddMonths(monthStart, 1).AddDays(-1);
 
         var eventPositions = new Dictionary<int, int>();
         var occupiedPositions = new Dictionary<(int Year, int Month, int Day), bool[]>();
@@ -306,34 +411,24 @@ public static class CalendarHelpers
         }).ToList();
     }
 
-    public static List<CalendarEvent> GetEventsForWeek(List<CalendarEvent> events, DateTime date)
+    public static List<CalendarEvent> GetEventsForWeek(List<CalendarEvent> events, DateTime date, CultureInfo? culture = null)
     {
-        var weekStart = StartOfWeek(date, DayOfWeek.Monday);
+        var weekStart = StartOfWeek(date, culture);
         var weekEnd = weekStart.AddDays(6);
         return events.Where(ev =>
             ev.StartDate.Date <= weekEnd && ev.EndDate.Date >= weekStart).ToList();
     }
 
-    public static List<CalendarEvent> GetEventsForMonth(List<CalendarEvent> events, DateTime date)
+    public static List<CalendarEvent> GetEventsForMonth(List<CalendarEvent> events, DateTime date, CultureInfo? culture = null)
     {
-        var monthStart = new DateTime(date.Year, date.Month, 1);
-        var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+        culture ??= CultureInfo.CurrentUICulture;
+        var cal = culture.Calendar;
+        int y = cal.GetYear(date);
+        int m = cal.GetMonth(date);
+        DateTime monthStart = cal.ToDateTime(y, m, 1, 0, 0, 0, 0);
+        DateTime monthEnd   = cal.AddMonths(monthStart, 1).AddDays(-1);
         return events.Where(ev =>
             ev.StartDate.Date <= monthEnd && ev.EndDate.Date >= monthStart).ToList();
-    }
-
-    public static List<CalendarEvent> GetEventsForYear(List<CalendarEvent> events, DateTime date)
-    {
-        var yearStart = new DateTime(date.Year, 1, 1);
-        var yearEnd = new DateTime(date.Year, 12, 31);
-        return events.Where(ev =>
-            ev.StartDate.Date <= yearEnd && ev.EndDate.Date >= yearStart).ToList();
-    }
-
-    public static DateTime[] GetWeekDates(DateTime date, DayOfWeek startDay = DayOfWeek.Sunday)
-    {
-        var start = StartOfWeek(date, startDay);
-        return Enumerable.Range(0, 7).Select(i => start.AddDays(i)).ToArray();
     }
 
     public static string GetColorCss(EventColor color) => color switch

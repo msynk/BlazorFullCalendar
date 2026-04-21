@@ -1,7 +1,8 @@
+@using System.Globalization
 @implements IDisposable
 
 <CascadingValue Value="State">
-    <div class="cal-root @(State.IsDarkMode ? "cal-dark" : "")">
+    <div class="cal-root @(State.IsDarkMode ? "cal-dark" : "")" dir="@(State.IsRtl ? "rtl" : "ltr")">
         <CalendarHeader />
         <CalendarBody />
         <CalendarToast />
@@ -12,13 +13,40 @@
     [Parameter] public List<CalendarEvent>? Events { get; set; }
     [Parameter] public List<CalendarUser>? Users { get; set; }
 
+    /// <summary>
+    /// Culture for the calendar. Accepts any CultureInfo, e.g. new CultureInfo("fa-IR").
+    /// NOTE: do NOT use this parameter when the component is rendered with
+    /// @rendermode="InteractiveServer" — CultureInfo is not JSON-serializable.
+    /// Use <see cref="CultureName"/> instead for server-interactive scenarios.
+    /// </summary>
+    [Parameter] public CultureInfo? Culture { get; set; }
+
+    /// <summary>
+    /// Culture name string (e.g. "fa-IR", "ar-SA", "fr-FR").
+    /// Preferred over <see cref="Culture"/> when using @rendermode="InteractiveServer"
+    /// because plain strings are safely serialized by Blazor's parameter persistence.
+    /// When both are supplied, CultureName takes precedence.
+    /// </summary>
+    [Parameter] public string? CultureName { get; set; }
+
     public CalendarState State { get; set; } = new();
+
+    private CultureInfo ResolveCulture() =>
+        CultureName is { Length: > 0 } name
+            ? new CultureInfo(name)
+            : Culture ?? CultureInfo.CurrentUICulture;
 
     protected override void OnInitialized()
     {
-        State.Initialize(Events ?? [], Users ?? []);
-
+        State.Initialize(Events ?? [], Users ?? [], ResolveCulture());
         State.OnStateChanged += HandleStateChanged;
+    }
+
+    protected override void OnParametersSet()
+    {
+        var resolved = ResolveCulture();
+        if (!string.Equals(resolved.Name, State.Culture.Name, StringComparison.Ordinal))
+            State.SetCulture(resolved);
     }
 
     private void HandleStateChanged() => InvokeAsync(StateHasChanged);

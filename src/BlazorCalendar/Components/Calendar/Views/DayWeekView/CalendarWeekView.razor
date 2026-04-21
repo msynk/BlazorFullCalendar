@@ -1,7 +1,7 @@
 @inject IJSRuntime JS
 
 @{
-    var weekStart = CalendarHelpers.StartOfWeek(State.SelectedDate);
+    var weekStart = CalendarHelpers.StartOfWeek(State.SelectedDate, State.Culture);
     var weekDays = Enumerable.Range(0, 7).Select(i => weekStart.AddDays(i)).ToArray();
 }
 
@@ -18,8 +18,8 @@
         {
             var isToday = day.Date == DateTime.Today;
             <div class="cal-week-header-day">
-                <span class="cal-week-header-day-name">@day.ToString("ddd", System.Globalization.CultureInfo.InvariantCulture)</span>
-                <span class="cal-week-header-day-num @(isToday ? "today" : "")">@day.Day</span>
+                <span class="cal-week-header-day-name">@day.ToString("ddd", State.Culture)</span>
+                <span class="cal-week-header-day-num @(isToday ? "today" : "")">@CalendarHelpers.GetCulturalDayOfMonth(day, State.Culture)</span>
             </div>
         }
     </div>

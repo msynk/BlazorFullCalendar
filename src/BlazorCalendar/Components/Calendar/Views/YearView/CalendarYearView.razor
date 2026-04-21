@@ -1,27 +1,36 @@
 @{
     var allEvents = MultiDayEvents.Concat(SingleDayEvents).ToList();
-    var currentYear = State.SelectedDate.Year;
-    var months = Enumerable.Range(1, 12).Select(m => new DateTime(currentYear, m, 1)).ToArray();
+    var cal = State.Culture.Calendar;
+    var dtf = State.Culture.DateTimeFormat;
+    int culturalYear = cal.GetYear(State.SelectedDate);
+    var months = Enumerable.Range(1, 12)
+        .Select(m => cal.ToDateTime(culturalYear, m, 1, 0, 0, 0, 0))
+        .ToArray();
+    var yearWeekDayHeaders = CalendarHelpers.GetAbbreviatedWeekDayHeaders(State.Culture);
 }
 
 <div class="cal-year">
     @foreach (var monthDate in months)
     {
-        var cells = CalendarHelpers.GetCalendarCells(monthDate);
+        var cells = CalendarHelpers.GetCalendarCells(monthDate, State.Culture);
+        var monthIndex = cal.GetMonth(monthDate);
+        var monthName = dtf.GetMonthName(monthIndex);
         <div class="cal-year-month">
             <div class="cal-year-month-title" @onclick="() => GoToMonth(monthDate)">
-                @monthDate.ToString("MMMM")
+                @monthName
             </div>
             <div class="cal-year-weekdays">
-                @foreach (var wd in new[] { "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" })
+                @foreach (var wd in yearWeekDayHeaders)
                 {
-                    <div class="cal-year-weekday">@wd</div>
+                    <div class="cal-year-weekday">@(wd.Length > 2 ? wd[..2] : wd)</div>
                 }
             </div>
             <div class="cal-year-days">
                 @foreach (var cell in cells)
                 {
-                    var isCurrentMonth = cell.Date.Month == monthDate.Month && cell.Date.Year == monthDate.Year;
+                    var cellCulturalMonth = cal.GetMonth(cell.Date);
+                    var isCurrentMonth = cellCulturalMonth == monthIndex
+                        && cal.GetYear(cell.Date) == culturalYear;
                     var isToday = cell.Date.Date == DateTime.Today;
                     var dayEvents = allEvents.Where(e => e.StartDate.Date == cell.Date.Date).ToList();
                     var hasEvents = isCurrentMonth && dayEvents.Count > 0;
