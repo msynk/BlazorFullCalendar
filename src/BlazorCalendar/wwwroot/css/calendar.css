@@ -210,7 +210,8 @@
     position: relative;
     cursor: pointer;
     transition: background 0.1s;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: 4px;
 }
 .cal-month-cell:hover { background: var(--cal-bg-hover); }
 .cal-month-cell:nth-child(7n) { border-right: none; }
@@ -531,9 +532,28 @@
     height: 100%;
 }
 
+.cal-week-scroll {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    position: relative;
+}
+
 .cal-week-header {
     display: flex;
     border-bottom: 1px solid var(--cal-border);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--cal-bg);
+    flex-shrink: 0;
+}
+
+.cal-week-body {
+    display: flex;
+    flex-shrink: 0;
 }
 .cal-week-header-time {
     width: 60px;
@@ -756,7 +776,32 @@
     font-size: 13px;
     color: var(--cal-text-secondary);
 }
-
+.cal-dialog-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.cal-dialog-header-row h3 { flex: 1; min-width: 0; }
+.cal-dialog-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: none;
+    border-radius: var(--cal-radius-sm);
+    color: var(--cal-text-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.1s, color 0.1s;
+}
+.cal-dialog-close-btn:hover {
+    background: var(--cal-bg-hover);
+    color: var(--cal-text);
+}
 .cal-dialog-body { padding: 16px 20px; }
 .cal-dialog-footer {
     padding: 12px 20px;
@@ -1155,11 +1200,47 @@
 .cal-droppable { transition: background 0.1s; }
 .cal-droppable.drag-over { background: rgba(59,130,246,0.08); }
 
+/* ===== Cell "add event" hover hint ===== */
+.cal-hour-row { cursor: pointer; transition: background 0.1s; }
+.cal-hour-row:hover { background: var(--cal-bg-hover); }
+
+.cal-cell-add-hint {
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    color: var(--cal-text-muted);
+    font-size: 11px;
+    font-weight: 500;
+    user-select: none;
+}
+.cal-month-cell:hover .cal-cell-add-hint,
+.cal-hour-row:hover .cal-cell-add-hint {
+    opacity: 1;
+}
+.cal-cell-add-hint-month {
+    position: absolute;
+    top: 5px;
+    right: 6px;
+}
+.cal-cell-add-hint-hour {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    z-index: 0;
+}
+
 /* ===== Scrollbar styling ===== */
-.cal-body ::-webkit-scrollbar { width: 8px; }
-.cal-body ::-webkit-scrollbar-track { background: transparent; }
-.cal-body ::-webkit-scrollbar-thumb { background: var(--cal-border); border-radius: 4px; }
-.cal-body ::-webkit-scrollbar-thumb:hover { background: var(--cal-text-muted); }
+.cal-body ::-webkit-scrollbar,
+.cal-week-scroll::-webkit-scrollbar { width: 8px; }
+.cal-body ::-webkit-scrollbar-track,
+.cal-week-scroll::-webkit-scrollbar-track { background: transparent; }
+.cal-body ::-webkit-scrollbar-thumb,
+.cal-week-scroll::-webkit-scrollbar-thumb { background: var(--cal-border); border-radius: 4px; }
+.cal-body ::-webkit-scrollbar-thumb:hover,
+.cal-week-scroll::-webkit-scrollbar-thumb:hover { background: var(--cal-text-muted); }
 
 /* ===== RTL (Right-to-Left) support ===== */
 
@@ -1178,6 +1259,7 @@
 /* Week header + timegrid */
 [dir="rtl"] .cal-week-header { direction: rtl; }
 [dir="rtl"] .cal-week-layout { direction: rtl; }
+[dir="rtl"] .cal-week-scroll { direction: rtl; }
 [dir="rtl"] .cal-timegrid-days { direction: rtl; }
 
 /* Day view: sidebar moves to the left side */

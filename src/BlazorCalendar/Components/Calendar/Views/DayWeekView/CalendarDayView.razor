@@ -27,21 +27,25 @@
                 @for (int h = 0; h < 24; h++)
                 {
                     var hour = h;
-                    <div class="cal-hour-row cal-droppable"
-                         @ondragover:preventDefault="true"
-                         @ondrop="() => OnDropHour(hour, 0)"
-                         @onclick="() => OnHourClick(hour)">
-                        @if (h > 0)
-                        {
-                            <div style="position:absolute;top:0;left:0;right:0;border-top:1px solid var(--cal-border);"></div>
-                        }
-                        <div class="cal-hour-row-half cal-droppable"
+                        <div class="cal-hour-row cal-droppable"
                              @ondragover:preventDefault="true"
-                             @ondrop="() => OnDropHour(hour, 30)"></div>
-                    </div>
+                             @ondrop="() => OnDropHour(hour, 0)"
+                             @onclick="() => OnHourClick(hour)">
+                            @if (h > 0)
+                            {
+                                <div style="position:absolute;top:0;left:0;right:0;border-top:1px solid var(--cal-border);"></div>
+                            }
+                            <div class="cal-hour-row-half cal-droppable"
+                                 @ondragover:preventDefault="true"
+                                 @ondrop="() => OnDropHour(hour, 30)"></div>
+                            <div class="cal-cell-add-hint cal-cell-add-hint-hour" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Add event
+                            </div>
+                        </div>
                 }
 
-                <RenderGroupedEvents GroupedEvents="groupedEvents" Day="State.SelectedDate" />
+                <RenderGroupedEvents GroupedEvents="groupedEvents" Day="State.SelectedDate" OnEventSelected="SelectEvent" />
                 <CalendarTimeline />
             </div>
         </div>
@@ -88,6 +92,11 @@
     <AddEditEventDialog StartDate="_addStartDate" StartHour="_addStartHour" OnClose="() => _showAddDialog = false" />
 }
 
+@if (_selectedEvent != null)
+{
+    <EventDetailsDialog Event="_selectedEvent" OnClose="CloseEventDetails" />
+}
+
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
     [Parameter] public List<CalendarEvent> SingleDayEvents { get; set; } = [];
@@ -98,6 +107,11 @@
     private bool _showAddDialog;
     private DateTime _addStartDate;
     private int _addStartHour;
+
+    private CalendarEvent? _selectedEvent;
+
+    private void SelectEvent(CalendarEvent ev) => _selectedEvent = ev;
+    private void CloseEventDetails() => _selectedEvent = null;
 
     private void OnHourClick(int hour)
     {

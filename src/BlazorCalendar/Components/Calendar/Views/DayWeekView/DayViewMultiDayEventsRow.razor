@@ -4,9 +4,14 @@
         @foreach (var ev in _multiDayForDay)
         {
             var position = GetPosition(ev);
-            <MonthEventBadge Event="ev" CellDate="Date" Position="@position" />
+            <MonthEventBadge Event="ev" CellDate="Date" Position="@position" OnSelected="ShowEventDetails" />
         }
     </div>
+}
+
+@if (_selectedEvent != null)
+{
+    <EventDetailsDialog Event="_selectedEvent" OnClose="CloseEventDetails" />
 }
 
 @code {
@@ -15,6 +20,7 @@
     [Parameter] public DateTime Date { get; set; }
 
     private List<CalendarEvent> _multiDayForDay = [];
+    private CalendarEvent? _selectedEvent;
 
     protected override void OnParametersSet()
     {
@@ -27,4 +33,7 @@
         if (ev.EndDate.Date == Date.Date) return "last";
         return "middle";
     }
+
+    private void ShowEventDetails(CalendarEvent ev) => _selectedEvent = ev;
+    private void CloseEventDetails() => _selectedEvent = null;
 }

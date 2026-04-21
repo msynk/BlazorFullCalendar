@@ -1,7 +1,10 @@
 <div class="cal-overlay" @onclick="OnClose">
     <div class="cal-dialog" @onclick:stopPropagation="true">
-        <div class="cal-dialog-header">
+        <div class="cal-dialog-header cal-dialog-header-row">
             <h3>@Event.Title</h3>
+            <button class="cal-dialog-close-btn" @onclick="OnClose" aria-label="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
         </div>
         <div class="cal-dialog-body">
             <div class="cal-event-detail-row">
@@ -52,9 +55,12 @@
                 </div>
             </div>
         </div>
-        <div class="cal-dialog-footer">
-            <button class="cal-btn" @onclick="Edit">Edit</button>
-            <button class="cal-btn cal-btn-danger" @onclick="Delete">Delete</button>
+        <div class="cal-dialog-footer" style="justify-content:space-between;">
+            <button class="cal-btn" @onclick="OnClose">Close</button>
+            <div style="display:flex;gap:8px;">
+                <button class="cal-btn" @onclick="Edit">Edit</button>
+                <button class="cal-btn cal-btn-danger" @onclick="Delete">Delete</button>
+            </div>
         </div>
     </div>
 </div>

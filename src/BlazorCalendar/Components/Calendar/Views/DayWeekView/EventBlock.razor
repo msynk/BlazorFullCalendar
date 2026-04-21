@@ -12,7 +12,7 @@
      draggable="true"
      @ondragstart="OnDragStart"
      @ondragend="OnDragEnd"
-     @onclick="() => _showDetails = true"
+     @onclick="() => OnSelected.InvokeAsync(Event)"
      @onclick:stopPropagation="true">
 
     <div class="cal-resize-handle cal-resize-handle-top"
@@ -39,16 +39,10 @@
          @onpointerdown:stopPropagation="true"></div>
 </div>
 
-@if (_showDetails)
-{
-    <EventDetailsDialog Event="Event" OnClose="() => _showDetails = false" />
-}
-
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
     [Parameter] public CalendarEvent Event { get; set; } = default!;
-
-    private bool _showDetails;
+    [Parameter] public EventCallback<CalendarEvent> OnSelected { get; set; }
 
     private void OnDragStart() => State.StartDrag(Event);
     private void OnDragEnd() => State.EndDrag();

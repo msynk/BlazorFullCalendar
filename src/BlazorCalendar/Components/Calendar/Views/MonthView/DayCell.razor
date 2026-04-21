@@ -10,6 +10,10 @@
      @onclick="() => OnCellClick()">
 
     <div class="cal-month-cell-day @(isToday ? "today" : "")">@Cell.Day</div>
+    <div class="cal-cell-add-hint cal-cell-add-hint-month" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add event
+    </div>
 
     <div class="cal-month-events">
         @for (int i = 0; i < 3; i++)
@@ -20,7 +24,7 @@
             {
                 var position = GetBadgePosition(item.Event, Cell.Date);
                 <div class="cal-month-event-slot">
-                    <MonthEventBadge Event="item.Event" CellDate="Cell.Date" Position="@position" />
+                    <MonthEventBadge Event="item.Event" CellDate="Cell.Date" Position="@position" OnSelected="ShowEventDetails" />
                 </div>
             }
             else
@@ -51,6 +55,11 @@
     <AddEditEventDialog StartDate="Cell.Date" OnClose="() => _showAddDialog = false" />
 }
 
+@if (_selectedEvent != null)
+{
+    <EventDetailsDialog Event="_selectedEvent" OnClose="CloseEventDetails" />
+}
+
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
     [Parameter] public CalendarCell Cell { get; set; } = default!;
@@ -59,13 +68,15 @@
 
     private bool _showEventList;
     private bool _showAddDialog;
+    private CalendarEvent? _selectedEvent;
+
+    private void ShowEventDetails(CalendarEvent ev) => _selectedEvent = ev;
+    private void CloseEventDetails() => _selectedEvent = null;
 
     private void OnCellClick()
     {
         State.SetSelectedDate(Cell.Date);
-        var cellEvents = CalendarHelpers.GetMonthCellEvents(Cell.Date, Events, EventPositions);
-        if (cellEvents.Count == 0)
-            _showAddDialog = true;
+        _showAddDialog = true;
     }
 
     private string GetBadgePosition(CalendarEvent ev, DateTime cellDate)
