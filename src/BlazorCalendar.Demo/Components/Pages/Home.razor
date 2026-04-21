@@ -98,7 +98,7 @@
         <p>A fully interactive calendar right here. Try switching views, clicking events, and navigating dates.</p>
     </div>
     <div class="demo-calendar-container">
-        <FullCalendar Events="_demoEvents" Users="_demoUsers" @rendermode="InteractiveServer" />
+        <BlazorCalendar Events="_demoEvents" Users="_demoUsers" @rendermode="InteractiveServer" />
     </div>
 </section>
 
@@ -114,7 +114,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             MyPage.razor
         </div>
-        <pre><span class="tag">&lt;FullCalendar</span> <span class="attr">Events</span>=<span class="str">"myEvents"</span> <span class="attr">Users</span>=<span class="str">"myUsers"</span> <span class="tag">/&gt;</span>
+        <pre><span class="tag">&lt;BlazorCalendar</span> <span class="attr">Events</span>=<span class="str">"myEvents"</span> <span class="attr">Users</span>=<span class="str">"myUsers"</span> <span class="tag">/&gt;</span>
 
 <span class="kw">@@code</span> {
     <span class="kw">private</span> <span class="type">List&lt;CalendarEvent&gt;</span> myEvents = <span class="kw">new</span>()
@@ -141,9 +141,8 @@
 <!-- Footer -->
 <footer class="demo-footer">
     <p>
-        Blazor Calendar &mdash; A port of
+        Blazor Calendar &mdash; Inspired by
         <a href="https://github.com/yassir-jeraidi/full-calendar" target="_blank">yassir-jeraidi/full-calendar</a>
-        to Blazor/.NET
     </p>
 </footer>
 
