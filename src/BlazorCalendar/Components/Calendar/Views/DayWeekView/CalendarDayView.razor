@@ -1,3 +1,5 @@
+@inject IJSRuntime JS
+
 @{
     var dayEvents = SingleDayEvents.Where(e =>
         e.StartDate.Date == State.SelectedDate.Date).ToList();
@@ -19,7 +21,7 @@
 
         <DayViewMultiDayEventsRow MultiDayEvents="MultiDayEvents" Date="State.SelectedDate" />
 
-        <div class="cal-timegrid-wrapper" style="scroll-behavior:smooth;">
+        <div id="cal-day-timegrid-scroll" class="cal-timegrid-wrapper">
             <TimeColumn />
             <div class="cal-timegrid">
                 @for (int h = 0; h < 24; h++)
@@ -88,6 +90,8 @@
     [Parameter] public List<CalendarEvent> SingleDayEvents { get; set; } = [];
     [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
 
+    private string? _timeGridScrollSignature;
+
     private bool _showAddDialog;
     private DateTime _addStartDate;
     private int _addStartHour;
@@ -102,5 +106,21 @@
     private void OnDropHour(int hour, int minute)
     {
         State.HandleDrop(State.SelectedDate, hour, minute);
+    }
+
+    private string BuildTimeGridScrollSignature() =>
+        $"{State.SelectedDate:yyyy-MM-dd}|{State.StartOfDayHour}";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var sig = BuildTimeGridScrollSignature();
+        if (sig == _timeGridScrollSignature)
+            return;
+
+        if (await TimeGridScrollInterop.TryScrollToStartOfDayAsync(
+                JS,
+                "cal-day-timegrid-scroll",
+                State.StartOfDayHour))
+            _timeGridScrollSignature = sig;
     }
 }

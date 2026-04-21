@@ -4,7 +4,7 @@ VisualStudioVersion = 17.0.0.0
 MinimumVisualStudioVersion = 16.0.0.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorCalendar", "BlazorCalendar\BlazorCalendar.csproj", "{FAB9C094-9778-48F2-8CF8-DDC3BE95A4A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorCalendar.Demo", "Demo\BlazorCalendar.Demo\BlazorCalendar.Demo.csproj", "{E7D3A9C2-4B1F-4A5E-9C8D-1A2B3C4D5E6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorCalendar.Demo", "BlazorCalendar.Demo\BlazorCalendar.Demo.csproj", "{E7D3A9C2-4B1F-4A5E-9C8D-1A2B3C4D5E6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

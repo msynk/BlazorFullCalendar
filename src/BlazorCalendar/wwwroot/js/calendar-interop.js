@@ -1,9 +1,13 @@
 window.calendarInterop = {
-    scrollToHour: function (elementId, hour) {
+    scrollToHour: function (elementId, hour, pixelsPerHour) {
         const el = document.getElementById(elementId);
-        if (el) {
-            const scrollTarget = hour * 96;
-            el.scrollTop = scrollTarget;
+        if (!el) return;
+        const pxPerHour = pixelsPerHour ?? 96;
+        const top = hour * pxPerHour;
+        if (typeof el.scrollTo === "function") {
+            el.scrollTo({ top: top, behavior: "auto" });
+        } else {
+            el.scrollTop = top;
         }
     },
 
