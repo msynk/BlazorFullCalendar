@@ -126,4 +126,4 @@ Original concept inspired by [yassir-jeraidi/full-calendar](https://github.com/y
 
 ## License
 
-[Add your license information here]
+MIT, use it and be happy :)
