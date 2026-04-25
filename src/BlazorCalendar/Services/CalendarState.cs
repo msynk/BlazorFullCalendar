@@ -163,9 +163,20 @@ public class CalendarState
     }
 
     // Drag-and-drop helpers
-    public void StartDrag(CalendarEvent ev) => DraggedEvent = ev;
+    public void StartDrag(CalendarEvent ev)
+    {
+        DraggedEvent = ev;
+        NotifyStateChanged();
+    }
 
-    public void EndDrag() => DraggedEvent = null;
+    public void EndDrag()
+    {
+        if (DraggedEvent == null)
+            return;
+
+        DraggedEvent = null;
+        NotifyStateChanged();
+    }
 
     public void HandleDrop(DateTime targetDate, int? hour = null, int? minute = null)
     {

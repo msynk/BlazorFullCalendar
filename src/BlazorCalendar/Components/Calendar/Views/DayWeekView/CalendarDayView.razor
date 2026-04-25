@@ -27,7 +27,8 @@
                 @for (int h = 0; h < 24; h++)
                 {
                     var hour = h;
-                        <div class="cal-hour-row cal-droppable"
+                        <div class="cal-hour-row cal-droppable @GetHourDropClass(hour, 0)"
+                             @ondragenter="() => OnDragEnterHour(hour, 0)"
                              @ondragover:preventDefault="true"
                              @ondrop="() => OnDropHour(hour, 0)"
                              @onclick="() => OnHourClick(hour)">
@@ -35,7 +36,9 @@
                             {
                                 <div style="position:absolute;top:0;left:0;right:0;border-top:1px solid var(--cal-border);"></div>
                             }
-                            <div class="cal-hour-row-half cal-droppable"
+                            <div class="cal-hour-row-half cal-droppable @GetHourDropClass(hour, 30)"
+                                 @ondragenter="() => OnDragEnterHour(hour, 30)"
+                                 @ondragenter:stopPropagation="true"
                                  @ondragover:preventDefault="true"
                                  @ondrop:stopPropagation="true"
                                  @ondrop="() => OnDropHour(hour, 30)"></div>
@@ -110,6 +113,8 @@
     private int _addStartHour;
 
     private CalendarEvent? _selectedEvent;
+    private int? _dragHour;
+    private int? _dragMinute;
 
     private void SelectEvent(CalendarEvent ev) => _selectedEvent = ev;
     private void CloseEventDetails() => _selectedEvent = null;
@@ -123,7 +128,28 @@
 
     private void OnDropHour(int hour, int minute)
     {
+        _dragHour = null;
+        _dragMinute = null;
         State.HandleDrop(State.SelectedDate, hour, minute);
+    }
+
+    private void OnDragEnterHour(int hour, int minute)
+    {
+        if (!State.IsDragging)
+            return;
+
+        _dragHour = hour;
+        _dragMinute = minute;
+    }
+
+    private string GetHourDropClass(int hour, int minute)
+    {
+        if (!State.IsDragging)
+            return string.Empty;
+
+        return _dragHour == hour && _dragMinute == minute
+            ? (minute == 30 ? "cal-drop-preview-half" : "cal-drop-preview-hour")
+            : string.Empty;
     }
 
     private string BuildTimeGridScrollSignature() =>

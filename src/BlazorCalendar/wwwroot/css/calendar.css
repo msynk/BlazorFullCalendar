@@ -390,18 +390,29 @@
 
 /* Event block in day/week */
 .cal-event-block {
-    position: absolute;
+    position: relative;
     z-index: 2;
     padding: 4px 8px;
     border-radius: var(--cal-radius-sm);
     font-size: 12px;
     cursor: grab;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    pointer-events: auto;
     overflow: hidden;
     border: 1px solid transparent;
     user-select: none;
     transition: box-shadow 0.15s, filter 0.1s;
 }
 .cal-event-block:hover { filter: brightness(0.95); z-index: 5; box-shadow: var(--cal-shadow); }
+.cal-event-block-pass-through { pointer-events: none; }
+.cal-event-block-resizing {
+    z-index: 8;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.45), var(--cal-shadow);
+    filter: brightness(0.98);
+}
 
 .cal-event-block-title {
     font-weight: 600;
@@ -593,6 +604,7 @@
     position: relative;
     border-right: 1px solid var(--cal-border);
     min-height: calc(24 * var(--cal-hour-height));
+    overflow: hidden;
 }
 .cal-week-day-col:last-child { border-right: none; }
 
@@ -1203,6 +1215,25 @@
 /* ===== Droppable area hover states ===== */
 .cal-droppable { transition: background 0.1s; }
 .cal-droppable.drag-over { background: rgba(59,130,246,0.08); }
+.cal-droppable.cal-drop-preview-hour {
+    background: linear-gradient(
+        to bottom,
+        rgba(59,130,246,0.16) 0%,
+        rgba(59,130,246,0.16) 50%,
+        transparent 50%,
+        transparent 100%
+    );
+    outline: 1px solid rgba(59,130,246,0.45);
+    outline-offset: -1px;
+    z-index: 6;
+}
+.cal-droppable.cal-drop-preview-half {
+    background: rgba(59,130,246,0.16);
+    outline: 1px solid rgba(59,130,246,0.45);
+    outline-offset: -1px;
+    z-index: 7;
+    opacity: 1;
+}
 
 /* ===== Cell "add event" hover hint ===== */
 .cal-hour-row { cursor: pointer; transition: background 0.1s; }

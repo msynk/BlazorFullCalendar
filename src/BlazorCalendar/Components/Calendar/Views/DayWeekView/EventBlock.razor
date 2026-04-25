@@ -1,22 +1,27 @@
+@inject IJSRuntime JS
+@implements IDisposable
+
 @{
     var start = Event.StartDate;
     var end = Event.EndDate;
     var durationMin = (end - start).TotalMinutes;
-    var heightPx = (durationMin / 60.0) * CalendarHelpers.HourHeightPx - 4;
+    var heightPx = (durationMin / 60.0) * CalendarHelpers.HourHeightPx;
     var isDotVariant = State.BadgeVariant == BadgeVariant.Dot;
     var colorClass = isDotVariant ? "dot-variant" : CalendarHelpers.GetColorCss(Event.Color);
 }
 
-<div class="cal-event-block @colorClass"
+<div class="cal-event-block @colorClass @(State.IsDragging ? "cal-event-block-pass-through" : "") @(_isResizing ? "cal-event-block-resizing" : "")"
      style="height:@(heightPx.ToString("F0", System.Globalization.CultureInfo.InvariantCulture))px;"
      draggable="true"
      @ondragstart="OnDragStart"
      @ondragend="OnDragEnd"
-     @onclick="() => OnSelected.InvokeAsync(Event)"
+     @onclick="OnClick"
      @onclick:stopPropagation="true">
 
-    <div class="cal-resize-handle cal-resize-handle-top"
+    <div id="@_topHandleId"
+         class="cal-resize-handle cal-resize-handle-top"
          @onpointerdown="OnResizeTopStart"
+         @onpointerdown:preventDefault="true"
          @onpointerdown:stopPropagation="true"></div>
 
     <div style="display:flex;align-items:center;gap:4px;">
@@ -34,9 +39,18 @@
         </div>
     }
 
-    <div class="cal-resize-handle cal-resize-handle-bottom"
+    <div id="@_bottomHandleId"
+         class="cal-resize-handle cal-resize-handle-bottom"
          @onpointerdown="OnResizeBottomStart"
+         @onpointerdown:preventDefault="true"
          @onpointerdown:stopPropagation="true"></div>
+
+    @if (_isResizing)
+    {
+        <div class="cal-resize-preview">
+            @CalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat) - @CalendarHelpers.FormatTime(Event.EndDate, State.Use24HourFormat)
+        </div>
+    }
 </div>
 
 @code {
@@ -44,9 +58,106 @@
     [Parameter] public CalendarEvent Event { get; set; } = default!;
     [Parameter] public EventCallback<CalendarEvent> OnSelected { get; set; }
 
-    private void OnDragStart() => State.StartDrag(Event);
+    private readonly string _instanceId = Guid.NewGuid().ToString("N");
+    private DotNetObjectReference<EventBlock>? _dotNetRef;
+    private CalendarEvent? _resizeBaseEvent;
+    private bool _resizeInitialized;
+    private bool _isResizing;
+    private DateTime _suppressClickUntilUtc;
+    private string _topHandleId => $"cal-resize-top-{_instanceId}";
+    private string _bottomHandleId => $"cal-resize-bottom-{_instanceId}";
+
+    private void OnDragStart()
+    {
+        if (_isResizing)
+            return;
+
+        State.StartDrag(Event);
+    }
     private void OnDragEnd() => State.EndDrag();
 
-    private void OnResizeTopStart() { /* JS interop placeholder */ }
-    private void OnResizeBottomStart() { /* JS interop placeholder */ }
+    private async Task OnClick()
+    {
+        if (DateTime.UtcNow <= _suppressClickUntilUtc || _isResizing)
+            return;
+
+        await OnSelected.InvokeAsync(Event);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_resizeInitialized)
+            return;
+
+        _dotNetRef = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("calendarInterop.initResize", _dotNetRef, _topHandleId, "top");
+        await JS.InvokeVoidAsync("calendarInterop.initResize", _dotNetRef, _bottomHandleId, "bottom");
+        _resizeInitialized = true;
+    }
+
+    [JSInvokable]
+    public void OnResizeStart(string direction)
+    {
+        _isResizing = true;
+        _resizeBaseEvent = Event;
+        _suppressClickUntilUtc = DateTime.UtcNow.AddMilliseconds(300);
+        State.EndDrag();
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public void OnResizeMove(string direction, int deltaMinutes)
+    {
+        if (!_isResizing || _resizeBaseEvent == null)
+            return;
+
+        var baseEvent = _resizeBaseEvent;
+        var snappedDelta = (int)(Math.Round(deltaMinutes / 30.0, MidpointRounding.AwayFromZero) * 30);
+
+        var newStart = baseEvent.StartDate;
+        var newEnd = baseEvent.EndDate;
+
+        if (direction == "top")
+        {
+            var maxStart = baseEvent.EndDate.AddMinutes(-30);
+            newStart = baseEvent.StartDate.AddMinutes(snappedDelta);
+            if (newStart > maxStart)
+                newStart = maxStart;
+        }
+        else
+        {
+            var minEnd = baseEvent.StartDate.AddMinutes(30);
+            newEnd = baseEvent.EndDate.AddMinutes(snappedDelta);
+            if (newEnd < minEnd)
+                newEnd = minEnd;
+        }
+
+        if (newStart == Event.StartDate && newEnd == Event.EndDate)
+            return;
+
+        State.UpdateEvent(new CalendarEvent
+        {
+            Id = baseEvent.Id,
+            Title = baseEvent.Title,
+            Description = baseEvent.Description,
+            StartDate = newStart,
+            EndDate = newEnd,
+            Color = baseEvent.Color,
+            Attendees = [.. baseEvent.Attendees]
+        });
+    }
+
+    [JSInvokable]
+    public void OnResizeEnd()
+    {
+        _isResizing = false;
+        _resizeBaseEvent = null;
+        _suppressClickUntilUtc = DateTime.UtcNow.AddMilliseconds(300);
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private void OnResizeTopStart() { }
+    private void OnResizeBottomStart() { }
+
+    public void Dispose() => _dotNetRef?.Dispose();
 }

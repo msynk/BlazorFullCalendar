@@ -19,7 +19,6 @@ window.calendarInterop = {
         const minPerPixel = 60 / pixelsPerHour;
 
         let startY = 0;
-        let startHeight = 0;
 
         const onPointerMove = (e) => {
             const deltaY = e.clientY - startY;
@@ -36,10 +35,9 @@ window.calendarInterop = {
         el.addEventListener('pointerdown', (e) => {
             e.preventDefault();
             startY = e.clientY;
-            startHeight = el.parentElement?.offsetHeight || 0;
             document.addEventListener('pointermove', onPointerMove);
             document.addEventListener('pointerup', onPointerUp);
-            dotNetRef.invokeMethodAsync('OnResizeStart');
+            dotNetRef.invokeMethodAsync('OnResizeStart', direction);
         });
     },
 
