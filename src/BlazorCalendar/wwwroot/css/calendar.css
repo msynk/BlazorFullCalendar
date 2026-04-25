@@ -375,11 +375,15 @@
     border-bottom: 1px solid var(--cal-border);
     position: relative;
 }
+/* Bottom half of each hour — must stretch from 50% to bottom or it has ~0 height
+   and all drops land on the parent row (always :00). */
 .cal-hour-row-half {
     position: absolute;
     top: 50%;
-    left: 0;
     right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
     border-top: 1px dashed var(--cal-border);
     opacity: 0.5;
 }
