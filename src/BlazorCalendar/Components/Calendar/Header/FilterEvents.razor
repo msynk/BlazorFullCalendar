@@ -1,10 +1,20 @@
-<select class="cal-filter-select" @onchange="HandleColorChange" value="@SelectedColorValue" aria-label="Filter events by color">
-    <option value="">All colors</option>
-    @foreach (var color in Enum.GetValues<EventColor>())
-    {
-        <option value="@color">@color</option>
-    }
-</select>
+<div class="cal-filter-row">
+    <select class="cal-filter-select" @onchange="HandleColorChange" value="@SelectedColorValue" aria-label="Filter events by color">
+        <option value="">All colors</option>
+        @foreach (var color in Enum.GetValues<EventColor>())
+        {
+            <option value="@color">@color</option>
+        }
+    </select>
+
+    <select class="cal-filter-select cal-filter-select-person" @onchange="HandleAttendeeChange" value="@(State.SelectedAttendeeKey ?? "")" aria-label="Filter events by person in current view">
+        <option value="">All people</option>
+        @foreach (var (key, name) in State.GetAttendeesInCurrentView())
+        {
+            <option value="@key">@name</option>
+        }
+    </select>
+</div>
 
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
@@ -25,4 +35,7 @@
         if (Enum.TryParse<EventColor>(value, out var selected))
             State.SetColorFilter(selected);
     }
+
+    private void HandleAttendeeChange(ChangeEventArgs e) =>
+        State.SetAttendeeFilter(e.Value?.ToString());
 }

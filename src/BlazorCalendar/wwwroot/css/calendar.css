@@ -1059,6 +1059,14 @@
 }
 .cal-toggle input:checked ~ .cal-toggle-thumb { transform: translateX(16px); }
 
+/* ===== Filter row ===== */
+.cal-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 /* ===== Filter Select ===== */
 .cal-filter-select {
     padding: 6px 10px;
@@ -1070,6 +1078,10 @@
     color: var(--cal-text-secondary);
     outline: none;
     min-width: 120px;
+}
+.cal-filter-select-person {
+    min-width: 140px;
+    max-width: 200px;
 }
 .cal-filter-select:focus {
     border-color: var(--cal-primary);

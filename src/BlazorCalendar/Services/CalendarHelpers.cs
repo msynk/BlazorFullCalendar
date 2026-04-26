@@ -431,6 +431,38 @@ public static class CalendarHelpers
             ev.StartDate.Date <= monthEnd && ev.EndDate.Date >= monthStart).ToList();
     }
 
+    /// <summary>
+    /// Events overlapping the date range implied by the current view and selected date
+    /// (used for attendee filters and similar “in this view” logic).
+    /// </summary>
+    public static List<CalendarEvent> GetEventsForView(
+        List<CalendarEvent> events,
+        CalendarView view,
+        DateTime selectedDate,
+        CultureInfo? culture = null)
+    {
+        culture ??= CultureInfo.CurrentUICulture;
+        return view switch
+        {
+            CalendarView.Day => GetEventsForDay(events, selectedDate),
+            CalendarView.Week => GetEventsForWeek(events, selectedDate, culture),
+            CalendarView.Month => GetEventsForMonth(events, selectedDate, culture),
+            CalendarView.Year => GetEventsForYear(events, selectedDate, culture),
+            CalendarView.Agenda => GetEventsForMonth(events, selectedDate, culture),
+            _ => events.ToList()
+        };
+    }
+
+    /// <summary>Stable key for filtering events by attendee (Id preferred, else full name).</summary>
+    public static string AttendeeFilterKey(CalendarAttendee a)
+    {
+        if (!string.IsNullOrWhiteSpace(a.Id))
+            return "id:" + a.Id.Trim();
+        if (!string.IsNullOrWhiteSpace(a.FullName))
+            return "name:" + a.FullName.Trim().ToLowerInvariant();
+        return "";
+    }
+
     public static string GetColorCss(EventColor color) => color switch
     {
         EventColor.Blue => "cal-color-blue",
