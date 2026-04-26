@@ -986,6 +986,26 @@
 }
 .cal-event-detail-value { font-size: 13px; }
 
+.cal-event-detail-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+}
+.cal-dark .cal-event-detail-swatch { border-color: rgba(255, 255, 255, 0.2); }
+
+.cal-event-detail-color {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 4px 10px;
+    border-radius: var(--cal-radius-sm);
+    border: 1px solid transparent;
+    font-weight: 500;
+}
+
 /* ===== Settings Dropdown ===== */
 .cal-dropdown {
     position: relative;
@@ -1158,11 +1178,25 @@
 .cal-happening-now-empty { font-size: 12px; color: var(--cal-text-muted); }
 
 .cal-happening-event {
+    display: block;
+    width: 100%;
     padding: 8px;
     border-radius: var(--cal-radius-sm);
     margin-bottom: 6px;
     border: 1px solid var(--cal-border);
+    background: var(--cal-bg);
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition: background 0.1s;
 }
+.cal-happening-event:hover { background: var(--cal-bg-hover); }
+.cal-happening-event:focus-visible {
+    outline: 2px solid var(--cal-primary);
+    outline-offset: 2px;
+}
+[dir="rtl"] .cal-happening-event { text-align: right; }
 .cal-happening-event-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
 .cal-happening-event-meta { font-size: 12px; color: var(--cal-text-secondary); display: flex; align-items: center; gap: 4px; }
 
