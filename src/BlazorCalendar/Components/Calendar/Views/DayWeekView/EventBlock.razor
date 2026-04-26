@@ -2,16 +2,28 @@
 @implements IDisposable
 
 @{
-    var start = Event.StartDate;
-    var end = Event.EndDate;
-    var durationMin = (end - start).TotalMinutes;
+    var displayStart = _previewStart ?? Event.StartDate;
+    var displayEnd = _previewEnd ?? Event.EndDate;
+    var durationMin = (displayEnd - displayStart).TotalMinutes;
     var heightPx = (durationMin / 60.0) * CalendarHelpers.HourHeightPx;
     var isDotVariant = State.BadgeVariant == BadgeVariant.Dot;
     var colorClass = isDotVariant ? "dot-variant" : CalendarHelpers.GetColorCss(Event.Color);
+    double translateYPx = 0;
+    if (_isResizing && string.Equals(_resizeDirection, "top", StringComparison.Ordinal) && _resizeBaseEvent != null && _previewStart.HasValue)
+        translateYPx = (displayStart - _resizeBaseEvent.StartDate).TotalMinutes / 60.0 * CalendarHelpers.HourHeightPx;
+    var inv = System.Globalization.CultureInfo.InvariantCulture;
+    var blockStyle = $"height:{heightPx.ToString("F0", inv)}px;transform:translateY({translateYPx.ToString("F2", inv)}px);";
+    var resizeClasses = "";
+    if (_isResizing)
+    {
+        resizeClasses = "cal-event-block-resizing";
+        if (_resizeDirection is "top" or "bottom")
+            resizeClasses += $" cal-resize-dir-{_resizeDirection}";
+    }
 }
 
-<div class="cal-event-block @colorClass @(State.IsDragging ? "cal-event-block-pass-through" : "") @(_isResizing ? "cal-event-block-resizing" : "")"
-     style="height:@(heightPx.ToString("F0", System.Globalization.CultureInfo.InvariantCulture))px;"
+<div class="cal-event-block @colorClass @(State.IsDragging ? "cal-event-block-pass-through" : "") @resizeClasses"
+     style="@blockStyle"
      draggable="true"
      @ondragstart="OnDragStart"
      @ondragend="OnDragEnd"
@@ -35,7 +47,7 @@
     @if (durationMin > 25)
     {
         <div class="cal-event-block-time">
-            @CalendarHelpers.FormatTime(start, State.Use24HourFormat) - @CalendarHelpers.FormatTime(end, State.Use24HourFormat)
+            @CalendarHelpers.FormatTime(displayStart, State.Use24HourFormat) - @CalendarHelpers.FormatTime(displayEnd, State.Use24HourFormat)
         </div>
     }
 
@@ -47,8 +59,9 @@
 
     @if (_isResizing)
     {
-        <div class="cal-resize-preview">
-            @CalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat) - @CalendarHelpers.FormatTime(Event.EndDate, State.Use24HourFormat)
+        <div class="cal-resize-preview" role="status" aria-live="polite" aria-label="New time range">
+            <svg class="cal-resize-preview-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="cal-resize-preview-time">@CalendarHelpers.FormatTime(displayStart, State.Use24HourFormat) – @CalendarHelpers.FormatTime(displayEnd, State.Use24HourFormat)</span>
         </div>
     }
 </div>
@@ -61,11 +74,23 @@
     private readonly string _instanceId = Guid.NewGuid().ToString("N");
     private DotNetObjectReference<EventBlock>? _dotNetRef;
     private CalendarEvent? _resizeBaseEvent;
+    private string? _resizeDirection;
+    private DateTime? _previewStart;
+    private DateTime? _previewEnd;
     private bool _resizeInitialized;
     private bool _isResizing;
     private DateTime _suppressClickUntilUtc;
     private string _topHandleId => $"cal-resize-top-{_instanceId}";
     private string _bottomHandleId => $"cal-resize-bottom-{_instanceId}";
+
+    /// <summary>Minimum event length enforced by resize (minutes).</summary>
+    private const int MinEventDurationMinutes = 30;
+
+    /// <summary>
+    /// Pointer movement below this (in minutes along the time axis) does not change start/end,
+    /// so the edge does not jump as soon as the user presses the handle.
+    /// </summary>
+    private const int ResizeDeadZoneMinutes = MinEventDurationMinutes / 2;
 
     private void OnDragStart()
     {
@@ -99,61 +124,120 @@
     public void OnResizeStart(string direction)
     {
         _isResizing = true;
+        _resizeDirection = direction;
         _resizeBaseEvent = Event;
+        _previewStart = null;
+        _previewEnd = null;
         _suppressClickUntilUtc = DateTime.UtcNow.AddMilliseconds(300);
         State.EndDrag();
         _ = InvokeAsync(StateHasChanged);
     }
 
     [JSInvokable]
-    public void OnResizeMove(string direction, int deltaMinutes)
+    public Task OnResizeMove(string direction, int deltaMinutes)
     {
         if (!_isResizing || _resizeBaseEvent == null)
-            return;
+            return Task.CompletedTask;
 
+        // Finger back at (or very near) the grab point → show the original span again and cancel
+        // any in-progress preview so the user can "undo" without releasing early.
+        if (deltaMinutes == 0 || Math.Abs(deltaMinutes) <= ResizeDeadZoneMinutes)
+        {
+            if (_previewStart.HasValue || _previewEnd.HasValue)
+            {
+                _previewStart = null;
+                _previewEnd = null;
+                return InvokeAsync(StateHasChanged);
+            }
+            return Task.CompletedTask;
+        }
+
+        var effectiveDelta = deltaMinutes - Math.Sign(deltaMinutes) * ResizeDeadZoneMinutes;
+        const int slotMinutes = MinEventDurationMinutes;
         var baseEvent = _resizeBaseEvent;
-        var snappedDelta = (int)(Math.Round(deltaMinutes / 30.0, MidpointRounding.AwayFromZero) * 30);
 
         var newStart = baseEvent.StartDate;
         var newEnd = baseEvent.EndDate;
 
         if (direction == "top")
         {
-            var maxStart = baseEvent.EndDate.AddMinutes(-30);
-            newStart = baseEvent.StartDate.AddMinutes(snappedDelta);
+            var maxStart = baseEvent.EndDate.AddMinutes(-slotMinutes);
+            var candidateStart = baseEvent.StartDate.AddMinutes(effectiveDelta);
+            newStart = effectiveDelta > 0
+                ? CalendarHelpers.CeilToMinuteInterval(candidateStart, slotMinutes)
+                : CalendarHelpers.FloorToMinuteInterval(candidateStart, slotMinutes);
             if (newStart > maxStart)
                 newStart = maxStart;
         }
         else
         {
-            var minEnd = baseEvent.StartDate.AddMinutes(30);
-            newEnd = baseEvent.EndDate.AddMinutes(snappedDelta);
+            var minEnd = baseEvent.StartDate.AddMinutes(slotMinutes);
+            var candidateEnd = baseEvent.EndDate.AddMinutes(effectiveDelta);
+            newEnd = effectiveDelta > 0
+                ? CalendarHelpers.CeilToMinuteInterval(candidateEnd, slotMinutes)
+                : CalendarHelpers.FloorToMinuteInterval(candidateEnd, slotMinutes);
             if (newEnd < minEnd)
                 newEnd = minEnd;
         }
 
-        if (newStart == Event.StartDate && newEnd == Event.EndDate)
-            return;
-
-        State.UpdateEvent(new CalendarEvent
+        // Snapped range matches drag-start range → treat as restored original (clear preview).
+        if (newStart == baseEvent.StartDate && newEnd == baseEvent.EndDate)
         {
-            Id = baseEvent.Id,
-            Title = baseEvent.Title,
-            Description = baseEvent.Description,
-            StartDate = newStart,
-            EndDate = newEnd,
-            Color = baseEvent.Color,
-            Attendees = [.. baseEvent.Attendees]
-        });
+            if (_previewStart.HasValue || _previewEnd.HasValue)
+            {
+                _previewStart = null;
+                _previewEnd = null;
+                return InvokeAsync(StateHasChanged);
+            }
+            return Task.CompletedTask;
+        }
+
+        var curStart = _previewStart ?? baseEvent.StartDate;
+        var curEnd = _previewEnd ?? baseEvent.EndDate;
+        if (newStart == curStart && newEnd == curEnd)
+            return Task.CompletedTask;
+
+        _previewStart = newStart;
+        _previewEnd = newEnd;
+        return InvokeAsync(StateHasChanged);
     }
 
     [JSInvokable]
-    public void OnResizeEnd()
+    public Task OnResizeEnd()
     {
-        _isResizing = false;
-        _resizeBaseEvent = null;
-        _suppressClickUntilUtc = DateTime.UtcNow.AddMilliseconds(300);
-        _ = InvokeAsync(StateHasChanged);
+        try
+        {
+            if (_resizeBaseEvent != null && _previewStart.HasValue && _previewEnd.HasValue)
+            {
+                var s = _previewStart.Value;
+                var e = _previewEnd.Value;
+                if (s != _resizeBaseEvent.StartDate || e != _resizeBaseEvent.EndDate)
+                {
+                    var b = _resizeBaseEvent;
+                    State.UpdateEvent(new CalendarEvent
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        Description = b.Description,
+                        StartDate = s,
+                        EndDate = e,
+                        Color = b.Color,
+                        Attendees = [.. b.Attendees]
+                    });
+                }
+            }
+        }
+        finally
+        {
+            _previewStart = null;
+            _previewEnd = null;
+            _isResizing = false;
+            _resizeBaseEvent = null;
+            _resizeDirection = null;
+            _suppressClickUntilUtc = DateTime.UtcNow.AddMilliseconds(300);
+        }
+
+        return InvokeAsync(StateHasChanged);
     }
 
     private void OnResizeTopStart() { }

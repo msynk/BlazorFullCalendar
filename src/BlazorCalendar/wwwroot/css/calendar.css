@@ -18,6 +18,11 @@
     --cal-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
     --cal-hour-height: 96px;
     --cal-timeline-color: #ef4444;
+    --cal-resize-ring: rgba(59, 130, 246, 0.65);
+    --cal-resize-glow: rgba(59, 130, 246, 0.22);
+    --cal-resize-preview-bg: rgba(255, 255, 255, 0.96);
+    --cal-resize-preview-border: rgba(59, 130, 246, 0.45);
+    --cal-resize-handle-line: #3b82f6;
 }
 
 .cal-dark {
@@ -35,6 +40,11 @@
     --cal-danger-hover: #ef4444;
     --cal-shadow: 0 1px 3px rgba(0,0,0,0.3);
     --cal-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.3);
+    --cal-resize-ring: rgba(96, 165, 250, 0.85);
+    --cal-resize-glow: rgba(59, 130, 246, 0.35);
+    --cal-resize-preview-bg: rgba(31, 41, 55, 0.96);
+    --cal-resize-preview-border: rgba(96, 165, 250, 0.55);
+    --cal-resize-handle-line: #60a5fa;
 }
 
 /* ===== Base ===== */
@@ -409,9 +419,24 @@
 .cal-event-block:hover { filter: brightness(0.95); z-index: 5; box-shadow: var(--cal-shadow); }
 .cal-event-block-pass-through { pointer-events: none; }
 .cal-event-block-resizing {
-    z-index: 8;
-    box-shadow: 0 0 0 2px rgba(59,130,246,0.45), var(--cal-shadow);
-    filter: brightness(0.98);
+    z-index: 12;
+    cursor: ns-resize;
+    filter: brightness(1.02) saturate(1.05);
+    will-change: transform, height;
+    border-color: var(--cal-resize-ring) !important;
+    box-shadow:
+        0 0 0 2px var(--cal-resize-ring),
+        0 0 0 5px var(--cal-resize-glow),
+        0 12px 28px rgba(15, 23, 42, 0.18),
+        var(--cal-shadow);
+    transition: box-shadow 0.2s ease, filter 0.2s ease, border-color 0.2s ease;
+}
+.cal-dark .cal-event-block-resizing {
+    box-shadow:
+        0 0 0 2px var(--cal-resize-ring),
+        0 0 0 5px var(--cal-resize-glow),
+        0 12px 32px rgba(0, 0, 0, 0.45),
+        var(--cal-shadow);
 }
 
 .cal-event-block-title {
@@ -431,26 +456,103 @@
     position: absolute;
     left: 0;
     right: 0;
-    height: 6px;
+    height: 10px;
     cursor: ns-resize;
     z-index: 3;
+    touch-action: none;
+    border-radius: 4px;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
 }
-.cal-resize-handle-top { top: -3px; }
-.cal-resize-handle-bottom { bottom: -3px; }
-.cal-resize-handle:hover { background: rgba(0,0,0,0.05); border-radius: 2px; }
+.cal-resize-handle::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--cal-resize-handle-line);
+    opacity: 0;
+    transition: opacity 0.15s ease, width 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+.cal-resize-handle-top { top: -5px; }
+.cal-resize-handle-top::after { top: 3px; }
+.cal-resize-handle-bottom { bottom: -5px; }
+.cal-resize-handle-bottom::after { bottom: 3px; }
+.cal-resize-handle:hover {
+    background: var(--cal-resize-glow);
+}
+.cal-resize-handle:hover::after {
+    opacity: 0.85;
+    width: 36px;
+}
+.cal-event-block-resizing .cal-resize-handle-top {
+    background: linear-gradient(to bottom, var(--cal-resize-glow), transparent);
+}
+.cal-event-block-resizing .cal-resize-handle-bottom {
+    background: linear-gradient(to top, var(--cal-resize-glow), transparent);
+}
+.cal-event-block-resizing .cal-resize-handle::after {
+    opacity: 1;
+    width: 40px;
+    box-shadow: 0 0 0 2px var(--cal-resize-glow), 0 2px 6px rgba(59, 130, 246, 0.35);
+}
+.cal-event-block-resizing.cal-resize-dir-top .cal-resize-handle-top::after,
+.cal-event-block-resizing.cal-resize-dir-bottom .cal-resize-handle-bottom::after {
+    height: 4px;
+    width: 44px;
+    box-shadow: 0 0 0 3px var(--cal-resize-glow), 0 2px 10px rgba(59, 130, 246, 0.45);
+}
 
 .cal-resize-preview {
     position: absolute;
-    right: 4px;
-    bottom: 4px;
-    font-size: 10px;
-    padding: 2px 6px;
-    background: var(--cal-bg);
-    border: 1px solid var(--cal-border);
-    border-radius: 4px;
-    box-shadow: var(--cal-shadow);
-    z-index: 10;
+    right: 6px;
+    bottom: 6px;
+    left: auto;
+    top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px 6px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+    color: var(--cal-primary);
+    background: var(--cal-resize-preview-bg);
+    border: 1px solid var(--cal-resize-preview-border);
+    border-radius: var(--cal-radius-sm);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+        0 4px 14px rgba(59, 130, 246, 0.2),
+        var(--cal-shadow);
+    z-index: 14;
     white-space: nowrap;
+    pointer-events: none;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+.cal-dark .cal-resize-preview {
+    color: #93c5fd;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+        0 4px 18px rgba(0, 0, 0, 0.35);
+}
+.cal-event-block-resizing.cal-resize-dir-top .cal-resize-preview {
+    top: 6px;
+    bottom: auto;
+}
+.cal-resize-preview-icon {
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+.cal-resize-preview-time {
+    color: var(--cal-text);
+    font-weight: 700;
+}
+.cal-dark .cal-resize-preview-time {
+    color: #e5e7eb;
 }
 
 /* ===== Timeline (current time indicator) ===== */

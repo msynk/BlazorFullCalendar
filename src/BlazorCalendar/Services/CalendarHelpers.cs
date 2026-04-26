@@ -453,6 +453,37 @@ public static class CalendarHelpers
         };
     }
 
+    /// <summary>
+    /// Smallest time t' &gt;= <paramref name="dt"/> on the same calendar day where
+    /// (t' - t'.Date) is a whole multiple of <paramref name="intervalMinutes"/>.
+    /// If <paramref name="dt"/> is already on such a boundary, returns <paramref name="dt"/> unchanged.
+    /// </summary>
+    public static DateTime CeilToMinuteInterval(DateTime dt, int intervalMinutes)
+    {
+        if (intervalMinutes <= 0)
+            throw new ArgumentOutOfRangeException(nameof(intervalMinutes));
+
+        var dayStart = dt.Date;
+        var minutesSinceDay = (dt - dayStart).TotalMinutes;
+        var slots = Math.Ceiling(minutesSinceDay / intervalMinutes);
+        return dayStart.AddMinutes(slots * intervalMinutes);
+    }
+
+    /// <summary>
+    /// Largest time t' &lt;= <paramref name="dt"/> on the same calendar day where
+    /// (t' - t'.Date) is a whole multiple of <paramref name="intervalMinutes"/>.
+    /// </summary>
+    public static DateTime FloorToMinuteInterval(DateTime dt, int intervalMinutes)
+    {
+        if (intervalMinutes <= 0)
+            throw new ArgumentOutOfRangeException(nameof(intervalMinutes));
+
+        var dayStart = dt.Date;
+        var minutesSinceDay = (dt - dayStart).TotalMinutes;
+        var slots = Math.Floor(minutesSinceDay / intervalMinutes);
+        return dayStart.AddMinutes(slots * intervalMinutes);
+    }
+
     /// <summary>Stable key for filtering events by attendee (Id preferred, else full name).</summary>
     public static string AttendeeFilterKey(CalendarAttendee a)
     {
