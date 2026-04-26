@@ -35,13 +35,12 @@
 
             <div class="cal-field">
                 <label>Color</label>
-                <div class="cal-color-picker">
+                <select @bind="_color" aria-label="Event color">
                     @foreach (var color in Enum.GetValues<EventColor>())
                     {
-                        <span class="cal-color-swatch cal-swatch-@(color.ToString().ToLowerInvariant()) @(_color == color ? "selected" : "")"
-                              @onclick="() => _color = color"></span>
+                        <option value="@color">@color</option>
                     }
-                </div>
+                </select>
             </div>
 
             <div class="cal-field">

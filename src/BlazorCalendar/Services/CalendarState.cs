@@ -145,6 +145,16 @@ public class CalendarState
         NotifyStateChanged();
     }
 
+    public void SetColorFilter(EventColor? color)
+    {
+        SelectedColors.Clear();
+        if (color.HasValue)
+            SelectedColors.Add(color.Value);
+
+        ApplyFilters();
+        NotifyStateChanged();
+    }
+
     public void ClearFilter()
     {
         SelectedColors.Clear();

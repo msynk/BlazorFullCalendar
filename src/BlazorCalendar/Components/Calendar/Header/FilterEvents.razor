@@ -1,18 +1,28 @@
-<div class="cal-filter-chips">
+<select class="cal-filter-select" @onchange="HandleColorChange" value="@SelectedColorValue" aria-label="Filter events by color">
+    <option value="">All colors</option>
     @foreach (var color in Enum.GetValues<EventColor>())
     {
-        <button class="cal-filter-chip @(State.SelectedColors.Contains(color) ? "active" : "")"
-                @onclick="() => State.FilterByColor(color)">
-            <span class="cal-bullet cal-bg-@(color.ToString().ToLowerInvariant())" style="width:8px;height:8px;"></span>
-            @color
-        </button>
+        <option value="@color">@color</option>
     }
-    @if (State.SelectedColors.Count > 0)
-    {
-        <button class="cal-filter-chip" @onclick="State.ClearFilter">Clear</button>
-    }
-</div>
+</select>
 
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
+
+    private string SelectedColorValue => State.SelectedColors.Count == 1
+        ? State.SelectedColors[0].ToString()
+        : string.Empty;
+
+    private void HandleColorChange(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            State.SetColorFilter(null);
+            return;
+        }
+
+        if (Enum.TryParse<EventColor>(value, out var selected))
+            State.SetColorFilter(selected);
+    }
 }

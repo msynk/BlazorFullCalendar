@@ -35,9 +35,9 @@
                     var dayEvents = allEvents.Where(e => e.StartDate.Date == cell.Date.Date).ToList();
                     var hasEvents = isCurrentMonth && dayEvents.Count > 0;
 
-                    <div class="cal-year-day @(!isCurrentMonth ? "other-month" : "") @(isToday ? "today" : "") @(hasEvents ? "has-events" : "")"
+                    <div class="cal-year-day @(!isCurrentMonth ? "other-month" : "") @(hasEvents ? "has-events" : "")"
                          @onclick="() => { if (hasEvents) ShowEventsForDay(cell.Date, dayEvents); }">
-                        @cell.Day
+                        <span class="cal-year-day-number @(isToday ? "today" : "")">@cell.Day</span>
                         @if (hasEvents)
                         {
                             <div class="cal-year-day-bullets">

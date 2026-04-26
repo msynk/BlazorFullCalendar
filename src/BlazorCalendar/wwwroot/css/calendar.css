@@ -611,7 +611,7 @@
 /* ===== Year View ===== */
 .cal-year {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
     gap: 16px;
     padding: 16px;
     overflow-y: auto;
@@ -622,6 +622,7 @@
     border: 1px solid var(--cal-border);
     border-radius: var(--cal-radius);
     padding: 12px;
+    min-width: 0;
 }
 .cal-year-month-title {
     font-weight: 600;
@@ -659,11 +660,19 @@
     position: relative;
 }
 .cal-year-day.other-month { opacity: 0.3; }
-.cal-year-day.today {
+.cal-year-day-number {
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border-radius: 50%;
+}
+.cal-year-day-number.today {
     background: var(--cal-primary);
     color: var(--cal-primary-text);
     font-weight: 700;
-    border-radius: 50%;
 }
 .cal-year-day.has-events { cursor: pointer; font-weight: 600; }
 .cal-year-day.has-events:hover { background: var(--cal-bg-hover); }
@@ -1050,31 +1059,21 @@
 }
 .cal-toggle input:checked ~ .cal-toggle-thumb { transform: translateX(16px); }
 
-/* ===== Filter Chips ===== */
-.cal-filter-chips {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-}
-.cal-filter-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
+/* ===== Filter Select ===== */
+.cal-filter-select {
+    padding: 6px 10px;
     border: 1px solid var(--cal-border);
-    border-radius: 20px;
+    border-radius: var(--cal-radius-sm);
     font-size: 12px;
     font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
     background: var(--cal-bg);
     color: var(--cal-text-secondary);
+    outline: none;
+    min-width: 120px;
 }
-.cal-filter-chip:hover { border-color: var(--cal-text-muted); }
-.cal-filter-chip.active {
-    background: var(--cal-primary);
-    color: var(--cal-primary-text);
+.cal-filter-select:focus {
     border-color: var(--cal-primary);
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
 }
 
 /* ===== User Select ===== */
@@ -1190,8 +1189,12 @@
     .cal-header { flex-direction: column; align-items: stretch; }
     .cal-header-left, .cal-header-center, .cal-header-right { justify-content: center; }
     .cal-day-sidebar { display: none; }
-    .cal-year { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 8px; }
+    .cal-year { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 8px; }
     .cal-week-mobile-warning { display: block; }
+}
+
+@media (max-width: 640px) {
+    .cal-year { grid-template-columns: 1fr; }
 }
 
 @media (min-width: 769px) {
@@ -1283,9 +1286,9 @@
 [dir="rtl"] .cal-btn-nav svg { transform: scaleX(-1); }
 
 /* Header zones: reverse the logical order of sections */
-[dir="rtl"] .cal-header { flex-direction: row-reverse; }
+/* [dir="rtl"] .cal-header { flex-direction: row-reverse; }
 [dir="rtl"] .cal-header-left  { flex: 1; justify-content: flex-end; }
-[dir="rtl"] .cal-header-right { flex: 1; justify-content: flex-start; }
+[dir="rtl"] .cal-header-right { flex: 1; justify-content: flex-start; } */
 
 /* Month grid: columns flow right-to-left */
 [dir="rtl"] .cal-month-header { direction: rtl; }
