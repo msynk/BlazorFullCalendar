@@ -41,7 +41,7 @@
                 <div>
                     <div class="cal-event-detail-label">@Texts.StartDateLabel</div>
                     <div class="cal-event-detail-value">
-                        @Event.StartDate.ToString("dddd dd MMMM") @Texts.AtWord @CalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)
+                        @Event.StartDate.ToString("dddd dd MMMM", State.Culture) @Texts.AtWord @CalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)
                     </div>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                 <div>
                     <div class="cal-event-detail-label">@Texts.EndDateLabel</div>
                     <div class="cal-event-detail-value">
-                        @Event.EndDate.ToString("dddd dd MMMM") @Texts.AtWord @CalendarHelpers.FormatTime(Event.EndDate, State.Use24HourFormat)
+                        @Event.EndDate.ToString("dddd dd MMMM", State.Culture) @Texts.AtWord @CalendarHelpers.FormatTime(Event.EndDate, State.Use24HourFormat)
                     </div>
                 </div>
             </div>

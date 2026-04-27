@@ -1494,6 +1494,13 @@
 [dir="rtl"] .cal-agenda-item  { direction: rtl; }
 [dir="rtl"] .cal-agenda-time  { margin-left: 0; margin-right: auto; }
 [dir="rtl"] .cal-agenda-info  { text-align: right; }
+[dir="rtl"] .cal-timeline-label { left: auto; right: -54px; }
+
+/* Settings dropdown should open toward the viewport in RTL */
+[dir="rtl"] .cal-dropdown-menu {
+    right: auto;
+    left: 0;
+}
 
 /* Mini-calendar */
 [dir="rtl"] .cal-mini-calendar { direction: rtl; }
