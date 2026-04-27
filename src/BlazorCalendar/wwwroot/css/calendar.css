@@ -1418,6 +1418,16 @@
     z-index: 0;
 }
 
+[dir="rtl"] .cal-cell-add-hint-month {
+    right: auto;
+    left: 6px;
+}
+
+[dir="rtl"] .cal-cell-add-hint-hour {
+    right: auto;
+    left: 8px;
+}
+
 /* ===== Scrollbar styling ===== */
 .cal-body ::-webkit-scrollbar,
 .cal-week-scroll::-webkit-scrollbar { width: 8px; }
@@ -1447,6 +1457,30 @@
 [dir="rtl"] .cal-week-layout { direction: rtl; }
 [dir="rtl"] .cal-week-scroll { direction: rtl; }
 [dir="rtl"] .cal-timegrid-days { direction: rtl; }
+
+/* Multi-day badge joins need mirrored corners/borders in RTL */
+[dir="rtl"] .cal-event-badge.position-first {
+    border-radius: 0 4px 4px 0;
+    border-left: none;
+    border-right: 1px solid transparent;
+}
+[dir="rtl"] .cal-event-badge.position-middle {
+    border-left: none;
+    border-right: none;
+}
+[dir="rtl"] .cal-event-badge.position-last {
+    border-radius: 4px 0 0 4px;
+    border-right: none;
+    border-left: 1px solid transparent;
+}
+
+/* Visual last-column borders in RTL are on the first DOM child */
+[dir="rtl"] .cal-month-cell:nth-child(7n) { border-right: 1px solid var(--cal-border); }
+[dir="rtl"] .cal-month-cell:nth-child(7n + 1) { border-right: none; }
+[dir="rtl"] .cal-week-header-day:last-child { border-right: 1px solid var(--cal-border); }
+[dir="rtl"] .cal-week-header-day:first-child { border-right: none; }
+[dir="rtl"] .cal-week-day-col:last-child { border-right: 1px solid var(--cal-border); }
+[dir="rtl"] .cal-week-day-col:first-child { border-right: none; }
 
 /* Day view: sidebar moves to the left side */
 [dir="rtl"] .cal-day-layout  { direction: rtl; }
