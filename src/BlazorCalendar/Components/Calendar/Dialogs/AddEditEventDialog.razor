@@ -2,17 +2,17 @@
     <div class="cal-dialog" @onclick:stopPropagation="true">
         <div class="cal-dialog-header cal-dialog-header-row">
             <div>
-                <h3>@(_isEditing ? "Edit Event" : "Add New Event")</h3>
-                <p>@(_isEditing ? "Modify your existing event." : "Create a new event for your calendar.")</p>
+                <h3>@(_isEditing ? Texts.EditEventDialogTitle : Texts.AddEventDialogTitle)</h3>
+                <p>@(_isEditing ? Texts.EditEventDialogSubtitle : Texts.AddEventDialogSubtitle)</p>
             </div>
-            <button class="cal-dialog-close-btn" @onclick="OnClose" aria-label="Close">
+            <button class="cal-dialog-close-btn" @onclick="OnClose" aria-label="@Texts.CloseAriaLabel">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
         <div class="cal-dialog-body">
             <div class="cal-field">
-                <label>Title</label>
-                <input type="text" @bind="_title" placeholder="Event title" />
+                <label>@Texts.TitleLabel</label>
+                <input type="text" @bind="_title" placeholder="@Texts.EventTitlePlaceholder" />
                 @if (_errors.ContainsKey("title"))
                 {
                     <div class="cal-field-error">@_errors["title"]</div>
@@ -20,12 +20,12 @@
             </div>
 
             <div class="cal-field">
-                <label>Start Date & Time</label>
+                <label>@Texts.StartDateTimeLabel</label>
                 <input type="datetime-local" @bind="_startDate" />
             </div>
 
             <div class="cal-field">
-                <label>End Date & Time</label>
+                <label>@Texts.EndDateTimeLabel</label>
                 <input type="datetime-local" @bind="_endDate" />
                 @if (_errors.ContainsKey("endDate"))
                 {
@@ -34,18 +34,18 @@
             </div>
 
             <div class="cal-field">
-                <label>Color</label>
-                <select @bind="_color" aria-label="Event color">
+                <label>@Texts.ColorLabel</label>
+                <select @bind="_color" aria-label="@Texts.EventColorAriaLabel">
                     @foreach (var color in Enum.GetValues<EventColor>())
                     {
-                        <option value="@color">@color</option>
+                        <option value="@color">@Texts.GetColorLabel(color)</option>
                     }
                 </select>
             </div>
 
             <div class="cal-field">
-                <label>Description</label>
-                <textarea @bind="_description" placeholder="Event description"></textarea>
+                <label>@Texts.DescriptionLabel</label>
+                <textarea @bind="_description" placeholder="@Texts.EventDescriptionPlaceholder"></textarea>
                 @if (_errors.ContainsKey("description"))
                 {
                     <div class="cal-field-error">@_errors["description"]</div>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="cal-field">
-                <label>Attendees</label>
+                <label>@Texts.AttendeesLabel</label>
                 @if (_attendees.Count > 0)
                 {
                     <div class="cal-attendees-chips">
@@ -71,10 +71,10 @@
                     </div>
                 }
                 <div class="cal-attendee-add-row">
-                    <input type="text" @bind="_newFirstName" placeholder="First name" />
-                    <input type="text" @bind="_newLastName" placeholder="Last name" />
-                    <input type="text" @bind="_newId" placeholder="ID (optional)" />
-                    <button class="cal-btn cal-btn-sm" type="button" @onclick="AddAttendee">Add</button>
+                    <input type="text" @bind="_newFirstName" placeholder="@Texts.FirstNamePlaceholder" />
+                    <input type="text" @bind="_newLastName" placeholder="@Texts.LastNamePlaceholder" />
+                    <input type="text" @bind="_newId" placeholder="@Texts.IdOptionalPlaceholder" />
+                    <button class="cal-btn cal-btn-sm" type="button" @onclick="AddAttendee">@Texts.AddButton</button>
                 </div>
                 @if (_errors.ContainsKey("attendee"))
                 {
@@ -83,9 +83,9 @@
             </div>
         </div>
         <div class="cal-dialog-footer">
-            <button class="cal-btn" @onclick="OnClose">Cancel</button>
+            <button class="cal-btn" @onclick="OnClose">@Texts.CancelButton</button>
             <button class="cal-btn cal-btn-primary" @onclick="Submit">
-                @(_isEditing ? "Save Changes" : "Create Event")
+                @(_isEditing ? Texts.SaveChangesButton : Texts.CreateEventButton)
             </button>
         </div>
     </div>
@@ -93,6 +93,7 @@
 
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
     [Parameter] public CalendarEvent? ExistingEvent { get; set; }
     [Parameter] public DateTime? StartDate { get; set; }
     [Parameter] public int? StartHour { get; set; }
@@ -137,7 +138,7 @@
 
         if (string.IsNullOrWhiteSpace(_newFirstName) && string.IsNullOrWhiteSpace(_newLastName))
         {
-            _errors["attendee"] = "First name or last name is required";
+            _errors["attendee"] = Texts.ValidationAttendeeNameRequired;
             return;
         }
 
@@ -159,11 +160,11 @@
     {
         _errors.Clear();
         if (string.IsNullOrWhiteSpace(_title))
-            _errors["title"] = "Title is required";
+            _errors["title"] = Texts.ValidationTitleRequired;
         if (string.IsNullOrWhiteSpace(_description))
-            _errors["description"] = "Description is required";
+            _errors["description"] = Texts.ValidationDescriptionRequired;
         if (_endDate <= _startDate)
-            _errors["endDate"] = "End date must be after start date";
+            _errors["endDate"] = Texts.ValidationEndAfterStart;
 
         if (_errors.Count > 0) return;
 

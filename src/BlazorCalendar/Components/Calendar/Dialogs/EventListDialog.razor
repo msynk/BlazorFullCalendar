@@ -1,8 +1,8 @@
 <div class="cal-overlay" @onclick="OnClose">
     <div class="cal-dialog" @onclick:stopPropagation="true">
         <div class="cal-dialog-header">
-            <h3>Events on @Date.ToString("dddd, MMM d, yyyy")</h3>
-            <p>@Events.Count event(s)</p>
+            <h3>@Texts.EventListTitlePrefix @Date.ToString("dddd, MMM d, yyyy")</h3>
+            <p>@Events.Count @Texts.EventListCountSuffix</p>
         </div>
         <div class="cal-dialog-body" style="max-height:400px;overflow-y:auto;">
             @foreach (var ev in Events)
@@ -22,7 +22,7 @@
             }
         </div>
         <div class="cal-dialog-footer">
-            <button class="cal-btn" @onclick="OnClose">Close</button>
+            <button class="cal-btn" @onclick="OnClose">@Texts.CloseButton</button>
         </div>
     </div>
 </div>
@@ -34,6 +34,7 @@
 
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
     [Parameter] public DateTime Date { get; set; }
     [Parameter] public List<CalendarEvent> Events { get; set; } = [];
     [Parameter] public EventCallback OnClose { get; set; }

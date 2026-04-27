@@ -172,7 +172,7 @@ public class CalendarState
     }
 
     /// <summary>Distinct attendees on events visible in the current view/date range.</summary>
-    public IReadOnlyList<(string Key, string DisplayName)> GetAttendeesInCurrentView()
+    public IReadOnlyList<(string Key, string DisplayName)> GetAttendeesInCurrentView(string unnamedAttendeeText = "(Unnamed)")
     {
         var viewEvents = CalendarHelpers.GetEventsForView(_allEvents.ToList(), View, SelectedDate, Culture);
         var map = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -186,7 +186,7 @@ public class CalendarState
                 if (map.ContainsKey(key))
                     continue;
                 var label = string.IsNullOrWhiteSpace(a.FullName)
-                    ? (string.IsNullOrWhiteSpace(a.Id) ? "(Unnamed)" : a.Id.Trim())
+                    ? (string.IsNullOrWhiteSpace(a.Id) ? unnamedAttendeeText : a.Id.Trim())
                     : a.FullName.Trim();
                 map[key] = label;
             }

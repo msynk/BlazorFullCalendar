@@ -2,11 +2,13 @@
 @implements IDisposable
 
 <CascadingValue Value="State">
-    <div class="cal-root @(State.IsDarkMode ? "cal-dark" : "")" dir="@(State.IsRtl ? "rtl" : "ltr")">
-        <CalendarHeader />
-        <CalendarBody />
-        <CalendarToast />
-    </div>
+    <CascadingValue Value="Texts">
+        <div class="cal-root @(State.IsDarkMode ? "cal-dark" : "")" dir="@(State.IsRtl ? "rtl" : "ltr")">
+            <CalendarHeader />
+            <CalendarBody />
+            <CalendarToast />
+        </div>
+    </CascadingValue>
 </CascadingValue>
 
 @code {
@@ -27,6 +29,7 @@
     /// When both are supplied, CultureName takes precedence.
     /// </summary>
     [Parameter] public string? CultureName { get; set; }
+    [Parameter] public CalendarTexts Texts { get; set; } = new();
 
     public CalendarState State { get; set; } = new();
 

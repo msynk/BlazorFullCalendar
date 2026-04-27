@@ -3,13 +3,14 @@
     {
         <button class="cal-view-tab @(State.View == view ? "active" : "")"
                 @onclick="() => State.SetView(view)">
-            @view.ToString()
+            @Texts.GetViewLabel(view)
         </button>
     }
 </div>
 
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
 
     private static readonly CalendarView[] _views = [
         CalendarView.Day, CalendarView.Week, CalendarView.Month,

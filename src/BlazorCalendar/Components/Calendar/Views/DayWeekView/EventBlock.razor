@@ -59,7 +59,7 @@
 
     @if (_isResizing)
     {
-        <div class="cal-resize-preview" role="status" aria-live="polite" aria-label="New time range">
+        <div class="cal-resize-preview" role="status" aria-live="polite" aria-label="@Texts.ResizePreviewAriaLabel">
             <svg class="cal-resize-preview-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             <span class="cal-resize-preview-time">@CalendarHelpers.FormatTime(displayStart, State.Use24HourFormat) – @CalendarHelpers.FormatTime(displayEnd, State.Use24HourFormat)</span>
         </div>
@@ -68,6 +68,7 @@
 
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
     [Parameter] public CalendarEvent Event { get; set; } = default!;
     [Parameter] public EventCallback<CalendarEvent> OnSelected { get; set; }
 

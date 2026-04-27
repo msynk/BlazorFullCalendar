@@ -7,7 +7,7 @@
 
 <div class="cal-week-layout">
     <div class="cal-week-mobile-warning">
-        Weekly view is not recommended on smaller devices. Please switch to a desktop device or use the daily view instead.
+        @Texts.WeekMobileWarning
     </div>
 
     <WeekViewMultiDayEventsRow MultiDayEvents="MultiDayEvents" Date="State.SelectedDate" />
@@ -56,7 +56,7 @@
                                      @ondrop="() => OnDrop(d, hour, 30)"></div>
                                 <div class="cal-cell-add-hint cal-cell-add-hint-hour" aria-hidden="true">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                    Add event
+                                    @Texts.AddEventHoverHint
                                 </div>
                             </div>
                         }
@@ -86,6 +86,7 @@
 
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
     [Parameter] public List<CalendarEvent> SingleDayEvents { get; set; } = [];
     [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
 

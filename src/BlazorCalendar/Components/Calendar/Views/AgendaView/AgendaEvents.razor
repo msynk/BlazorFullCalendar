@@ -20,12 +20,12 @@
 
 <div class="cal-agenda">
     <div class="cal-agenda-search">
-        <input type="text" placeholder="Search events..." @bind="_search" @bind:event="oninput" />
+        <input type="text" placeholder="@Texts.SearchEventsPlaceholder" @bind="_search" @bind:event="oninput" />
     </div>
 
     @if (grouped.Count == 0)
     {
-        <div class="cal-agenda-empty">No events found.</div>
+        <div class="cal-agenda-empty">@Texts.NoEventsFound</div>
     }
     else
     {
@@ -77,6 +77,7 @@
 
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
 
     private string _search = "";
     private bool _showDetails;
