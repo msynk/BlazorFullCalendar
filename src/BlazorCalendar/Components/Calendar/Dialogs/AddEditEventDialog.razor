@@ -21,12 +21,12 @@
 
             <div class="cal-field">
                 <label>@Texts.StartDateTimeLabel</label>
-                <input type="datetime-local" @bind="_startDate" />
+                <input type="datetime-local" @bind="_startDate" lang="@State.Culture.Name" />
             </div>
 
             <div class="cal-field">
                 <label>@Texts.EndDateTimeLabel</label>
-                <input type="datetime-local" @bind="_endDate" />
+                <input type="datetime-local" @bind="_endDate" lang="@State.Culture.Name" />
                 @if (_errors.ContainsKey("endDate"))
                 {
                     <div class="cal-field-error">@_errors["endDate"]</div>
