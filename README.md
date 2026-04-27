@@ -6,8 +6,10 @@ A feature-rich, interactive calendar component for Blazor applications. Built wi
 
 - **5 View Modes**: Day, Week, Month, Year, and Agenda views with smooth transitions
 - **Event Management**: Create, edit, and delete events with a polished dialog and form validation
+- **Culture-Aware Date-Time Picker**: Built-in dropdown date-time picker in add/edit dialogs (no browser-native `datetime-local`) with culture calendar rendering support (including `fa-IR`)
 - **Drag & Drop**: Move events between time slots and dates with native HTML5 drag-and-drop
 - **Multi-User Support**: Filter events by user or color with avatar initials and color badges
+- **Text Customization**: Override UI labels, button text, placeholders, aria labels, and validation messages with `CalendarTexts`
 - **Customizable**: Dark mode, 12/24-hour format, dot vs colored badges, configurable start hour, and agenda grouping options
 - **Live Timeline**: Real-time current-time indicator in day and week views with "Happening Now" sidebar
 
@@ -60,6 +62,34 @@ app.MapRazorComponents<App>()
 }
 ```
 
+### Localization Notes
+
+- The event add/edit dialog uses a custom dropdown date-time picker instead of native browser date inputs.
+- Date cells, weekday headers, month names, and year/day values are rendered from the active `CultureInfo` calendar.
+- This improves consistency for non-Gregorian cultures such as Persian (`fa-IR`) and other localized calendars.
+- Dialog labels and validation text can be localized by supplying a customized `CalendarTexts` instance.
+
+### Text Customization Example
+
+```razor
+<BlazorCalendar Events="myEvents"
+                Users="myUsers"
+                CultureName="fa-IR"
+                Texts="calendarTexts"
+                @rendermode="InteractiveServer" />
+
+@code {
+    private readonly CalendarTexts calendarTexts = new()
+    {
+        AddEventButton = "افزودن رویداد",
+        AddEventDialogTitle = "افزودن رویداد جدید",
+        StartDateTimeLabel = "تاریخ و زمان شروع",
+        EndDateTimeLabel = "تاریخ و زمان پایان",
+        CreateEventButton = "ایجاد رویداد"
+    };
+}
+```
+
 ### Models
 
 #### CalendarEvent
@@ -97,6 +127,9 @@ Available colors: `Blue`, `Green`, `Red`, `Yellow`, `Purple`, `Orange`
 |-----------|------|-------------|
 | `Events` | `List<CalendarEvent>?` | List of calendar events to display |
 | `Users` | `List<CalendarUser>?` | List of users for event assignment and filtering |
+| `Texts` | `CalendarTexts` | Custom UI strings for labels, placeholders, action buttons, aria labels, and validation messages |
+| `Culture` | `CultureInfo?` | Sets calendar/date rendering and formatting |
+| `CultureName` | `string?` | Culture name shortcut (for example `fa-IR`, `ar-SA`, `fr-FR`) |
 
 ## Views
 
