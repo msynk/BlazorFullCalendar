@@ -965,6 +965,135 @@
 .cal-field textarea { resize: vertical; min-height: 60px; }
 .cal-field .cal-field-error { color: var(--cal-danger); font-size: 12px; margin-top: 2px; }
 
+/* ===== Custom Date-Time Picker ===== */
+.cal-dtp {
+    position: relative;
+}
+
+.cal-dtp-trigger {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-radius-sm);
+    background: var(--cal-bg);
+    color: var(--cal-text);
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.cal-dtp-trigger:hover {
+    background: var(--cal-bg-hover);
+}
+
+.cal-dtp-trigger-icon {
+    color: var(--cal-text-muted);
+    font-size: 10px;
+}
+
+.cal-dtp-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-radius-sm);
+    background: var(--cal-bg);
+    padding: 8px;
+    box-shadow: var(--cal-shadow-lg);
+}
+
+.cal-dtp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.cal-dtp-month-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cal-text);
+}
+
+.cal-dtp-nav-btn {
+    border: 1px solid var(--cal-border);
+    background: var(--cal-bg);
+    color: var(--cal-text);
+    width: 24px;
+    height: 24px;
+    border-radius: var(--cal-radius-sm);
+    line-height: 1;
+    cursor: pointer;
+}
+
+.cal-dtp-nav-btn:hover {
+    background: var(--cal-bg-hover);
+}
+
+.cal-dtp-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.cal-dtp-weekdays span {
+    text-align: center;
+    font-size: 11px;
+    color: var(--cal-text-muted);
+}
+
+.cal-dtp-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.cal-dtp-day {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--cal-text);
+    border-radius: 6px;
+    height: 28px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.cal-dtp-day:hover {
+    background: var(--cal-bg-hover);
+}
+
+.cal-dtp-day-muted {
+    color: var(--cal-text-muted);
+}
+
+.cal-dtp-day-selected {
+    background: var(--cal-primary);
+    color: #fff;
+}
+
+.cal-dtp-day-selected:hover {
+    background: var(--cal-primary);
+}
+
+.cal-dtp-time {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cal-dtp-time select {
+    width: auto;
+    min-width: 64px;
+}
+
 /* Color picker in form */
 .cal-color-picker {
     display: flex;
