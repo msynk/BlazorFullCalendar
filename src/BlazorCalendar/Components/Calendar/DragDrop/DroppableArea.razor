@@ -8,6 +8,7 @@
 
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
     [Parameter] public DateTime Date { get; set; }
     [Parameter] public int? Hour { get; set; }
     [Parameter] public int? Minute { get; set; }
@@ -19,9 +20,9 @@
     private void OnDragOver() => _isOver = true;
     private void OnDragLeave() => _isOver = false;
 
-    private void OnDrop()
+    private async Task OnDrop()
     {
         _isOver = false;
-        State.HandleDrop(Date, Hour, Minute);
+        await Notifier.HandleDropAsync(Date, Hour, Minute);
     }
 }

@@ -94,6 +94,7 @@
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
     [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
     [Parameter] public CalendarEvent? ExistingEvent { get; set; }
     [Parameter] public DateTime? StartDate { get; set; }
     [Parameter] public int? StartHour { get; set; }
@@ -168,7 +169,7 @@
         return Task.CompletedTask;
     }
 
-    private void Submit()
+    private async Task Submit()
     {
         _errors.Clear();
         if (string.IsNullOrWhiteSpace(_title))
@@ -179,6 +180,10 @@
             _errors["endDate"] = Texts.ValidationEndAfterStart;
 
         if (_errors.Count > 0) return;
+
+        var oldSnapshot = _isEditing && ExistingEvent is not null
+            ? BlazorCalendarChangeNotifier.CloneEvent(ExistingEvent)
+            : null;
 
         var ev = new CalendarEvent
         {
@@ -196,6 +201,14 @@
         else
             State.AddEvent(ev);
 
-        OnClose.InvokeAsync();
+        await Notifier.NotifyAsync(new BlazorCalendarChangeEventArgs
+        {
+            Event = BlazorCalendarChangeNotifier.CloneEvent(ev),
+            OldEvent = oldSnapshot,
+            Kind = _isEditing ? CalendarChangeKind.Edit : CalendarChangeKind.Add,
+            Source = CalendarChangeSource.Dialog
+        });
+
+        await OnClose.InvokeAsync();
     }
 }

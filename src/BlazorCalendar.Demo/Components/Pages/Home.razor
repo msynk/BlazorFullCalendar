@@ -98,7 +98,9 @@
         <p>A fully interactive calendar right here. Try switching views, clicking events, and navigating dates.</p>
     </div>
     <div class="demo-calendar-container">
-        <BlazorCalendar Events="_demoEvents" @rendermode="InteractiveServer" />
+        <BlazorCalendar Events="_demoEvents"
+                        OnChange="HandleCalendarChange"
+                        @rendermode="InteractiveServer" />
     </div>
 </section>
 
@@ -146,4 +148,6 @@
 
 @code {
     private static readonly List<CalendarEvent> _demoEvents = DemoSampleData.CreateEvents();
+
+    private Task HandleCalendarChange(BlazorCalendarChangeEventArgs args) => Task.CompletedTask;
 }

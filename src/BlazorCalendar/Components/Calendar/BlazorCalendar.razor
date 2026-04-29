@@ -3,11 +3,13 @@
 
 <CascadingValue Value="State">
     <CascadingValue Value="Texts">
-        <div class="cal-root @(State.IsDarkMode ? "cal-dark" : "")" dir="@(State.IsRtl ? "rtl" : "ltr")">
-            <CalendarHeader />
-            <CalendarBody />
-            <CalendarToast />
-        </div>
+        <CascadingValue Value="_changeNotifier">
+            <div class="cal-root @(State.IsDarkMode ? "cal-dark" : "")" dir="@(State.IsRtl ? "rtl" : "ltr")">
+                <CalendarHeader />
+                <CalendarBody />
+                <CalendarToast />
+            </div>
+        </CascadingValue>
     </CascadingValue>
 </CascadingValue>
 
@@ -30,8 +32,13 @@
     /// </summary>
     [Parameter] public string? CultureName { get; set; }
     [Parameter] public CalendarTexts Texts { get; set; } = new();
+    /// <summary>
+    /// Raised when a user adds, edits, or deletes an event in the calendar UI.
+    /// </summary>
+    [Parameter] public EventCallback<BlazorCalendarChangeEventArgs> OnChange { get; set; }
 
     public CalendarState State { get; set; } = new();
+    private BlazorCalendarChangeNotifier _changeNotifier = default!;
 
     private CultureInfo ResolveCulture() =>
         CultureName is { Length: > 0 } name
@@ -41,6 +48,7 @@
     protected override void OnInitialized()
     {
         State.Initialize(Events ?? [], ResolveCulture());
+        _changeNotifier = new BlazorCalendarChangeNotifier(State, args => OnChange.InvokeAsync(args));
         State.OnStateChanged += HandleStateChanged;
     }
 

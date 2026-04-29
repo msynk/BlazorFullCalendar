@@ -27,15 +27,41 @@
         </div>
     </div>
 
-    <div style="flex:1;padding:16px 24px 24px;min-height:0;">
+    <div style="flex:1;padding:16px 24px 24px;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;">
         <div style="height:100%;border:1px solid var(--demo-border);border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-            <BlazorCalendar Events="_demoEvents" CultureName="@_selectedCultureName" Texts="@SelectedTexts" />
+            <BlazorCalendar Events="_demoEvents"
+                            CultureName="@_selectedCultureName"
+                            Texts="@SelectedTexts"
+                            OnChange="HandleCalendarChange" />
         </div>
+        <aside style="border:1px solid var(--demo-border);border-radius:12px;background:var(--demo-bg);padding:12px;overflow:auto;">
+            <h3 style="margin:0 0 8px 0;font-size:14px;">Recent Changes</h3>
+            @if (_recentChanges.Count == 0)
+            {
+                <p style="margin:0;color:var(--demo-text-secondary);font-size:12px;">No event changes yet.</p>
+            }
+            else
+            {
+                <ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:8px;">
+                    @foreach (var change in _recentChanges)
+                    {
+                        <li style="font-size:12px;line-height:1.35;">
+                            <strong>@change.Kind</strong> via @change.Source<br />
+                            <span>@change.Title</span><br />
+                            <span style="color:var(--demo-text-secondary);">@change.AtLocal.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </aside>
     </div>
 </div>
 
 @code {
     private static readonly List<CalendarEvent> _demoEvents = DemoSampleData.CreateEvents();
+    private readonly List<ChangeLogItem> _recentChanges = [];
+
+    private sealed record ChangeLogItem(string Title, CalendarChangeKind Kind, CalendarChangeSource Source, DateTime AtLocal);
 
     private record CultureOption(string Label, string Name);
 
@@ -456,4 +482,13 @@
         _textsByCulture.TryGetValue(_selectedCultureName, out var texts)
             ? texts
             : _defaultTexts;
+
+    private Task HandleCalendarChange(BlazorCalendarChangeEventArgs args)
+    {
+        _recentChanges.Insert(0, new ChangeLogItem(args.Event.Title, args.Kind, args.Source, DateTime.Now));
+        if (_recentChanges.Count > 5)
+            _recentChanges.RemoveRange(5, _recentChanges.Count - 5);
+
+        return Task.CompletedTask;
+    }
 }

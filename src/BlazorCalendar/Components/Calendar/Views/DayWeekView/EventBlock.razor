@@ -69,6 +69,7 @@
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
     [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
     [Parameter] public CalendarEvent Event { get; set; } = default!;
     [Parameter] public EventCallback<CalendarEvent> OnSelected { get; set; }
 
@@ -204,7 +205,7 @@
     }
 
     [JSInvokable]
-    public Task OnResizeEnd()
+    public async Task OnResizeEnd()
     {
         try
         {
@@ -215,7 +216,7 @@
                 if (s != _resizeBaseEvent.StartDate || e != _resizeBaseEvent.EndDate)
                 {
                     var b = _resizeBaseEvent;
-                    State.UpdateEvent(new CalendarEvent
+                    var updated = new CalendarEvent
                     {
                         Id = b.Id,
                         Title = b.Title,
@@ -224,6 +225,16 @@
                         EndDate = e,
                         Color = b.Color,
                         Attendees = [.. b.Attendees]
+                    };
+
+                    State.UpdateEvent(updated);
+
+                    await Notifier.NotifyAsync(new BlazorCalendarChangeEventArgs
+                    {
+                        Event = BlazorCalendarChangeNotifier.CloneEvent(updated),
+                        OldEvent = BlazorCalendarChangeNotifier.CloneEvent(b),
+                        Kind = CalendarChangeKind.Edit,
+                        Source = CalendarChangeSource.Resize
                     });
                 }
             }
@@ -238,7 +249,7 @@
             _suppressClickUntilUtc = DateTime.UtcNow.AddMilliseconds(300);
         }
 
-        return InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
     }
 
     private void OnResizeTopStart() { }

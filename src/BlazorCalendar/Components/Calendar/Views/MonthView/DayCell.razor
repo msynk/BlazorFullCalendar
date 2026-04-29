@@ -63,6 +63,7 @@
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
     [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
     [Parameter] public CalendarCell Cell { get; set; } = default!;
     [Parameter] public List<CalendarEvent> Events { get; set; } = [];
     [Parameter] public Dictionary<int, int> EventPositions { get; set; } = new();
@@ -90,8 +91,8 @@
 
     private void OnDragOver() { }
 
-    private void OnDrop()
+    private async Task OnDrop()
     {
-        State.HandleDrop(Cell.Date);
+        await Notifier.HandleDropAsync(Cell.Date);
     }
 }

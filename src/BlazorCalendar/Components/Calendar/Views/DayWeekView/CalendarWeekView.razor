@@ -87,6 +87,7 @@
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
     [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
     [Parameter] public List<CalendarEvent> SingleDayEvents { get; set; } = [];
     [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
 
@@ -111,12 +112,12 @@
         _showAddDialog = true;
     }
 
-    private void OnDrop(DateTime day, int hour, int minute)
+    private async Task OnDrop(DateTime day, int hour, int minute)
     {
         _dragDate = null;
         _dragHour = null;
         _dragMinute = null;
-        State.HandleDrop(day, hour, minute);
+        await Notifier.HandleDropAsync(day, hour, minute);
     }
 
     private void OnDragEnterSlot(DateTime day, int hour, int minute)

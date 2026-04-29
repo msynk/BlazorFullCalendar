@@ -80,6 +80,7 @@
 @code {
     [CascadingParameter] public CalendarState State { get; set; } = default!;
     [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
     [Parameter] public CalendarEvent Event { get; set; } = default!;
     [Parameter] public EventCallback OnClose { get; set; }
 
@@ -93,9 +94,17 @@
         OnClose.InvokeAsync();
     }
 
-    private void Delete()
+    private async Task Delete()
     {
+        var snapshot = BlazorCalendarChangeNotifier.CloneEvent(Event);
         State.RemoveEvent(Event.Id);
-        OnClose.InvokeAsync();
+        await Notifier.NotifyAsync(new BlazorCalendarChangeEventArgs
+        {
+            Event = snapshot,
+            OldEvent = snapshot,
+            Kind = CalendarChangeKind.Delete,
+            Source = CalendarChangeSource.Delete
+        });
+        await OnClose.InvokeAsync();
     }
 }

@@ -39,7 +39,9 @@ app.MapRazorComponents<App>()
 ```razor
 @page "/calendar"
 
-<BlazorCalendar Events="myEvents" Users="myUsers" @rendermode="InteractiveServer" />
+<BlazorCalendar Events="myEvents"
+                OnChange="HandleCalendarChange"
+                @rendermode="InteractiveServer" />
 
 @code {
     private List<CalendarEvent> myEvents = new()
@@ -50,15 +52,15 @@ app.MapRazorComponents<App>()
             Description = "Weekly sync",
             StartDate = DateTime.Today.AddHours(10),
             EndDate = DateTime.Today.AddHours(11),
-            Color = EventColor.Blue,
-            User = new() { Id = "1", Name = "Alice" }
+            Color = EventColor.Blue
         }
     };
 
-    private List<CalendarUser> myUsers = new()
+    private Task HandleCalendarChange(BlazorCalendarChangeEventArgs args)
     {
-        new() { Id = "1", Name = "Alice" }
-    };
+        // Persist args.Event or synchronize with your backend/store.
+        return Task.CompletedTask;
+    }
 }
 ```
 
@@ -73,7 +75,6 @@ app.MapRazorComponents<App>()
 
 ```razor
 <BlazorCalendar Events="myEvents"
-                Users="myUsers"
                 CultureName="fa-IR"
                 Texts="calendarTexts"
                 @rendermode="InteractiveServer" />
@@ -130,6 +131,7 @@ Available colors: `Blue`, `Green`, `Red`, `Yellow`, `Purple`, `Orange`
 | `Texts` | `CalendarTexts` | Custom UI strings for labels, placeholders, action buttons, aria labels, and validation messages |
 | `Culture` | `CultureInfo?` | Sets calendar/date rendering and formatting |
 | `CultureName` | `string?` | Culture name shortcut (for example `fa-IR`, `ar-SA`, `fr-FR`) |
+| `OnChange` | `EventCallback<BlazorCalendarChangeEventArgs>` | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`) |
 
 ## Views
 
