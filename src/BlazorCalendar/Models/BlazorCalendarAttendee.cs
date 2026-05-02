@@ -1,4 +1,4 @@
-namespace BlazorCalendar.Models;
+namespace BlazorCalendar;
 
 public class BlazorCalendarAttendee
 {

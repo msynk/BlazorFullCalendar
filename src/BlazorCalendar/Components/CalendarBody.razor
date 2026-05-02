@@ -1,0 +1,50 @@
+@namespace BlazorCalendar
+@implements IDisposable
+
+<div class="cal-body" @key="State.View">
+    @switch (State.View)
+    {
+        case BlazorCalendarView.Month:
+            <CalendarMonthView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
+            break;
+        case BlazorCalendarView.Week:
+            <CalendarWeekView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
+            break;
+        case BlazorCalendarView.Day:
+            <CalendarDayView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
+            break;
+        case BlazorCalendarView.Year:
+            <CalendarYearView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
+            break;
+        case BlazorCalendarView.Agenda:
+            <AgendaEvents />
+            break;
+    }
+</div>
+
+@code {
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+
+    private List<BlazorCalendarEvent> _singleDayEvents = [];
+    private List<BlazorCalendarEvent> _multiDayEvents = [];
+
+    protected override void OnInitialized()
+    {
+        State.OnStateChanged += Refresh;
+        ComputeEvents();
+    }
+
+    private void Refresh()
+    {
+        ComputeEvents();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ComputeEvents()
+    {
+        _singleDayEvents = State.Events.Where(e => e.IsSingleDay).ToList();
+        _multiDayEvents = State.Events.Where(e => e.IsMultiDay).ToList();
+    }
+
+    public void Dispose() => State.OnStateChanged -= Refresh;
+}

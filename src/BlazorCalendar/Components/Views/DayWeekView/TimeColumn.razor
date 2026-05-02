@@ -1,0 +1,18 @@
+@namespace BlazorCalendar
+
+<div class="cal-time-column">
+    @for (int h = 0; h < 24; h++)
+    {
+        var hour = h;
+        <div class="cal-time-slot-label">
+            @if (hour > 0)
+            {
+                @BlazorCalendarHelpers.FormatHourLabel(hour, State.Use24HourFormat)
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+}

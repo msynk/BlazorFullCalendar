@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace BlazorCalendar.Services;
+namespace BlazorCalendar;
 
 internal static class TimeGridScrollInterop
 {

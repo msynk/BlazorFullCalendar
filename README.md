@@ -32,9 +32,7 @@ app.MapRazorComponents<App>()
 3. Add the namespace imports to your `_Imports.razor`:
 
 ```razor
-@using BlazorCalendar.Models
-@using BlazorCalendar.Services
-@using BlazorCalendar.Components.Calendar
+@using BlazorCalendar
 ```
 
 ## Usage

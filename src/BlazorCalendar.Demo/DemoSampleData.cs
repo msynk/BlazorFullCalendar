@@ -1,5 +1,3 @@
-using BlazorCalendar.Models;
-
 namespace BlazorCalendar.Demo;
 
 public static class DemoSampleData

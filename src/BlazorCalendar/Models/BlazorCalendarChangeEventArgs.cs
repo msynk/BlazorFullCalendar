@@ -1,4 +1,4 @@
-namespace BlazorCalendar.Models;
+namespace BlazorCalendar;
 
 /// <summary>
 /// Identifies the kind of change applied to a calendar event.

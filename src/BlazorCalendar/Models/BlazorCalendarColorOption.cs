@@ -1,4 +1,4 @@
-namespace BlazorCalendar.Models;
+namespace BlazorCalendar;
 
 /// <summary>
 /// Describes one selectable event color in the calendar UI (picker, filters, agenda headers).

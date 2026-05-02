@@ -1,6 +1,6 @@
-using BlazorCalendar.Models;
+using BlazorCalendar;
 
-namespace BlazorCalendar.Services;
+namespace BlazorCalendar;
 
 /// <summary>
 /// Dispatches calendar event change notifications to the component consumer.

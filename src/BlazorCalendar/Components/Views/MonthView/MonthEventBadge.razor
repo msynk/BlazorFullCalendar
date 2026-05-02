@@ -1,0 +1,67 @@
+@namespace BlazorCalendar
+
+@{
+    var positionClass = Position switch
+    {
+        "first" => "position-first",
+        "middle" => "position-middle",
+        "last" => "position-last",
+        _ => ""
+    };
+
+    var isDotVariant = State.BadgeVariant == BlazorCalendarBadgeVariant.Dot;
+    var colorClass = isDotVariant ? "dot-variant" : BlazorCalendarHelpers.GetColorCss(Event.Color);
+    var showTitle = Position is "first" or "none";
+    var showTime = Position is "last" or "none";
+}
+
+<div class="cal-event-badge @colorClass @positionClass"
+     style="@MarginStyle"
+     draggable="true"
+     @ondragstart="OnDragStart"
+     @ondragend="OnDragEnd"
+     @onclick="() => OnSelected.InvokeAsync(Event)"
+     @onclick:stopPropagation="true">
+
+    <div style="display:flex;align-items:center;gap:4px;overflow:hidden;">
+        @if (isDotVariant && Position is not "middle" and not "last")
+        {
+            <EventBullet Color="Event.Color" />
+        }
+        @if (showTitle)
+        {
+            <span class="cal-event-badge-title">@Event.Title</span>
+        }
+    </div>
+
+    @if (showTime)
+    {
+        <span class="cal-event-badge-time">@BlazorCalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)</span>
+    }
+</div>
+
+@code {
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [Parameter] public BlazorCalendarEvent Event { get; set; } = default!;
+    [Parameter] public DateTime CellDate { get; set; }
+    [Parameter] public string Position { get; set; } = "none";
+    [Parameter] public EventCallback<BlazorCalendarEvent> OnSelected { get; set; }
+
+    private string MarginStyle
+    {
+        get
+        {
+            var isRtl = State.IsRtl;
+            return Position switch
+            {
+                "first"  => isRtl ? "margin-left:-4px; margin-right:2px;" : "margin-left:2px; margin-right:-4px;",
+                "middle" => "margin-left:-4px; margin-right:-4px;",
+                "last"   => isRtl ? "margin-left:2px; margin-right:-4px;" : "margin-left:-4px; margin-right:2px;",
+                _        => "margin:0 2px;"
+            };
+        }
+    }
+
+    private void OnDragStart() => State.StartDrag(Event);
+    private void OnDragEnd() => State.EndDrag();
+}

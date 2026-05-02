@@ -1,4 +1,4 @@
-namespace BlazorCalendar.Models;
+namespace BlazorCalendar;
 
 /// <summary>
 /// Resolved color list and helpers for labels. Built from the calendar's <c>EventColorOptions</c> parameter.

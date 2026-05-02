@@ -1,7 +1,6 @@
 using System.Globalization;
-using BlazorCalendar.Models;
 
-namespace BlazorCalendar.Services;
+namespace BlazorCalendar;
 
 public class BlazorCalendarState
 {

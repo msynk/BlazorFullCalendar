@@ -1,0 +1,52 @@
+@namespace BlazorCalendar
+
+<div class="cal-overlay" @onclick="OnClose">
+    <div class="cal-dialog" @onclick:stopPropagation="true">
+        <div class="cal-dialog-header">
+            <h3>@Texts.EventListTitlePrefix @Date.ToString("dddd, MMM d, yyyy")</h3>
+            <p>@Events.Count @Texts.EventListCountSuffix</p>
+        </div>
+        <div class="cal-dialog-body" style="max-height:400px;overflow-y:auto;">
+            @foreach (var ev in Events)
+            {
+                <div class="cal-agenda-item" @onclick="() => SelectEvent(ev)">
+                    <div class="cal-agenda-avatar @BlazorCalendarHelpers.GetBgColorCss(ev.Color)">
+                        @(ev.Attendees.Count > 0 ? ev.Attendees[0].Initials : "")
+                    </div>
+                    <div class="cal-agenda-info">
+                        <div class="cal-agenda-title">@ev.Title</div>
+                        <div class="cal-agenda-desc">@ev.Description</div>
+                    </div>
+                    <div class="cal-agenda-time">
+                        @BlazorCalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="cal-dialog-footer">
+            <button class="cal-btn" @onclick="OnClose">@Texts.CloseButton</button>
+        </div>
+    </div>
+</div>
+
+@if (_showDetails && _selectedEvent != null)
+{
+    <EventDetailsDialog Event="_selectedEvent" OnClose="() => _showDetails = false" />
+}
+
+@code {
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarTexts Texts { get; set; } = default!;
+    [Parameter] public DateTime Date { get; set; }
+    [Parameter] public List<BlazorCalendarEvent> Events { get; set; } = [];
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private bool _showDetails;
+    private BlazorCalendarEvent? _selectedEvent;
+
+    private void SelectEvent(BlazorCalendarEvent ev)
+    {
+        _selectedEvent = ev;
+        _showDetails = true;
+    }
+}
