@@ -13,6 +13,13 @@
         </div>
 
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <button type="button"
+                    style="font-size:13px;padding:5px 10px;border:1px solid var(--demo-border);border-radius:6px;background:var(--demo-bg);color:var(--demo-text);cursor:pointer;outline:none;"
+                    @onclick="ToggleRecentChangesPanel"
+                    aria-expanded="@_recentChangesPanelVisible"
+                    title="@(_recentChangesPanelVisible ? "Hide the recent changes sidebar" : "Show the recent changes sidebar")">
+                @(_recentChangesPanelVisible ? "Hide recent changes" : "Show recent changes")
+            </button>
             <!-- Culture selector -->
             <div style="display:flex;align-items:center;gap:6px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--demo-text-secondary);flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -27,13 +34,15 @@
         </div>
     </div>
 
-    <div style="flex:1;padding:16px 24px 24px;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;">
+    <div style="flex:1;padding:16px 24px 24px;min-height:0;display:grid;grid-template-columns:@(_recentChangesPanelVisible ? "minmax(0,1fr) 320px" : "minmax(0,1fr)");gap:16px;">
         <div style="height:100%;border:1px solid var(--demo-border);border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
             <BlazorCalendar Events="_demoEvents"
                             CultureName="@_selectedCultureName"
                             Texts="@SelectedTexts"
                             OnChange="HandleCalendarChange" />
         </div>
+        @if (_recentChangesPanelVisible)
+        {
         <aside style="border:1px solid var(--demo-border);border-radius:12px;background:var(--demo-bg);padding:12px;overflow:auto;">
             <h3 style="margin:0 0 8px 0;font-size:14px;">Recent Changes</h3>
             @if (_recentChanges.Count == 0)
@@ -54,6 +63,7 @@
                 </ul>
             }
         </aside>
+        }
     </div>
 </div>
 
@@ -78,6 +88,9 @@
     ];
 
     private string _selectedCultureName = "en-US";
+    private bool _recentChangesPanelVisible;
+
+    private void ToggleRecentChangesPanel() => _recentChangesPanelVisible = !_recentChangesPanelVisible;
 
     private static readonly CalendarTexts _defaultTexts = new();
 

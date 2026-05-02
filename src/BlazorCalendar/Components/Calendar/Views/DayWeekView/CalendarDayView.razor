@@ -11,12 +11,15 @@
 <div class="cal-day-layout">
     <div class="cal-day-main">
         <div class="cal-day-header">
-            <span style="color:var(--cal-text-secondary);font-size:14px;">
-                @State.SelectedDate.ToString("ddd", State.Culture)
-            </span>
-            <span class="cal-day-header-date @(State.SelectedDate.Date == DateTime.Today ? "today" : "")">
-                @CalendarHelpers.GetCulturalDayOfMonth(State.SelectedDate, State.Culture)
-            </span>
+            <div class="cal-day-header-time-gutter" aria-hidden="true"></div>
+            <div class="cal-day-header-titles">
+                <span style="color:var(--cal-text-secondary);font-size:14px;">
+                    @State.SelectedDate.ToString("ddd", State.Culture)
+                </span>
+                <span class="cal-day-header-date @(State.SelectedDate.Date == DateTime.Today ? "today" : "")">
+                    @CalendarHelpers.GetCulturalDayOfMonth(State.SelectedDate, State.Culture)
+                </span>
+            </div>
         </div>
 
         <DayViewMultiDayEventsRow MultiDayEvents="MultiDayEvents" Date="State.SelectedDate" />
