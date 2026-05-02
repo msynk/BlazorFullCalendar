@@ -1,6 +1,6 @@
 namespace BlazorCalendar.Models;
 
-public class CalendarTexts
+public class BlazorCalendarTexts
 {
     public string ViewDay { get; set; } = "Day";
     public string ViewWeek { get; set; } = "Week";
@@ -88,24 +88,24 @@ public class CalendarTexts
     public string ColorPurple { get; set; } = "Purple";
     public string ColorOrange { get; set; } = "Orange";
 
-    public string GetViewLabel(CalendarView view) => view switch
+    public string GetViewLabel(BlazorCalendarView view) => view switch
     {
-        CalendarView.Day => ViewDay,
-        CalendarView.Week => ViewWeek,
-        CalendarView.Month => ViewMonth,
-        CalendarView.Year => ViewYear,
-        CalendarView.Agenda => ViewAgenda,
+        BlazorCalendarView.Day => ViewDay,
+        BlazorCalendarView.Week => ViewWeek,
+        BlazorCalendarView.Month => ViewMonth,
+        BlazorCalendarView.Year => ViewYear,
+        BlazorCalendarView.Agenda => ViewAgenda,
         _ => view.ToString()
     };
 
-    public string GetColorLabel(EventColor color) => color switch
+    public string GetColorLabel(BlazorCalendarEventColor color) => color switch
     {
-        EventColor.Blue => ColorBlue,
-        EventColor.Green => ColorGreen,
-        EventColor.Red => ColorRed,
-        EventColor.Yellow => ColorYellow,
-        EventColor.Purple => ColorPurple,
-        EventColor.Orange => ColorOrange,
+        BlazorCalendarEventColor.Blue => ColorBlue,
+        BlazorCalendarEventColor.Green => ColorGreen,
+        BlazorCalendarEventColor.Red => ColorRed,
+        BlazorCalendarEventColor.Yellow => ColorYellow,
+        BlazorCalendarEventColor.Purple => ColorPurple,
+        BlazorCalendarEventColor.Orange => ColorOrange,
         _ => color.ToString()
     };
 }

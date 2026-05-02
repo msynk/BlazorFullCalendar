@@ -3,7 +3,7 @@
 @{
     var dayEvents = SingleDayEvents.Where(e =>
         e.StartDate.Date == State.SelectedDate.Date).ToList();
-    var groupedEvents = CalendarHelpers.GroupEvents(dayEvents);
+    var groupedEvents = BlazorCalendarHelpers.GroupEvents(dayEvents);
     var currentEvents = SingleDayEvents.Where(e =>
         DateTime.Now >= e.StartDate && DateTime.Now <= e.EndDate).ToList();
 }
@@ -17,7 +17,7 @@
                     @State.SelectedDate.ToString("ddd", State.Culture)
                 </span>
                 <span class="cal-day-header-date @(State.SelectedDate.Date == DateTime.Today ? "today" : "")">
-                    @CalendarHelpers.GetCulturalDayOfMonth(State.SelectedDate, State.Culture)
+                    @BlazorCalendarHelpers.GetCulturalDayOfMonth(State.SelectedDate, State.Culture)
                 </span>
             </div>
         </div>
@@ -85,7 +85,7 @@
                         }
                         <div class="cal-happening-event-meta">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            @CalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat) - @CalendarHelpers.FormatTime(ev.EndDate, State.Use24HourFormat)
+                            @BlazorCalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat) - @BlazorCalendarHelpers.FormatTime(ev.EndDate, State.Use24HourFormat)
                         </div>
                     </button>
                 }
@@ -105,11 +105,11 @@
 }
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
-    [Parameter] public List<CalendarEvent> SingleDayEvents { get; set; } = [];
-    [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
+    [Parameter] public List<BlazorCalendarEvent> SingleDayEvents { get; set; } = [];
+    [Parameter] public List<BlazorCalendarEvent> MultiDayEvents { get; set; } = [];
 
     private string? _timeGridScrollSignature;
 
@@ -117,11 +117,11 @@
     private DateTime _addStartDate;
     private int _addStartHour;
 
-    private CalendarEvent? _selectedEvent;
+    private BlazorCalendarEvent? _selectedEvent;
     private int? _dragHour;
     private int? _dragMinute;
 
-    private void SelectEvent(CalendarEvent ev) => _selectedEvent = ev;
+    private void SelectEvent(BlazorCalendarEvent ev) => _selectedEvent = ev;
     private void CloseEventDetails() => _selectedEvent = null;
 
     private void OnHourClick(int hour)

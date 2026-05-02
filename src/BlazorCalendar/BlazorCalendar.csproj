@@ -6,6 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>BlazorCalendar</RootNamespace>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <IsPackable>true</IsPackable>
+    <PackageId>BlazorCalendar</PackageId>
+    <Title>Blazor Calendar</Title>
+    <Description>Feature-rich interactive calendar component for Blazor: day, week, month, year, and agenda views; event CRUD; drag-and-drop; culture-aware date handling; and customizable styling.</Description>
+    <PackageTags>blazor;calendar;scheduler;events;agenda;razor;wasm;server;component</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +24,14 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

@@ -35,20 +35,20 @@
 }
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [Parameter] public List<BlazorCalendarEvent> MultiDayEvents { get; set; } = [];
     [Parameter] public DateTime Date { get; set; }
 
     private DateTime[] _weekDays = [];
-    private List<CalendarEvent> _weekEvents = [];
+    private List<BlazorCalendarEvent> _weekEvents = [];
     private Dictionary<int, int> _eventRows = new();
     private int _rowCount;
-    private CalendarEvent? _selectedEvent;
+    private BlazorCalendarEvent? _selectedEvent;
 
     protected override void OnParametersSet()
     {
-        _weekDays = CalendarHelpers.GetWeekDates(Date);
-        _weekEvents = CalendarHelpers.GetEventsForWeek(MultiDayEvents, Date)
+        _weekDays = BlazorCalendarHelpers.GetWeekDates(Date);
+        _weekEvents = BlazorCalendarHelpers.GetEventsForWeek(MultiDayEvents, Date)
             .Where(e => e.IsMultiDay)
             .OrderByDescending(e => (e.EndDate - e.StartDate).TotalDays)
             .ThenBy(e => e.StartDate)
@@ -78,6 +78,6 @@
         _rowCount = _eventRows.Count > 0 ? _eventRows.Values.Max() + 1 : 0;
     }
 
-    private void ShowEventDetails(CalendarEvent ev) => _selectedEvent = ev;
+    private void ShowEventDetails(BlazorCalendarEvent ev) => _selectedEvent = ev;
     private void CloseEventDetails() => _selectedEvent = null;
 }

@@ -3,36 +3,36 @@ using BlazorCalendar.Models;
 
 namespace BlazorCalendar.Services;
 
-public class CalendarState
+public class BlazorCalendarState
 {
-    private List<CalendarEvent> _allEvents = [];
-    private List<CalendarEvent> _filteredEvents = [];
+    private List<BlazorCalendarEvent> _allEvents = [];
+    private List<BlazorCalendarEvent> _filteredEvents = [];
 
     public DateTime SelectedDate { get; private set; } = DateTime.Today;
-    public CalendarView View { get; private set; } = CalendarView.Month;
-    public List<EventColor> SelectedColors { get; private set; } = [];
+    public BlazorCalendarView View { get; private set; } = BlazorCalendarView.Month;
+    public List<BlazorCalendarEventColor> SelectedColors { get; private set; } = [];
 
-    /// <summary>When set, only events that include this attendee (by <see cref="CalendarHelpers.AttendeeFilterKey"/>) are shown.</summary>
+    /// <summary>When set, only events that include this attendee (by <see cref="BlazorCalendarHelpers.AttendeeFilterKey"/>) are shown.</summary>
     public string? SelectedAttendeeKey { get; private set; }
     public bool Use24HourFormat { get; private set; } = true;
-    public BadgeVariant BadgeVariant { get; private set; } = BadgeVariant.Colored;
+    public BlazorCalendarBadgeVariant BadgeVariant { get; private set; } = BlazorCalendarBadgeVariant.Colored;
     public int StartOfDayHour { get; private set; } = 8;
-    public AgendaGroupBy AgendaModeGroupBy { get; private set; } = AgendaGroupBy.Date;
+    public BlazorCalendarAgendaGroupBy AgendaModeGroupBy { get; private set; } = BlazorCalendarAgendaGroupBy.Date;
     public bool IsDarkMode { get; private set; }
 
     public CultureInfo Culture { get; private set; } = CultureInfo.CurrentUICulture;
     public bool IsRtl => Culture.TextInfo.IsRightToLeft;
 
     // Drag state
-    public CalendarEvent? DraggedEvent { get; set; }
+    public BlazorCalendarEvent? DraggedEvent { get; set; }
     public bool IsDragging => DraggedEvent != null;
 
-    public IReadOnlyList<CalendarEvent> Events => _filteredEvents;
-    public IReadOnlyList<CalendarEvent> AllEvents => _allEvents;
+    public IReadOnlyList<BlazorCalendarEvent> Events => _filteredEvents;
+    public IReadOnlyList<BlazorCalendarEvent> AllEvents => _allEvents;
 
     public event Action? OnStateChanged;
 
-    public void Initialize(List<CalendarEvent> events, CultureInfo? culture = null)
+    public void Initialize(List<BlazorCalendarEvent> events, CultureInfo? culture = null)
     {
         _allEvents = [.. events];
         if (culture != null)
@@ -55,7 +55,7 @@ public class CalendarState
         NotifyStateChanged();
     }
 
-    public void SetView(CalendarView view)
+    public void SetView(BlazorCalendarView view)
     {
         View = view;
         ApplyFilters();
@@ -74,7 +74,7 @@ public class CalendarState
         NotifyStateChanged();
     }
 
-    public void SetBadgeVariant(BadgeVariant variant)
+    public void SetBadgeVariant(BlazorCalendarBadgeVariant variant)
     {
         BadgeVariant = variant;
         NotifyStateChanged();
@@ -89,7 +89,7 @@ public class CalendarState
         }
     }
 
-    public void SetAgendaModeGroupBy(AgendaGroupBy groupBy)
+    public void SetAgendaModeGroupBy(BlazorCalendarAgendaGroupBy groupBy)
     {
         AgendaModeGroupBy = groupBy;
         NotifyStateChanged();
@@ -103,14 +103,14 @@ public class CalendarState
 
     public void NavigatePrevious()
     {
-        SelectedDate = CalendarHelpers.NavigateDate(SelectedDate, View, false, Culture);
+        SelectedDate = BlazorCalendarHelpers.NavigateDate(SelectedDate, View, false, Culture);
         ApplyFilters();
         NotifyStateChanged();
     }
 
     public void NavigateNext()
     {
-        SelectedDate = CalendarHelpers.NavigateDate(SelectedDate, View, true, Culture);
+        SelectedDate = BlazorCalendarHelpers.NavigateDate(SelectedDate, View, true, Culture);
         ApplyFilters();
         NotifyStateChanged();
     }
@@ -122,14 +122,14 @@ public class CalendarState
         NotifyStateChanged();
     }
 
-    public void AddEvent(CalendarEvent ev)
+    public void AddEvent(BlazorCalendarEvent ev)
     {
         _allEvents.Add(ev);
         ApplyFilters();
         NotifyStateChanged();
     }
 
-    public void UpdateEvent(CalendarEvent ev)
+    public void UpdateEvent(BlazorCalendarEvent ev)
     {
         var idx = _allEvents.FindIndex(e => e.Id == ev.Id);
         if (idx >= 0) _allEvents[idx] = ev;
@@ -144,7 +144,7 @@ public class CalendarState
         NotifyStateChanged();
     }
 
-    public void FilterByColor(EventColor color)
+    public void FilterByColor(BlazorCalendarEventColor color)
     {
         if (SelectedColors.Contains(color))
             SelectedColors.Remove(color);
@@ -154,7 +154,7 @@ public class CalendarState
         NotifyStateChanged();
     }
 
-    public void SetColorFilter(EventColor? color)
+    public void SetColorFilter(BlazorCalendarEventColor? color)
     {
         SelectedColors.Clear();
         if (color.HasValue)
@@ -174,13 +174,13 @@ public class CalendarState
     /// <summary>Distinct attendees on events visible in the current view/date range.</summary>
     public IReadOnlyList<(string Key, string DisplayName)> GetAttendeesInCurrentView(string unnamedAttendeeText = "(Unnamed)")
     {
-        var viewEvents = CalendarHelpers.GetEventsForView(_allEvents.ToList(), View, SelectedDate, Culture);
+        var viewEvents = BlazorCalendarHelpers.GetEventsForView(_allEvents.ToList(), View, SelectedDate, Culture);
         var map = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var ev in viewEvents)
         {
             foreach (var a in ev.Attendees)
             {
-                var key = CalendarHelpers.AttendeeFilterKey(a);
+                var key = BlazorCalendarHelpers.AttendeeFilterKey(a);
                 if (key.Length == 0)
                     continue;
                 if (map.ContainsKey(key))
@@ -216,7 +216,7 @@ public class CalendarState
             result = result.Where(e => SelectedColors.Contains(e.Color));
 
         if (SelectedAttendeeKey is not null)
-            result = result.Where(e => e.Attendees.Any(a => CalendarHelpers.AttendeeFilterKey(a) == SelectedAttendeeKey));
+            result = result.Where(e => e.Attendees.Any(a => BlazorCalendarHelpers.AttendeeFilterKey(a) == SelectedAttendeeKey));
 
         _filteredEvents = result.ToList();
     }
@@ -226,10 +226,10 @@ public class CalendarState
         if (SelectedAttendeeKey is null)
             return;
 
-        var validKeys = CalendarHelpers
+        var validKeys = BlazorCalendarHelpers
             .GetEventsForView(_allEvents.ToList(), View, SelectedDate, Culture)
             .SelectMany(e => e.Attendees)
-            .Select(CalendarHelpers.AttendeeFilterKey)
+            .Select(BlazorCalendarHelpers.AttendeeFilterKey)
             .Where(k => k.Length > 0)
             .ToHashSet(StringComparer.Ordinal);
 
@@ -238,7 +238,7 @@ public class CalendarState
     }
 
     // Drag-and-drop helpers
-    public void StartDrag(CalendarEvent ev)
+    public void StartDrag(BlazorCalendarEvent ev)
     {
         DraggedEvent = ev;
         NotifyStateChanged();
@@ -272,7 +272,7 @@ public class CalendarState
             return;
         }
 
-        var updated = new CalendarEvent
+        var updated = new BlazorCalendarEvent
         {
             Id = DraggedEvent.Id,
             Title = DraggedEvent.Title,

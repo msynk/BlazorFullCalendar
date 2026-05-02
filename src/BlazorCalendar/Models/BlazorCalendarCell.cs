@@ -1,6 +1,6 @@
 namespace BlazorCalendar.Models;
 
-public class CalendarCell
+public class BlazorCalendarCell
 {
     public int Day { get; set; }
     public bool CurrentMonth { get; set; }

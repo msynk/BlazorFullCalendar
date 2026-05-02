@@ -5,12 +5,12 @@
         <div class="cal-time-slot-label">
             @if (hour > 0)
             {
-                @CalendarHelpers.FormatHourLabel(hour, State.Use24HourFormat)
+                @BlazorCalendarHelpers.FormatHourLabel(hour, State.Use24HourFormat)
             }
         </div>
     }
 </div>
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
 }

@@ -1,6 +1,6 @@
 namespace BlazorCalendar.Models;
 
-public class CalendarAttendee
+public class BlazorCalendarAttendee
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;

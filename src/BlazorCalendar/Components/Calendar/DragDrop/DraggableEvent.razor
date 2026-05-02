@@ -8,8 +8,8 @@
 </div>
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [Parameter] public CalendarEvent Event { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [Parameter] public BlazorCalendarEvent Event { get; set; } = default!;
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public EventCallback OnClick { get; set; }

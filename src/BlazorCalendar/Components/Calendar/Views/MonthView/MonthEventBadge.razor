@@ -7,8 +7,8 @@
         _ => ""
     };
 
-    var isDotVariant = State.BadgeVariant == BadgeVariant.Dot;
-    var colorClass = isDotVariant ? "dot-variant" : CalendarHelpers.GetColorCss(Event.Color);
+    var isDotVariant = State.BadgeVariant == BlazorCalendarBadgeVariant.Dot;
+    var colorClass = isDotVariant ? "dot-variant" : BlazorCalendarHelpers.GetColorCss(Event.Color);
     var showTitle = Position is "first" or "none";
     var showTime = Position is "last" or "none";
 }
@@ -34,16 +34,16 @@
 
     @if (showTime)
     {
-        <span class="cal-event-badge-time">@CalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)</span>
+        <span class="cal-event-badge-time">@BlazorCalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)</span>
     }
 </div>
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [Parameter] public CalendarEvent Event { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [Parameter] public BlazorCalendarEvent Event { get; set; } = default!;
     [Parameter] public DateTime CellDate { get; set; }
     [Parameter] public string Position { get; set; } = "none";
-    [Parameter] public EventCallback<CalendarEvent> OnSelected { get; set; }
+    [Parameter] public EventCallback<BlazorCalendarEvent> OnSelected { get; set; }
 
     private string MarginStyle
     {

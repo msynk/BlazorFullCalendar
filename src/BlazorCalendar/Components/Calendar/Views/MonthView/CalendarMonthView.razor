@@ -1,8 +1,8 @@
 @{
-    var cells = CalendarHelpers.GetCalendarCells(State.SelectedDate, State.Culture);
+    var cells = BlazorCalendarHelpers.GetCalendarCells(State.SelectedDate, State.Culture);
     var allEvents = MultiDayEvents.Concat(SingleDayEvents).ToList();
-    var eventPositions = CalendarHelpers.CalculateMonthEventPositions(MultiDayEvents, SingleDayEvents, State.SelectedDate, State.Culture);
-    var weekDayHeaders = CalendarHelpers.GetWeekDayHeaders(State.Culture);
+    var eventPositions = BlazorCalendarHelpers.CalculateMonthEventPositions(MultiDayEvents, SingleDayEvents, State.SelectedDate, State.Culture);
+    var weekDayHeaders = BlazorCalendarHelpers.GetWeekDayHeaders(State.Culture);
 }
 
 <div class="cal-month">
@@ -22,7 +22,7 @@
 </div>
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [Parameter] public List<CalendarEvent> SingleDayEvents { get; set; } = [];
-    [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [Parameter] public List<BlazorCalendarEvent> SingleDayEvents { get; set; } = [];
+    [Parameter] public List<BlazorCalendarEvent> MultiDayEvents { get; set; } = [];
 }

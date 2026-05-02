@@ -3,7 +3,7 @@ namespace BlazorCalendar.Models;
 /// <summary>
 /// Identifies the kind of change applied to a calendar event.
 /// </summary>
-public enum CalendarChangeKind
+public enum BlazorCalendarChangeKind
 {
     Add,
     Edit,
@@ -13,7 +13,7 @@ public enum CalendarChangeKind
 /// <summary>
 /// Identifies where a calendar event change originated from in the UI.
 /// </summary>
-public enum CalendarChangeSource
+public enum BlazorCalendarChangeSource
 {
     Dialog,
     Drag,
@@ -30,21 +30,21 @@ public sealed class BlazorCalendarChangeEventArgs
     /// The current event snapshot after the change for Add/Edit,
     /// or the removed event snapshot for Delete.
     /// </summary>
-    public required CalendarEvent Event { get; init; }
+    public required BlazorCalendarEvent Event { get; init; }
 
     /// <summary>
     /// The change type that occurred.
     /// </summary>
-    public required CalendarChangeKind Kind { get; init; }
+    public required BlazorCalendarChangeKind Kind { get; init; }
 
     /// <summary>
     /// The event snapshot before the change for Edit/Delete.
     /// Null for Add.
     /// </summary>
-    public CalendarEvent? OldEvent { get; init; }
+    public BlazorCalendarEvent? OldEvent { get; init; }
 
     /// <summary>
     /// The UI source that triggered this change.
     /// </summary>
-    public CalendarChangeSource Source { get; init; }
+    public BlazorCalendarChangeSource Source { get; init; }
 }

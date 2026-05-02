@@ -3,29 +3,29 @@
 <div class="cal-body" @key="State.View">
     @switch (State.View)
     {
-        case CalendarView.Month:
+        case BlazorCalendarView.Month:
             <CalendarMonthView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
             break;
-        case CalendarView.Week:
+        case BlazorCalendarView.Week:
             <CalendarWeekView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
             break;
-        case CalendarView.Day:
+        case BlazorCalendarView.Day:
             <CalendarDayView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
             break;
-        case CalendarView.Year:
+        case BlazorCalendarView.Year:
             <CalendarYearView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
             break;
-        case CalendarView.Agenda:
+        case BlazorCalendarView.Agenda:
             <AgendaEvents />
             break;
     }
 </div>
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
 
-    private List<CalendarEvent> _singleDayEvents = [];
-    private List<CalendarEvent> _multiDayEvents = [];
+    private List<BlazorCalendarEvent> _singleDayEvents = [];
+    private List<BlazorCalendarEvent> _multiDayEvents = [];
 
     protected override void OnInitialized()
     {

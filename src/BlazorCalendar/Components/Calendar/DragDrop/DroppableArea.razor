@@ -7,7 +7,7 @@
 </div>
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
     [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
     [Parameter] public DateTime Date { get; set; }
     [Parameter] public int? Hour { get; set; }

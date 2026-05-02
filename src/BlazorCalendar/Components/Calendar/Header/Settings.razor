@@ -16,10 +16,10 @@
                 </label>
             </div>
 
-            <div class="cal-dropdown-item" @onclick="() => State.SetBadgeVariant(State.BadgeVariant == BadgeVariant.Dot ? BadgeVariant.Colored : BadgeVariant.Dot)">
+            <div class="cal-dropdown-item" @onclick="() => State.SetBadgeVariant(State.BadgeVariant == BlazorCalendarBadgeVariant.Dot ? BlazorCalendarBadgeVariant.Colored : BlazorCalendarBadgeVariant.Dot)">
                 <span>@Texts.DotBadgeLabel</span>
                 <label class="cal-toggle">
-                    <input type="checkbox" checked="@(State.BadgeVariant == BadgeVariant.Dot)" />
+                    <input type="checkbox" checked="@(State.BadgeVariant == BlazorCalendarBadgeVariant.Dot)" />
                     <span class="cal-toggle-track"></span>
                     <span class="cal-toggle-thumb"></span>
                 </label>
@@ -49,14 +49,14 @@
             <div class="cal-dropdown-sep"></div>
             <div class="cal-dropdown-label">@Texts.AgendaGroupByLabel</div>
 
-            <div class="cal-dropdown-item @(State.AgendaModeGroupBy == AgendaGroupBy.Date ? "active" : "")"
-                 @onclick="() => State.SetAgendaModeGroupBy(AgendaGroupBy.Date)"
-                 style="@(State.AgendaModeGroupBy == AgendaGroupBy.Date ? "background:var(--cal-bg-hover);" : "")">
+            <div class="cal-dropdown-item @(State.AgendaModeGroupBy == BlazorCalendarAgendaGroupBy.Date ? "active" : "")"
+                 @onclick="() => State.SetAgendaModeGroupBy(BlazorCalendarAgendaGroupBy.Date)"
+                 style="@(State.AgendaModeGroupBy == BlazorCalendarAgendaGroupBy.Date ? "background:var(--cal-bg-hover);" : "")">
                 @Texts.AgendaGroupByDate
             </div>
-            <div class="cal-dropdown-item @(State.AgendaModeGroupBy == AgendaGroupBy.Color ? "active" : "")"
-                 @onclick="() => State.SetAgendaModeGroupBy(AgendaGroupBy.Color)"
-                 style="@(State.AgendaModeGroupBy == AgendaGroupBy.Color ? "background:var(--cal-bg-hover);" : "")">
+            <div class="cal-dropdown-item @(State.AgendaModeGroupBy == BlazorCalendarAgendaGroupBy.Color ? "active" : "")"
+                 @onclick="() => State.SetAgendaModeGroupBy(BlazorCalendarAgendaGroupBy.Color)"
+                 style="@(State.AgendaModeGroupBy == BlazorCalendarAgendaGroupBy.Color ? "background:var(--cal-bg-hover);" : "")">
                 @Texts.AgendaGroupByColor
             </div>
         </div>
@@ -64,8 +64,8 @@
 </div>
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarTexts Texts { get; set; } = default!;
     private bool _open;
 
     private void OnStartHourChange(ChangeEventArgs e)

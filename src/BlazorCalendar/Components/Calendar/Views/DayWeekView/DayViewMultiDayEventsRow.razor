@@ -15,25 +15,25 @@
 }
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [Parameter] public List<CalendarEvent> MultiDayEvents { get; set; } = [];
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [Parameter] public List<BlazorCalendarEvent> MultiDayEvents { get; set; } = [];
     [Parameter] public DateTime Date { get; set; }
 
-    private List<CalendarEvent> _multiDayForDay = [];
-    private CalendarEvent? _selectedEvent;
+    private List<BlazorCalendarEvent> _multiDayForDay = [];
+    private BlazorCalendarEvent? _selectedEvent;
 
     protected override void OnParametersSet()
     {
-        _multiDayForDay = CalendarHelpers.GetEventsForDay(MultiDayEvents, Date, true);
+        _multiDayForDay = BlazorCalendarHelpers.GetEventsForDay(MultiDayEvents, Date, true);
     }
 
-    private string GetPosition(CalendarEvent ev)
+    private string GetPosition(BlazorCalendarEvent ev)
     {
         if (ev.StartDate.Date == Date.Date) return "first";
         if (ev.EndDate.Date == Date.Date) return "last";
         return "middle";
     }
 
-    private void ShowEventDetails(CalendarEvent ev) => _selectedEvent = ev;
+    private void ShowEventDetails(BlazorCalendarEvent ev) => _selectedEvent = ev;
     private void CloseEventDetails() => _selectedEvent = null;
 }

@@ -8,7 +8,7 @@
             @foreach (var ev in Events)
             {
                 <div class="cal-agenda-item" @onclick="() => SelectEvent(ev)">
-                    <div class="cal-agenda-avatar @CalendarHelpers.GetBgColorCss(ev.Color)">
+                    <div class="cal-agenda-avatar @BlazorCalendarHelpers.GetBgColorCss(ev.Color)">
                         @(ev.Attendees.Count > 0 ? ev.Attendees[0].Initials : "")
                     </div>
                     <div class="cal-agenda-info">
@@ -16,7 +16,7 @@
                         <div class="cal-agenda-desc">@ev.Description</div>
                     </div>
                     <div class="cal-agenda-time">
-                        @CalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
+                        @BlazorCalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
                     </div>
                 </div>
             }
@@ -33,16 +33,16 @@
 }
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarTexts Texts { get; set; } = default!;
     [Parameter] public DateTime Date { get; set; }
-    [Parameter] public List<CalendarEvent> Events { get; set; } = [];
+    [Parameter] public List<BlazorCalendarEvent> Events { get; set; } = [];
     [Parameter] public EventCallback OnClose { get; set; }
 
     private bool _showDetails;
-    private CalendarEvent? _selectedEvent;
+    private BlazorCalendarEvent? _selectedEvent;
 
-    private void SelectEvent(CalendarEvent ev)
+    private void SelectEvent(BlazorCalendarEvent ev)
     {
         _selectedEvent = ev;
         _showDetails = true;

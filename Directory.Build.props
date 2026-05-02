@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <Authors>Saleh Yusefnejad</Authors>
+    <Copyright>Copyright (c) 2026 Saleh Yusefnejad</Copyright>
+    <PackageProjectUrl>https://github.com/msynk/BlazorCalendar</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/msynk/BlazorCalendar.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>

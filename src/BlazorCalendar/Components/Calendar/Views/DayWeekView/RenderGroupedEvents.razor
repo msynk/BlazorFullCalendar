@@ -2,7 +2,7 @@
 {
     @foreach (var ev in group)
     {
-        var style = CalendarHelpers.GetEventBlockStyle(ev, Day, groupIndex, GroupedEvents.Count);
+        var style = BlazorCalendarHelpers.GetEventBlockStyle(ev, Day, groupIndex, GroupedEvents.Count);
 
         var hasOverlap = GroupedEvents.Where((g, i) => i != groupIndex)
             .Any(otherGroup => otherGroup.Any(other =>
@@ -18,7 +18,7 @@
 }
 
 @code {
-    [Parameter] public List<List<CalendarEvent>> GroupedEvents { get; set; } = [];
+    [Parameter] public List<List<BlazorCalendarEvent>> GroupedEvents { get; set; } = [];
     [Parameter] public DateTime Day { get; set; }
-    [Parameter] public EventCallback<CalendarEvent> OnEventSelected { get; set; }
+    [Parameter] public EventCallback<BlazorCalendarEvent> OnEventSelected { get; set; }
 }

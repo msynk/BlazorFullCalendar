@@ -4,17 +4,19 @@
 <CascadingValue Value="State">
     <CascadingValue Value="Texts">
         <CascadingValue Value="_changeNotifier">
+            <CascadingValue Value="_colorScheme">
             <div class="cal-root @(State.IsDarkMode ? "cal-dark" : "")" dir="@(State.IsRtl ? "rtl" : "ltr")">
                 <CalendarHeader />
                 <CalendarBody />
                 <CalendarToast />
             </div>
+            </CascadingValue>
         </CascadingValue>
     </CascadingValue>
 </CascadingValue>
 
 @code {
-    [Parameter] public List<CalendarEvent>? Events { get; set; }
+    [Parameter] public List<BlazorCalendarEvent>? Events { get; set; }
 
     /// <summary>
     /// Culture for the calendar. Accepts any CultureInfo, e.g. new CultureInfo("fa-IR").
@@ -31,14 +33,22 @@
     /// When both are supplied, CultureName takes precedence.
     /// </summary>
     [Parameter] public string? CultureName { get; set; }
-    [Parameter] public CalendarTexts Texts { get; set; } = new();
+    [Parameter] public BlazorCalendarTexts Texts { get; set; } = new();
+
+    /// <summary>
+    /// Optional ordered list of event colors for pickers and filters. Labels are always the localized color name
+    /// from <see cref="BlazorCalendarTexts"/>; <see cref="BlazorCalendarColorOption.Title"/> is optional text after it (em dash).
+    /// When null or empty, all <see cref="BlazorCalendarEventColor"/> values are used in enum order.
+    /// </summary>
+    [Parameter] public IReadOnlyList<BlazorCalendarColorOption>? EventColorOptions { get; set; }
     /// <summary>
     /// Raised when a user adds, edits, or deletes an event in the calendar UI.
     /// </summary>
     [Parameter] public EventCallback<BlazorCalendarChangeEventArgs> OnChange { get; set; }
 
-    public CalendarState State { get; set; } = new();
+    public BlazorCalendarState State { get; set; } = new();
     private BlazorCalendarChangeNotifier _changeNotifier = default!;
+    private BlazorCalendarColorScheme _colorScheme = new(null);
 
     private CultureInfo ResolveCulture() =>
         CultureName is { Length: > 0 } name
@@ -54,6 +64,7 @@
 
     protected override void OnParametersSet()
     {
+        _colorScheme = new BlazorCalendarColorScheme(EventColorOptions);
         var resolved = ResolveCulture();
         if (!string.Equals(resolved.Name, State.Culture.Name, StringComparison.Ordinal))
             State.SetCulture(resolved);

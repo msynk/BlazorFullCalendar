@@ -3,14 +3,14 @@ using BlazorCalendar.Models;
 
 namespace BlazorCalendar.Services;
 
-public static class CalendarHelpers
+public static class BlazorCalendarHelpers
 {
     public const int HourHeightPx = 96;
     private const string FormatString = "MMM d, yyyy";
 
     // ── Culture-aware: Range text ────────────────────────────────────────────
 
-    public static string RangeText(CalendarView view, DateTime date, CultureInfo? culture = null)
+    public static string RangeText(BlazorCalendarView view, DateTime date, CultureInfo? culture = null)
     {
         culture ??= CultureInfo.CurrentUICulture;
         var cal = culture.Calendar;
@@ -18,23 +18,23 @@ public static class CalendarHelpers
 
         switch (view)
         {
-            case CalendarView.Month:
-            case CalendarView.Agenda:
+            case BlazorCalendarView.Month:
+            case BlazorCalendarView.Agenda:
             {
                 int y = cal.GetYear(date);
                 int m = cal.GetMonth(date);
                 string monthName = dtf.GetMonthName(m);
                 return $"{monthName} {y}";
             }
-            case CalendarView.Week:
+            case BlazorCalendarView.Week:
             {
                 var start = StartOfWeek(date, culture);
                 var end = start.AddDays(6);
                 return $"{FormatCultureDate(start, culture)} – {FormatCultureDate(end, culture)}";
             }
-            case CalendarView.Day:
+            case BlazorCalendarView.Day:
                 return FormatCultureDate(date, culture);
-            case CalendarView.Year:
+            case BlazorCalendarView.Year:
             {
                 int y = cal.GetYear(date);
                 return y.ToString(culture);
@@ -59,18 +59,18 @@ public static class CalendarHelpers
 
     // ── Culture-aware: Navigation ────────────────────────────────────────────
 
-    public static DateTime NavigateDate(DateTime date, CalendarView view, bool forward, CultureInfo? culture = null)
+    public static DateTime NavigateDate(DateTime date, BlazorCalendarView view, bool forward, CultureInfo? culture = null)
     {
         culture ??= CultureInfo.CurrentUICulture;
         var cal = culture.Calendar;
         int delta = forward ? 1 : -1;
         return view switch
         {
-            CalendarView.Month  => cal.AddMonths(date, delta),
-            CalendarView.Week   => date.AddDays(forward ? 7 : -7),
-            CalendarView.Day    => date.AddDays(delta),
-            CalendarView.Year   => cal.AddYears(date, delta),
-            CalendarView.Agenda => cal.AddMonths(date, delta),
+            BlazorCalendarView.Month  => cal.AddMonths(date, delta),
+            BlazorCalendarView.Week   => date.AddDays(forward ? 7 : -7),
+            BlazorCalendarView.Day    => date.AddDays(delta),
+            BlazorCalendarView.Year   => cal.AddYears(date, delta),
+            BlazorCalendarView.Agenda => cal.AddMonths(date, delta),
             _                   => date
         };
     }
@@ -127,7 +127,7 @@ public static class CalendarHelpers
 
     // ── Culture-aware: Calendar grid cells ──────────────────────────────────
 
-    public static List<CalendarCell> GetCalendarCells(DateTime selectedDate, CultureInfo? culture = null)
+    public static List<BlazorCalendarCell> GetCalendarCells(DateTime selectedDate, CultureInfo? culture = null)
     {
         culture ??= CultureInfo.CurrentUICulture;
         var cal = culture.Calendar;
@@ -152,19 +152,19 @@ public static class CalendarHelpers
         int prevCulturalYear = culturalMonth == 1 ? culturalYear - 1 : culturalYear;
         int daysInPrevMonth  = cal.GetDaysInMonth(prevCulturalYear, prevCulturalMonth);
 
-        var cells = new List<CalendarCell>();
+        var cells = new List<BlazorCalendarCell>();
 
         for (int i = 0; i < leadingDays; i++)
         {
             int d = daysInPrevMonth - leadingDays + i + 1;
             DateTime date = cal.ToDateTime(prevCulturalYear, prevCulturalMonth, d, 0, 0, 0, 0);
-            cells.Add(new CalendarCell { Day = d, CurrentMonth = false, Date = date });
+            cells.Add(new BlazorCalendarCell { Day = d, CurrentMonth = false, Date = date });
         }
 
         for (int i = 1; i <= daysInMonth; i++)
         {
             DateTime date = cal.ToDateTime(culturalYear, culturalMonth, i, 0, 0, 0, 0);
-            cells.Add(new CalendarCell { Day = i, CurrentMonth = true, Date = date });
+            cells.Add(new BlazorCalendarCell { Day = i, CurrentMonth = true, Date = date });
         }
 
         int totalDays  = leadingDays + daysInMonth;
@@ -179,7 +179,7 @@ public static class CalendarHelpers
         for (int i = 1; i <= trailing; i++)
         {
             DateTime date = cal.ToDateTime(nextCulturalYear, nextCulturalMonth, i, 0, 0, 0, 0);
-            cells.Add(new CalendarCell { Day = i, CurrentMonth = false, Date = date });
+            cells.Add(new BlazorCalendarCell { Day = i, CurrentMonth = false, Date = date });
         }
 
         return cells;
@@ -195,7 +195,7 @@ public static class CalendarHelpers
 
     // ── Culture-aware: Events for year ──────────────────────────────────────
 
-    public static List<CalendarEvent> GetEventsForYear(List<CalendarEvent> events, DateTime date, CultureInfo? culture = null)
+    public static List<BlazorCalendarEvent> GetEventsForYear(List<BlazorCalendarEvent> events, DateTime date, CultureInfo? culture = null)
     {
         culture ??= CultureInfo.CurrentUICulture;
         var cal = culture.Calendar;
@@ -222,10 +222,10 @@ public static class CalendarHelpers
             : dt.ToString("h tt", CultureInfo.InvariantCulture);
     }
 
-    public static List<List<CalendarEvent>> GroupEvents(List<CalendarEvent> dayEvents)
+    public static List<List<BlazorCalendarEvent>> GroupEvents(List<BlazorCalendarEvent> dayEvents)
     {
         var sorted = dayEvents.OrderBy(e => e.StartDate).ToList();
-        var groups = new List<List<CalendarEvent>>();
+        var groups = new List<List<BlazorCalendarEvent>>();
 
         foreach (var ev in sorted)
         {
@@ -247,7 +247,7 @@ public static class CalendarHelpers
     }
 
     public static (double TopPx, double WidthPercent, double LeftPercent) GetEventBlockStyle(
-        CalendarEvent ev, DateTime day, int groupIndex, int groupSize)
+        BlazorCalendarEvent ev, DateTime day, int groupIndex, int groupSize)
     {
         var dayStart = day.Date;
         var eventStart = ev.StartDate < dayStart ? dayStart : ev.StartDate;
@@ -265,8 +265,8 @@ public static class CalendarHelpers
     }
 
     public static Dictionary<int, int> CalculateMonthEventPositions(
-        List<CalendarEvent> multiDayEvents,
-        List<CalendarEvent> singleDayEvents,
+        List<BlazorCalendarEvent> multiDayEvents,
+        List<BlazorCalendarEvent> singleDayEvents,
         DateTime selectedDate,
         CultureInfo? culture = null)
     {
@@ -329,8 +329,8 @@ public static class CalendarHelpers
         return eventPositions;
     }
 
-    public static List<(CalendarEvent Event, int Position, bool IsMultiDay)> GetMonthCellEvents(
-        DateTime date, List<CalendarEvent> events, Dictionary<int, int> eventPositions)
+    public static List<(BlazorCalendarEvent Event, int Position, bool IsMultiDay)> GetMonthCellEvents(
+        DateTime date, List<BlazorCalendarEvent> events, Dictionary<int, int> eventPositions)
     {
         var dayStart = date.Date;
         var eventsForDate = events.Where(ev =>
@@ -354,11 +354,11 @@ public static class CalendarHelpers
         return AssignMonthCellDisplayRows(raw);
     }
 
-    private static List<(CalendarEvent Event, int Position, bool IsMultiDay)> AssignMonthCellDisplayRows(
-        List<(CalendarEvent Event, int Position, bool IsMultiDay)> raw)
+    private static List<(BlazorCalendarEvent Event, int Position, bool IsMultiDay)> AssignMonthCellDisplayRows(
+        List<(BlazorCalendarEvent Event, int Position, bool IsMultiDay)> raw)
     {
         var occupied = new bool[3];
-        var result = new List<(CalendarEvent Event, int Position, bool IsMultiDay)>();
+        var result = new List<(BlazorCalendarEvent Event, int Position, bool IsMultiDay)>();
 
         foreach (var x in raw)
         {
@@ -398,7 +398,7 @@ public static class CalendarHelpers
             .ToList();
     }
 
-    public static List<CalendarEvent> GetEventsForDay(List<CalendarEvent> events, DateTime date, bool weekOnly = false)
+    public static List<BlazorCalendarEvent> GetEventsForDay(List<BlazorCalendarEvent> events, DateTime date, bool weekOnly = false)
     {
         var target = date.Date;
         return events.Where(ev =>
@@ -411,7 +411,7 @@ public static class CalendarHelpers
         }).ToList();
     }
 
-    public static List<CalendarEvent> GetEventsForWeek(List<CalendarEvent> events, DateTime date, CultureInfo? culture = null)
+    public static List<BlazorCalendarEvent> GetEventsForWeek(List<BlazorCalendarEvent> events, DateTime date, CultureInfo? culture = null)
     {
         var weekStart = StartOfWeek(date, culture);
         var weekEnd = weekStart.AddDays(6);
@@ -419,7 +419,7 @@ public static class CalendarHelpers
             ev.StartDate.Date <= weekEnd && ev.EndDate.Date >= weekStart).ToList();
     }
 
-    public static List<CalendarEvent> GetEventsForMonth(List<CalendarEvent> events, DateTime date, CultureInfo? culture = null)
+    public static List<BlazorCalendarEvent> GetEventsForMonth(List<BlazorCalendarEvent> events, DateTime date, CultureInfo? culture = null)
     {
         culture ??= CultureInfo.CurrentUICulture;
         var cal = culture.Calendar;
@@ -435,20 +435,20 @@ public static class CalendarHelpers
     /// Events overlapping the date range implied by the current view and selected date
     /// (used for attendee filters and similar “in this view” logic).
     /// </summary>
-    public static List<CalendarEvent> GetEventsForView(
-        List<CalendarEvent> events,
-        CalendarView view,
+    public static List<BlazorCalendarEvent> GetEventsForView(
+        List<BlazorCalendarEvent> events,
+        BlazorCalendarView view,
         DateTime selectedDate,
         CultureInfo? culture = null)
     {
         culture ??= CultureInfo.CurrentUICulture;
         return view switch
         {
-            CalendarView.Day => GetEventsForDay(events, selectedDate),
-            CalendarView.Week => GetEventsForWeek(events, selectedDate, culture),
-            CalendarView.Month => GetEventsForMonth(events, selectedDate, culture),
-            CalendarView.Year => GetEventsForYear(events, selectedDate, culture),
-            CalendarView.Agenda => GetEventsForMonth(events, selectedDate, culture),
+            BlazorCalendarView.Day => GetEventsForDay(events, selectedDate),
+            BlazorCalendarView.Week => GetEventsForWeek(events, selectedDate, culture),
+            BlazorCalendarView.Month => GetEventsForMonth(events, selectedDate, culture),
+            BlazorCalendarView.Year => GetEventsForYear(events, selectedDate, culture),
+            BlazorCalendarView.Agenda => GetEventsForMonth(events, selectedDate, culture),
             _ => events.ToList()
         };
     }
@@ -485,7 +485,7 @@ public static class CalendarHelpers
     }
 
     /// <summary>Stable key for filtering events by attendee (Id preferred, else full name).</summary>
-    public static string AttendeeFilterKey(CalendarAttendee a)
+    public static string AttendeeFilterKey(BlazorCalendarAttendee a)
     {
         if (!string.IsNullOrWhiteSpace(a.Id))
             return "id:" + a.Id.Trim();
@@ -494,25 +494,25 @@ public static class CalendarHelpers
         return "";
     }
 
-    public static string GetColorCss(EventColor color) => color switch
+    public static string GetColorCss(BlazorCalendarEventColor color) => color switch
     {
-        EventColor.Blue => "cal-color-blue",
-        EventColor.Green => "cal-color-green",
-        EventColor.Red => "cal-color-red",
-        EventColor.Yellow => "cal-color-yellow",
-        EventColor.Purple => "cal-color-purple",
-        EventColor.Orange => "cal-color-orange",
+        BlazorCalendarEventColor.Blue => "cal-color-blue",
+        BlazorCalendarEventColor.Green => "cal-color-green",
+        BlazorCalendarEventColor.Red => "cal-color-red",
+        BlazorCalendarEventColor.Yellow => "cal-color-yellow",
+        BlazorCalendarEventColor.Purple => "cal-color-purple",
+        BlazorCalendarEventColor.Orange => "cal-color-orange",
         _ => "cal-color-blue"
     };
 
-    public static string GetBgColorCss(EventColor color) => color switch
+    public static string GetBgColorCss(BlazorCalendarEventColor color) => color switch
     {
-        EventColor.Blue => "cal-bg-blue",
-        EventColor.Green => "cal-bg-green",
-        EventColor.Red => "cal-bg-red",
-        EventColor.Yellow => "cal-bg-yellow",
-        EventColor.Purple => "cal-bg-purple",
-        EventColor.Orange => "cal-bg-orange",
+        BlazorCalendarEventColor.Blue => "cal-bg-blue",
+        BlazorCalendarEventColor.Green => "cal-bg-green",
+        BlazorCalendarEventColor.Red => "cal-bg-red",
+        BlazorCalendarEventColor.Yellow => "cal-bg-yellow",
+        BlazorCalendarEventColor.Purple => "cal-bg-purple",
+        BlazorCalendarEventColor.Orange => "cal-bg-orange",
         _ => "cal-bg-blue"
     };
 

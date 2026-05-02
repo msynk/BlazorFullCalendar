@@ -17,7 +17,7 @@ internal static class TimeGridScrollInterop
                 cancellationToken,
                 elementId,
                 startOfDayHour,
-                CalendarHelpers.HourHeightPx);
+                BlazorCalendarHelpers.HourHeightPx);
             return true;
         }
         catch (JSDisconnectedException)

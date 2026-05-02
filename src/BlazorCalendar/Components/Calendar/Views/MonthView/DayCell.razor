@@ -1,6 +1,6 @@
 @{
     var isToday = Cell.Date.Date == DateTime.Today;
-    var cellEvents = CalendarHelpers.GetMonthCellEvents(Cell.Date, Events, EventPositions);
+    var cellEvents = BlazorCalendarHelpers.GetMonthCellEvents(Cell.Date, Events, EventPositions);
 }
 
 <div class="cal-month-cell @(!Cell.CurrentMonth ? "other-month" : "") cal-droppable"
@@ -61,18 +61,18 @@
 }
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
-    [Parameter] public CalendarCell Cell { get; set; } = default!;
-    [Parameter] public List<CalendarEvent> Events { get; set; } = [];
+    [Parameter] public BlazorCalendarCell Cell { get; set; } = default!;
+    [Parameter] public List<BlazorCalendarEvent> Events { get; set; } = [];
     [Parameter] public Dictionary<int, int> EventPositions { get; set; } = new();
 
     private bool _showEventList;
     private bool _showAddDialog;
-    private CalendarEvent? _selectedEvent;
+    private BlazorCalendarEvent? _selectedEvent;
 
-    private void ShowEventDetails(CalendarEvent ev) => _selectedEvent = ev;
+    private void ShowEventDetails(BlazorCalendarEvent ev) => _selectedEvent = ev;
     private void CloseEventDetails() => _selectedEvent = null;
 
     private void OnCellClick()
@@ -81,7 +81,7 @@
         _showAddDialog = true;
     }
 
-    private string GetBadgePosition(CalendarEvent ev, DateTime cellDate)
+    private string GetBadgePosition(BlazorCalendarEvent ev, DateTime cellDate)
     {
         if (ev.IsSingleDay) return "none";
         if (ev.StartDate.Date == cellDate.Date) return "first";

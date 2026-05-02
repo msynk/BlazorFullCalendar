@@ -1,13 +1,13 @@
 @implements IDisposable
 
 <div class="cal-timeline" style="top:@(_positionPx.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))px;">
-    <span class="cal-timeline-label">@CalendarHelpers.FormatTime(DateTime.Now, State.Use24HourFormat)</span>
+    <span class="cal-timeline-label">@BlazorCalendarHelpers.FormatTime(DateTime.Now, State.Use24HourFormat)</span>
     <span class="cal-timeline-dot"></span>
     <span class="cal-timeline-line"></span>
 </div>
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
 
     private double _positionPx;
     private Timer? _timer;
@@ -24,7 +24,7 @@
 
     private void UpdatePosition()
     {
-        _positionPx = CalendarHelpers.GetCurrentTimeLineTopPx();
+        _positionPx = BlazorCalendarHelpers.GetCurrentTimeLineTopPx();
     }
 
     public void Dispose() => _timer?.Dispose();

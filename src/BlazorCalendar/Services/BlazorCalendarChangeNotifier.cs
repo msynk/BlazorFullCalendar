@@ -8,10 +8,10 @@ namespace BlazorCalendar.Services;
 /// </summary>
 public sealed class BlazorCalendarChangeNotifier
 {
-    private readonly CalendarState _state;
+    private readonly BlazorCalendarState _state;
     private readonly Func<BlazorCalendarChangeEventArgs, Task> _dispatch;
 
-    public BlazorCalendarChangeNotifier(CalendarState state, Func<BlazorCalendarChangeEventArgs, Task> dispatch)
+    public BlazorCalendarChangeNotifier(BlazorCalendarState state, Func<BlazorCalendarChangeEventArgs, Task> dispatch)
     {
         _state = state;
         _dispatch = dispatch;
@@ -23,7 +23,7 @@ public sealed class BlazorCalendarChangeNotifier
     public Task NotifyAsync(BlazorCalendarChangeEventArgs args) => _dispatch(args);
 
     /// <summary>
-    /// Applies drop logic through <see cref="CalendarState.HandleDrop"/> and emits
+    /// Applies drop logic through <see cref="BlazorCalendarState.HandleDrop"/> and emits
     /// an Edit change when the event date-time has actually changed.
     /// </summary>
     public Task HandleDropAsync(DateTime targetDate, int? hour = null, int? minute = null)
@@ -48,15 +48,15 @@ public sealed class BlazorCalendarChangeNotifier
         {
             Event = CloneEvent(after),
             OldEvent = oldSnapshot,
-            Kind = CalendarChangeKind.Edit,
-            Source = CalendarChangeSource.Drag
+            Kind = BlazorCalendarChangeKind.Edit,
+            Source = BlazorCalendarChangeSource.Drag
         });
     }
 
     /// <summary>
     /// Creates a deep snapshot of a calendar event payload suitable for change args.
     /// </summary>
-    public static CalendarEvent CloneEvent(CalendarEvent source) =>
+    public static BlazorCalendarEvent CloneEvent(BlazorCalendarEvent source) =>
         new()
         {
             Id = source.Id,
@@ -66,7 +66,7 @@ public sealed class BlazorCalendarChangeNotifier
             EndDate = source.EndDate,
             Color = source.Color,
             Attendees = source.Attendees
-                .Select(a => new CalendarAttendee
+                .Select(a => new BlazorCalendarAttendee
                 {
                     FirstName = a.FirstName,
                     LastName = a.LastName,

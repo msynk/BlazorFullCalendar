@@ -9,11 +9,11 @@
 </div>
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarTexts Texts { get; set; } = default!;
 
-    private static readonly CalendarView[] _views = [
-        CalendarView.Day, CalendarView.Week, CalendarView.Month,
-        CalendarView.Year, CalendarView.Agenda
+    private static readonly BlazorCalendarView[] _views = [
+        BlazorCalendarView.Day, BlazorCalendarView.Week, BlazorCalendarView.Month,
+        BlazorCalendarView.Year, BlazorCalendarView.Agenda
     ];
 }

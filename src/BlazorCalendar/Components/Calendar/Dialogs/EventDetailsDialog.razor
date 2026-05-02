@@ -8,10 +8,10 @@
         </div>
         <div class="cal-dialog-body">
             <div class="cal-event-detail-row">
-                <span class="cal-event-detail-swatch @CalendarHelpers.GetBgColorCss(Event.Color)" aria-hidden="true"></span>
+                <span class="cal-event-detail-swatch @BlazorCalendarHelpers.GetBgColorCss(Event.Color)" aria-hidden="true"></span>
                 <div>
                     <div class="cal-event-detail-label">@Texts.ColorLabel</div>
-                    <div class="cal-event-detail-value cal-event-detail-color @CalendarHelpers.GetColorCss(Event.Color)">@Texts.GetColorLabel(Event.Color)</div>
+                    <div class="cal-event-detail-value cal-event-detail-color @BlazorCalendarHelpers.GetColorCss(Event.Color)">@ColorScheme.GetPrimaryLabel(Event.Color, Texts)</div>
                 </div>
             </div>
             <div class="cal-event-detail-row">
@@ -41,7 +41,7 @@
                 <div>
                     <div class="cal-event-detail-label">@Texts.StartDateLabel</div>
                     <div class="cal-event-detail-value">
-                        @Event.StartDate.ToString("dddd dd MMMM", State.Culture) @Texts.AtWord @CalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)
+                        @Event.StartDate.ToString("dddd dd MMMM", State.Culture) @Texts.AtWord @BlazorCalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)
                     </div>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                 <div>
                     <div class="cal-event-detail-label">@Texts.EndDateLabel</div>
                     <div class="cal-event-detail-value">
-                        @Event.EndDate.ToString("dddd dd MMMM", State.Culture) @Texts.AtWord @CalendarHelpers.FormatTime(Event.EndDate, State.Use24HourFormat)
+                        @Event.EndDate.ToString("dddd dd MMMM", State.Culture) @Texts.AtWord @BlazorCalendarHelpers.FormatTime(Event.EndDate, State.Use24HourFormat)
                     </div>
                 </div>
             </div>
@@ -78,10 +78,11 @@
 }
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarColorScheme ColorScheme { get; set; } = default!;
     [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
-    [Parameter] public CalendarEvent Event { get; set; } = default!;
+    [Parameter] public BlazorCalendarEvent Event { get; set; } = default!;
     [Parameter] public EventCallback OnClose { get; set; }
 
     private bool _showEdit;
@@ -102,8 +103,8 @@
         {
             Event = snapshot,
             OldEvent = snapshot,
-            Kind = CalendarChangeKind.Delete,
-            Source = CalendarChangeSource.Delete
+            Kind = BlazorCalendarChangeKind.Delete,
+            Source = BlazorCalendarChangeSource.Delete
         });
         await OnClose.InvokeAsync();
     }

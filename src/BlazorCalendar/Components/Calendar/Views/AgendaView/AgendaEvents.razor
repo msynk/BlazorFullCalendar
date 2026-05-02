@@ -1,6 +1,6 @@
 @implements IDisposable
 @{
-    var monthEvents = CalendarHelpers.GetEventsForMonth(State.Events.ToList(), State.SelectedDate, State.Culture);
+    var monthEvents = BlazorCalendarHelpers.GetEventsForMonth(State.Events.ToList(), State.SelectedDate, State.Culture);
     if (!string.IsNullOrWhiteSpace(_search))
     {
         var q = _search.ToLowerInvariant();
@@ -9,13 +9,33 @@
             e.Description.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
-    var grouped = State.AgendaModeGroupBy == AgendaGroupBy.Date
-        ? monthEvents.GroupBy(e => e.StartDate.ToString("yyyy-MM-dd"))
+    List<(string GroupTitle, List<BlazorCalendarEvent> Items)> agendaGroups;
+    if (monthEvents.Count == 0)
+    {
+        agendaGroups = [];
+    }
+    else if (State.AgendaModeGroupBy == BlazorCalendarAgendaGroupBy.Date)
+    {
+        agendaGroups = monthEvents
+            .GroupBy(e => e.StartDate.ToString("yyyy-MM-dd"))
             .OrderBy(g => g.Key)
-            .ToList()
-        : monthEvents.GroupBy(e => e.Color.ToString())
-            .OrderBy(g => g.Key)
+            .Select(g =>
+            {
+                var title = DateTime.TryParse(g.Key, out var dt)
+                    ? $"{dt.ToString("dddd", State.Culture)}, {BlazorCalendarHelpers.FormatCultureDate(dt, State.Culture)}"
+                    : g.Key;
+                return (title, g.ToList());
+            })
             .ToList();
+    }
+    else
+    {
+        agendaGroups = monthEvents
+            .GroupBy(e => e.Color)
+            .OrderBy(g => ColorScheme.GetSortOrder(g.Key))
+            .Select(g => (ColorScheme.GetPrimaryLabel(g.Key, Texts), g.ToList()))
+            .ToList();
+    }
 }
 
 <div class="cal-agenda">
@@ -23,26 +43,20 @@
         <input type="text" placeholder="@Texts.SearchEventsPlaceholder" @bind="_search" @bind:event="oninput" />
     </div>
 
-    @if (grouped.Count == 0)
+    @if (agendaGroups.Count == 0)
     {
         <div class="cal-agenda-empty">@Texts.NoEventsFound</div>
     }
     else
     {
-        @foreach (var group in grouped)
+        @foreach (var (groupTitle, items) in agendaGroups)
         {
-            var title = State.AgendaModeGroupBy == AgendaGroupBy.Date
-                ? (DateTime.TryParse(group.Key, out var dt)
-                    ? $"{dt.ToString("dddd", State.Culture)}, {CalendarHelpers.FormatCultureDate(dt, State.Culture)}"
-                    : group.Key)
-                : CalendarHelpers.Capitalize(group.Key);
-
             <div class="cal-agenda-group">
-                <div class="cal-agenda-group-title">@title</div>
-                @foreach (var ev in group)
+                <div class="cal-agenda-group-title">@groupTitle</div>
+                @foreach (var ev in items)
                 {
                     <div class="cal-agenda-item" @onclick="() => ShowDetails(ev)">
-                        <div class="cal-agenda-avatar @CalendarHelpers.GetBgColorCss(ev.Color)">
+                        <div class="cal-agenda-avatar @BlazorCalendarHelpers.GetBgColorCss(ev.Color)">
                             @(ev.Attendees.Count > 0 ? ev.Attendees[0].Initials : "")
                         </div>
                         <div class="cal-agenda-info">
@@ -50,17 +64,17 @@
                             <div class="cal-agenda-desc">@ev.Description</div>
                         </div>
                         <div class="cal-agenda-time">
-                            @if (State.AgendaModeGroupBy == AgendaGroupBy.Date)
+                            @if (State.AgendaModeGroupBy == BlazorCalendarAgendaGroupBy.Date)
                             {
-                                @CalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
+                                @BlazorCalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
                                 <span> - </span>
-                                @CalendarHelpers.FormatTime(ev.EndDate, State.Use24HourFormat)
+                                @BlazorCalendarHelpers.FormatTime(ev.EndDate, State.Use24HourFormat)
                             }
                             else
                             {
-                                @CalendarHelpers.FormatCultureDate(ev.StartDate, State.Culture)
+                                @BlazorCalendarHelpers.FormatCultureDate(ev.StartDate, State.Culture)
                                 <span> · </span>
-                                @CalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
+                                @BlazorCalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
                             }
                         </div>
                     </div>
@@ -76,18 +90,19 @@
 }
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarColorScheme ColorScheme { get; set; } = default!;
 
     private string _search = "";
     private bool _showDetails;
-    private CalendarEvent? _selectedEvent;
+    private BlazorCalendarEvent? _selectedEvent;
 
     protected override void OnInitialized() => State.OnStateChanged += Refresh;
     private void Refresh() => InvokeAsync(StateHasChanged);
     public void Dispose() => State.OnStateChanged -= Refresh;
 
-    private void ShowDetails(CalendarEvent ev)
+    private void ShowDetails(BlazorCalendarEvent ev)
     {
         _selectedEvent = ev;
         _showDetails = true;

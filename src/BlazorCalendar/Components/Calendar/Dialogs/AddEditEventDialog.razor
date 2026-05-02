@@ -36,9 +36,9 @@
             <div class="cal-field">
                 <label>@Texts.ColorLabel</label>
                 <select @bind="_color" aria-label="@Texts.EventColorAriaLabel">
-                    @foreach (var color in Enum.GetValues<EventColor>())
+                    @foreach (var opt in ColorScheme.GetEditorOptions(_isEditing ? _color : null))
                     {
-                        <option value="@color">@Texts.GetColorLabel(color)</option>
+                        <option value="@opt.Color">@ColorScheme.GetPrimaryLabel(opt.Color, Texts)</option>
                     }
                 </select>
             </div>
@@ -92,10 +92,11 @@
 </div>
 
 @code {
-    [CascadingParameter] public CalendarState State { get; set; } = default!;
-    [CascadingParameter] public CalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorCalendarColorScheme ColorScheme { get; set; } = default!;
     [CascadingParameter] public BlazorCalendarChangeNotifier Notifier { get; set; } = default!;
-    [Parameter] public CalendarEvent? ExistingEvent { get; set; }
+    [Parameter] public BlazorCalendarEvent? ExistingEvent { get; set; }
     [Parameter] public DateTime? StartDate { get; set; }
     [Parameter] public int? StartHour { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
@@ -105,8 +106,8 @@
     private string _description = "";
     private DateTime _startDate;
     private DateTime _endDate;
-    private EventColor _color = EventColor.Blue;
-    private List<CalendarAttendee> _attendees = [];
+    private BlazorCalendarEventColor _color;
+    private List<BlazorCalendarAttendee> _attendees = [];
     private string _newFirstName = "";
     private string _newLastName = "";
     private string _newId = "";
@@ -115,6 +116,7 @@
     protected override void OnInitialized()
     {
         _isEditing = ExistingEvent != null;
+        var defaultColor = ColorScheme.Options[0].Color;
 
         if (_isEditing)
         {
@@ -127,6 +129,7 @@
         }
         else
         {
+            _color = defaultColor;
             var baseDate = StartDate ?? State.SelectedDate;
             _startDate = baseDate.Date.AddHours(StartHour ?? DateTime.Now.Hour);
             _endDate = _startDate.AddMinutes(30);
@@ -143,7 +146,7 @@
             return;
         }
 
-        _attendees.Add(new CalendarAttendee
+        _attendees.Add(new BlazorCalendarAttendee
         {
             FirstName = _newFirstName.Trim(),
             LastName = _newLastName.Trim(),
@@ -155,7 +158,7 @@
         _newId = "";
     }
 
-    private void RemoveAttendee(CalendarAttendee attendee) => _attendees.Remove(attendee);
+    private void RemoveAttendee(BlazorCalendarAttendee attendee) => _attendees.Remove(attendee);
 
     private Task OnStartDateChanged(DateTime value)
     {
@@ -185,7 +188,7 @@
             ? BlazorCalendarChangeNotifier.CloneEvent(ExistingEvent)
             : null;
 
-        var ev = new CalendarEvent
+        var ev = new BlazorCalendarEvent
         {
             Id = _isEditing ? ExistingEvent!.Id : Random.Shared.Next(100000, 999999),
             Title = _title,
@@ -205,8 +208,8 @@
         {
             Event = BlazorCalendarChangeNotifier.CloneEvent(ev),
             OldEvent = oldSnapshot,
-            Kind = _isEditing ? CalendarChangeKind.Edit : CalendarChangeKind.Add,
-            Source = CalendarChangeSource.Dialog
+            Kind = _isEditing ? BlazorCalendarChangeKind.Edit : BlazorCalendarChangeKind.Add,
+            Source = BlazorCalendarChangeSource.Dialog
         });
 
         await OnClose.InvokeAsync();
