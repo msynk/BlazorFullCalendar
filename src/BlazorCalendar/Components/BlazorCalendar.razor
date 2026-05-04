@@ -6,7 +6,7 @@
     <CascadingValue Value="Texts">
         <CascadingValue Value="_changeNotifier">
             <CascadingValue Value="_colorScheme">
-            <div class="cal-root @(State.IsDarkMode ? "cal-dark" : "")" dir="@(State.IsRtl ? "rtl" : "ltr")">
+            <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
                 <CalendarHeader />
                 <CalendarBody />
                 <CalendarToast />
@@ -37,6 +37,11 @@
     [Parameter] public BlazorCalendarTexts Texts { get; set; } = new();
 
     /// <summary>
+    /// Visual theme for calendar surfaces and controls. Requires <c>_content/BlazorCalendar/css/calendar.css</c> (imports Fluent tokens when applicable).
+    /// </summary>
+    [Parameter] public BlazorCalendarTheme Theme { get; set; } = BlazorCalendarTheme.Default;
+
+    /// <summary>
     /// Optional ordered list of event colors for pickers and filters. Labels are always the localized color name
     /// from <see cref="BlazorCalendarTexts"/>; <see cref="BlazorCalendarColorOption.Title"/> is optional text after it (em dash).
     /// When null or empty, all <see cref="BlazorCalendarEventColor"/> values are used in enum order.
@@ -50,6 +55,14 @@
     public BlazorCalendarState State { get; set; } = new();
     private BlazorCalendarChangeNotifier _changeNotifier = default!;
     private BlazorCalendarColorScheme _colorScheme = new(null);
+
+    private string RootCssClass =>
+        string.Join(' ', new[]
+        {
+            "cal-root",
+            State.IsDarkMode ? "cal-dark" : "",
+            Theme == BlazorCalendarTheme.Fluent ? "cal-theme-fluent" : ""
+        }.Where(s => !string.IsNullOrEmpty(s)));
 
     private CultureInfo ResolveCulture() =>
         CultureName is { Length: > 0 } name
