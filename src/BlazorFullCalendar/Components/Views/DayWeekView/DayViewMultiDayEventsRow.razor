@@ -1,0 +1,42 @@
+﻿@namespace BlazorFullCalendar
+
+@if (_multiDayForDay.Count > 0)
+{
+    <div class="cal-multiday-row">
+        @foreach (var ev in _multiDayForDay)
+        {
+            var position = GetPosition(ev);
+            <MonthEventBadge Event="ev" CellDate="Date" Position="@position" OnSelected="ShowEventDetails" />
+        }
+    </div>
+}
+
+@if (_selectedEvent != null)
+{
+    <EventDetailsDialog Event="_selectedEvent" OnClose="CloseEventDetails" />
+}
+
+@code {
+    [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
+    [Parameter] public List<BlazorFullCalendarEvent> MultiDayEvents { get; set; } = [];
+    [Parameter] public DateTime Date { get; set; }
+
+    private List<BlazorFullCalendarEvent> _multiDayForDay = [];
+    private BlazorFullCalendarEvent? _selectedEvent;
+
+    protected override void OnParametersSet()
+    {
+        _multiDayForDay = BlazorFullCalendarHelpers.GetEventsForDay(MultiDayEvents, Date, true);
+    }
+
+    private string GetPosition(BlazorFullCalendarEvent ev)
+    {
+        if (ev.StartDate.Date == Date.Date) return "first";
+        if (ev.EndDate.Date == Date.Date) return "last";
+        return "middle";
+    }
+
+    private void ShowEventDetails(BlazorFullCalendarEvent ev) => _selectedEvent = ev;
+    private void CloseEventDetails() => _selectedEvent = null;
+}
+

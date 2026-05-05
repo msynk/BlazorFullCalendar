@@ -1,0 +1,31 @@
+﻿@namespace BlazorFullCalendar
+
+@{
+    var cells = BlazorFullCalendarHelpers.GetCalendarCells(State.SelectedDate, State.Culture);
+    var allEvents = MultiDayEvents.Concat(SingleDayEvents).ToList();
+    var eventPositions = BlazorFullCalendarHelpers.CalculateMonthEventPositions(MultiDayEvents, SingleDayEvents, State.SelectedDate, State.Culture);
+    var weekDayHeaders = BlazorFullCalendarHelpers.GetWeekDayHeaders(State.Culture);
+}
+
+<div class="cal-month">
+    <div class="cal-month-header">
+        @foreach (var day in weekDayHeaders)
+        {
+            <div class="cal-month-header-cell">@day</div>
+        }
+    </div>
+
+    <div class="cal-month-grid">
+        @foreach (var cell in cells)
+        {
+            <DayCell Cell="cell" Events="allEvents" EventPositions="eventPositions" />
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
+    [Parameter] public List<BlazorFullCalendarEvent> SingleDayEvents { get; set; } = [];
+    [Parameter] public List<BlazorFullCalendarEvent> MultiDayEvents { get; set; } = [];
+}
+

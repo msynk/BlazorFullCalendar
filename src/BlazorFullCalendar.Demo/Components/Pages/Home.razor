@@ -1,0 +1,153 @@
+﻿@page "/"
+
+<PageTitle>Blazor Calendar - Feature-Rich Calendar Component</PageTitle>
+
+<!-- Hero -->
+<section class="demo-hero">
+    <div class="demo-hero-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Built with Blazor &amp; .NET
+    </div>
+    <h1>A Modern Calendar<br/>for Blazor Apps</h1>
+    <p>
+        A feature-rich, interactive calendar component with 5 views, drag-and-drop,
+        event management, color coding, dark mode, and more. Pure Blazor &mdash; no JavaScript frameworks.
+    </p>
+    <div class="demo-hero-actions">
+        <a href="/demo" class="demo-btn demo-btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Try Live Demo
+        </a>
+        <a href="/features" class="demo-btn demo-btn-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            View Features
+        </a>
+    </div>
+</section>
+
+<!-- Stats -->
+<div class="demo-stats">
+    <div class="demo-stat">
+        <div class="demo-stat-value">5</div>
+        <div class="demo-stat-label">Calendar Views</div>
+    </div>
+    <div class="demo-stat">
+        <div class="demo-stat-value">40+</div>
+        <div class="demo-stat-label">Components</div>
+    </div>
+    <div class="demo-stat">
+        <div class="demo-stat-value">6</div>
+        <div class="demo-stat-label">Event Colors</div>
+    </div>
+    <div class="demo-stat">
+        <div class="demo-stat-value">0</div>
+        <div class="demo-stat-label">JS Frameworks</div>
+    </div>
+</div>
+
+<!-- Feature Cards -->
+<section class="demo-features">
+    <div class="demo-feature-card">
+        <div class="demo-feature-icon" style="background:#eff6ff;color:#3b82f6;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <h3>5 View Modes</h3>
+        <p>Day, Week, Month, Year, and Agenda views â€” each optimized for its purpose with smooth transitions between them.</p>
+    </div>
+    <div class="demo-feature-card">
+        <div class="demo-feature-icon" style="background:#fef3c7;color:#d97706;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        </div>
+        <h3>Event Management</h3>
+        <p>Create, edit, and delete events with a polished dialog. Color-coded events with form validation.</p>
+    </div>
+    <div class="demo-feature-card">
+        <div class="demo-feature-icon" style="background:#f0fdf4;color:#16a34a;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+        </div>
+        <h3>Drag &amp; Drop</h3>
+        <p>Move events between time slots and dates with native HTML5 drag-and-drop. Visual drop zone feedback.</p>
+    </div>
+    <div class="demo-feature-card">
+        <div class="demo-feature-icon" style="background:#fdf2f8;color:#db2777;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <h3>Customizable</h3>
+        <p>Dark mode, 12/24-hour format, dot vs colored badges, configurable start hour, and agenda grouping options.</p>
+    </div>
+    <div class="demo-feature-card">
+        <div class="demo-feature-icon" style="background:#faf5ff;color:#9333ea;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>Attendees</h3>
+        <p>Add optional attendees to each event. Each attendee has a first name, last name, and an optional ID.</p>
+    </div>
+    <div class="demo-feature-card">
+        <div class="demo-feature-icon" style="background:#fff7ed;color:#ea580c;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3>Live Timeline</h3>
+        <p>Real-time current-time indicator in day and week views. "Happening Now" sidebar shows active events.</p>
+    </div>
+</section>
+
+<!-- Inline Calendar Preview -->
+<section class="demo-calendar-section">
+    <div class="demo-section-header">
+        <h2>See It in Action</h2>
+        <p>A fully interactive calendar right here. Try switching views, clicking events, and navigating dates.</p>
+    </div>
+    <div class="demo-calendar-container">
+        <BlazorFullCalendar Events="_demoEvents"
+                        OnChange="HandleCalendarChange" />
+    </div>
+</section>
+
+<!-- Usage Code -->
+<section class="demo-usage">
+    <div class="demo-section-header">
+        <h2>Quick Start</h2>
+        <p>Drop the component into any Blazor page with just a few lines.</p>
+    </div>
+
+    <div class="demo-code-block">
+        <div class="demo-code-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            MyPage.razor
+        </div>
+        <pre><span class="tag">&lt;BlazorFullCalendar</span> <span class="attr">Events</span>=<span class="str">"myEvents"</span> <span class="tag">/&gt;</span>
+
+<span class="kw">@@code</span> {
+    <span class="kw">private</span> <span class="type">List&lt;CalendarEvent&gt;</span> myEvents = <span class="kw">new</span>()
+    {
+        <span class="kw">new</span>() {
+            Id = <span class="str">1</span>,
+            Title = <span class="str">"Team Meeting"</span>,
+            Description = <span class="str">"Weekly sync"</span>,
+            StartDate = <span class="type">DateTime</span>.Today.AddHours(<span class="str">10</span>),
+            EndDate = <span class="type">DateTime</span>.Today.AddHours(<span class="str">11</span>),
+            Color = <span class="type">EventColor</span>.Blue,
+            Attendees =
+            [
+                <span class="kw">new</span>() { FirstName = <span class="str">"Alice"</span>, LastName = <span class="str">"Johnson"</span>, Id = <span class="str">"1"</span> }
+            ]
+        }
+    };
+}</pre>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="demo-footer">
+    <p>
+        Blazor Calendar &mdash; Inspired by
+        <a href="https://github.com/yassir-jeraidi/full-calendar" target="_blank">yassir-jeraidi/full-calendar</a>
+    </p>
+</footer>
+
+@code {
+    private static readonly List<BlazorFullCalendarEvent> _demoEvents = DemoSampleData.CreateEvents();
+
+    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args) => Task.CompletedTask;
+}
+

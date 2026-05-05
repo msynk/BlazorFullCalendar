@@ -1,0 +1,91 @@
+﻿@using System.Globalization
+@namespace BlazorFullCalendar
+@implements IDisposable
+
+<CascadingValue Value="State">
+    <CascadingValue Value="Texts">
+        <CascadingValue Value="_changeNotifier">
+            <CascadingValue Value="_colorScheme">
+            <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
+                <CalendarHeader />
+                <CalendarBody />
+                <CalendarToast />
+            </div>
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+</CascadingValue>
+
+@code {
+    [Parameter] public List<BlazorFullCalendarEvent>? Events { get; set; }
+
+    /// <summary>
+    /// Culture for the calendar. Accepts any CultureInfo, e.g. new CultureInfo("fa-IR").
+    /// NOTE: do NOT use this parameter when the component is rendered with
+    /// @rendermode="InteractiveServer" â€” CultureInfo is not JSON-serializable.
+    /// Use <see cref="CultureName"/> instead for server-interactive scenarios.
+    /// </summary>
+    [Parameter] public CultureInfo? Culture { get; set; }
+
+    /// <summary>
+    /// Culture name string (e.g. "fa-IR", "ar-SA", "fr-FR").
+    /// Preferred over <see cref="Culture"/> when using @rendermode="InteractiveServer"
+    /// because plain strings are safely serialized by Blazor's parameter persistence.
+    /// When both are supplied, CultureName takes precedence.
+    /// </summary>
+    [Parameter] public string? CultureName { get; set; }
+    [Parameter] public BlazorFullCalendarTexts Texts { get; set; } = new();
+
+    /// <summary>
+    /// Visual theme for calendar surfaces and controls. Requires <c>_content/BlazorFullCalendar/css/calendar.css</c> (imports Fluent tokens when applicable).
+    /// </summary>
+    [Parameter] public BlazorFullCalendarTheme Theme { get; set; } = BlazorFullCalendarTheme.Default;
+
+    /// <summary>
+    /// Optional ordered list of event colors for pickers and filters. Labels are always the localized color name
+    /// from <see cref="BlazorFullCalendarTexts"/>; <see cref="BlazorFullCalendarColorOption.Title"/> is optional text after it (em dash).
+    /// When null or empty, all <see cref="BlazorFullCalendarEventColor"/> values are used in enum order.
+    /// </summary>
+    [Parameter] public IReadOnlyList<BlazorFullCalendarColorOption>? EventColorOptions { get; set; }
+    /// <summary>
+    /// Raised when a user adds, edits, or deletes an event in the calendar UI.
+    /// </summary>
+    [Parameter] public EventCallback<BlazorFullCalendarChangeEventArgs> OnChange { get; set; }
+
+    public BlazorFullCalendarState State { get; set; } = new();
+    private BlazorFullCalendarChangeNotifier _changeNotifier = default!;
+    private BlazorFullCalendarColorScheme _colorScheme = new(null);
+
+    private string RootCssClass =>
+        string.Join(' ', new[]
+        {
+            "cal-root",
+            State.IsDarkMode ? "cal-dark" : "",
+            Theme == BlazorFullCalendarTheme.Fluent ? "cal-theme-fluent" : ""
+        }.Where(s => !string.IsNullOrEmpty(s)));
+
+    private CultureInfo ResolveCulture() =>
+        CultureName is { Length: > 0 } name
+            ? new CultureInfo(name)
+            : Culture ?? CultureInfo.CurrentUICulture;
+
+    protected override void OnInitialized()
+    {
+        State.Initialize(Events ?? [], ResolveCulture());
+        _changeNotifier = new BlazorFullCalendarChangeNotifier(State, args => OnChange.InvokeAsync(args));
+        State.OnStateChanged += HandleStateChanged;
+    }
+
+    protected override void OnParametersSet()
+    {
+        _colorScheme = new BlazorFullCalendarColorScheme(EventColorOptions);
+        var resolved = ResolveCulture();
+        if (!string.Equals(resolved.Name, State.Culture.Name, StringComparison.Ordinal))
+            State.SetCulture(resolved);
+    }
+
+    private void HandleStateChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => State.OnStateChanged -= HandleStateChanged;
+}
+

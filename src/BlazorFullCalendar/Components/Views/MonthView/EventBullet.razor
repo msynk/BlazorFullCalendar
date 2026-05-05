@@ -1,0 +1,8 @@
+﻿@namespace BlazorFullCalendar
+
+<span class="cal-bullet @BlazorFullCalendarHelpers.GetBgColorCss(Color)"></span>
+
+@code {
+    [Parameter] public BlazorFullCalendarEventColor Color { get; set; } = BlazorFullCalendarEventColor.Blue;
+}
+

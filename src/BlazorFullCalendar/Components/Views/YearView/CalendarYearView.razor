@@ -1,0 +1,86 @@
+﻿@namespace BlazorFullCalendar
+
+@{
+    var allEvents = MultiDayEvents.Concat(SingleDayEvents).ToList();
+    var cal = State.Culture.Calendar;
+    var dtf = State.Culture.DateTimeFormat;
+    int culturalYear = cal.GetYear(State.SelectedDate);
+    var months = Enumerable.Range(1, 12)
+        .Select(m => cal.ToDateTime(culturalYear, m, 1, 0, 0, 0, 0))
+        .ToArray();
+    var yearWeekDayHeaders = BlazorFullCalendarHelpers.GetAbbreviatedWeekDayHeaders(State.Culture);
+}
+
+<div class="cal-year">
+    @foreach (var monthDate in months)
+    {
+        var cells = BlazorFullCalendarHelpers.GetCalendarCells(monthDate, State.Culture);
+        var monthIndex = cal.GetMonth(monthDate);
+        var monthName = dtf.GetMonthName(monthIndex);
+        <div class="cal-year-month">
+            <div class="cal-year-month-title" @onclick="() => GoToMonth(monthDate)">
+                @monthName
+            </div>
+            <div class="cal-year-weekdays">
+                @foreach (var wd in yearWeekDayHeaders)
+                {
+                    <div class="cal-year-weekday">@(wd.Length > 2 ? wd[..2] : wd)</div>
+                }
+            </div>
+            <div class="cal-year-days">
+                @foreach (var cell in cells)
+                {
+                    var cellCulturalMonth = cal.GetMonth(cell.Date);
+                    var isCurrentMonth = cellCulturalMonth == monthIndex
+                        && cal.GetYear(cell.Date) == culturalYear;
+                    var isToday = cell.Date.Date == DateTime.Today;
+                    var dayEvents = allEvents.Where(e => e.StartDate.Date == cell.Date.Date).ToList();
+                    var hasEvents = isCurrentMonth && dayEvents.Count > 0;
+
+                    <div class="cal-year-day @(!isCurrentMonth ? "other-month" : "") @(hasEvents ? "has-events" : "")"
+                         @onclick="() => { if (hasEvents) ShowEventsForDay(cell.Date, dayEvents); }">
+                        <span class="cal-year-day-number @(isToday ? "today" : "")">@cell.Day</span>
+                        @if (hasEvents)
+                        {
+                            <div class="cal-year-day-bullets">
+                                @foreach (var ev in dayEvents.Take(3))
+                                {
+                                    <EventBullet Color="ev.Color" />
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@if (_showEventList)
+{
+    <EventListDialog Date="_eventListDate" Events="_eventListEvents" OnClose="() => _showEventList = false" />
+}
+
+@code {
+    [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
+    [Parameter] public List<BlazorFullCalendarEvent> SingleDayEvents { get; set; } = [];
+    [Parameter] public List<BlazorFullCalendarEvent> MultiDayEvents { get; set; } = [];
+
+    private bool _showEventList;
+    private DateTime _eventListDate;
+    private List<BlazorFullCalendarEvent> _eventListEvents = [];
+
+    private void GoToMonth(DateTime month)
+    {
+        State.SetSelectedDate(month);
+        State.SetView(BlazorFullCalendarView.Month);
+    }
+
+    private void ShowEventsForDay(DateTime date, List<BlazorFullCalendarEvent> events)
+    {
+        _eventListDate = date;
+        _eventListEvents = events;
+        _showEventList = true;
+    }
+}
+

@@ -1,0 +1,113 @@
+﻿@namespace BlazorFullCalendar
+@implements IDisposable
+
+@{
+    var monthEvents = BlazorFullCalendarHelpers.GetEventsForMonth(State.Events.ToList(), State.SelectedDate, State.Culture);
+    if (!string.IsNullOrWhiteSpace(_search))
+    {
+        var q = _search.ToLowerInvariant();
+        monthEvents = monthEvents.Where(e =>
+            e.Title.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+            e.Description.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
+    List<(string GroupTitle, List<BlazorFullCalendarEvent> Items)> agendaGroups;
+    if (monthEvents.Count == 0)
+    {
+        agendaGroups = [];
+    }
+    else if (State.AgendaModeGroupBy == BlazorFullCalendarAgendaGroupBy.Date)
+    {
+        agendaGroups = monthEvents
+            .GroupBy(e => e.StartDate.ToString("yyyy-MM-dd"))
+            .OrderBy(g => g.Key)
+            .Select(g =>
+            {
+                var title = DateTime.TryParse(g.Key, out var dt)
+                    ? $"{dt.ToString("dddd", State.Culture)}, {BlazorFullCalendarHelpers.FormatCultureDate(dt, State.Culture)}"
+                    : g.Key;
+                return (title, g.ToList());
+            })
+            .ToList();
+    }
+    else
+    {
+        agendaGroups = monthEvents
+            .GroupBy(e => e.Color)
+            .OrderBy(g => ColorScheme.GetSortOrder(g.Key))
+            .Select(g => (ColorScheme.GetPrimaryLabel(g.Key, Texts), g.ToList()))
+            .ToList();
+    }
+}
+
+<div class="cal-agenda">
+    <div class="cal-agenda-search">
+        <input type="text" placeholder="@Texts.SearchEventsPlaceholder" @bind="_search" @bind:event="oninput" />
+    </div>
+
+    @if (agendaGroups.Count == 0)
+    {
+        <div class="cal-agenda-empty">@Texts.NoEventsFound</div>
+    }
+    else
+    {
+        @foreach (var (groupTitle, items) in agendaGroups)
+        {
+            <div class="cal-agenda-group">
+                <div class="cal-agenda-group-title">@groupTitle</div>
+                @foreach (var ev in items)
+                {
+                    <div class="cal-agenda-item" @onclick="() => ShowDetails(ev)">
+                        <div class="cal-agenda-avatar @BlazorFullCalendarHelpers.GetBgColorCss(ev.Color)">
+                            @(ev.Attendees.Count > 0 ? ev.Attendees[0].Initials : "")
+                        </div>
+                        <div class="cal-agenda-info">
+                            <div class="cal-agenda-title">@ev.Title</div>
+                            <div class="cal-agenda-desc">@ev.Description</div>
+                        </div>
+                        <div class="cal-agenda-time">
+                            @if (State.AgendaModeGroupBy == BlazorFullCalendarAgendaGroupBy.Date)
+                            {
+                                @BlazorFullCalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
+                                <span> - </span>
+                                @BlazorFullCalendarHelpers.FormatTime(ev.EndDate, State.Use24HourFormat)
+                            }
+                            else
+                            {
+                                @BlazorFullCalendarHelpers.FormatCultureDate(ev.StartDate, State.Culture)
+                                <span> Â· </span>
+                                @BlazorFullCalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@if (_showDetails && _selectedEvent != null)
+{
+    <EventDetailsDialog Event="_selectedEvent" OnClose="() => _showDetails = false" />
+}
+
+@code {
+    [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
+    [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter] public BlazorFullCalendarColorScheme ColorScheme { get; set; } = default!;
+
+    private string _search = "";
+    private bool _showDetails;
+    private BlazorFullCalendarEvent? _selectedEvent;
+
+    protected override void OnInitialized() => State.OnStateChanged += Refresh;
+    private void Refresh() => InvokeAsync(StateHasChanged);
+    public void Dispose() => State.OnStateChanged -= Refresh;
+
+    private void ShowDetails(BlazorFullCalendarEvent ev)
+    {
+        _selectedEvent = ev;
+        _showDetails = true;
+    }
+}
+

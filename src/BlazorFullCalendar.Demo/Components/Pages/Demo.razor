@@ -1,0 +1,190 @@
+﻿@page "/demo"
+
+<PageTitle>Live Demo - Blazor Calendar</PageTitle>
+
+<div style="display:flex;flex-direction:column;height:calc(100vh - 56px);">
+    <div style="padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--demo-border);">
+        <div>
+            <h1 style="font-size:18px;font-weight:700;margin:0;">Live Demo</h1>
+            <p style="font-size:12px;color:var(--demo-text-secondary);margin:0;">
+                Create events, switch views, drag &amp; drop, toggle settings.
+                Colors show the <strong>localized color name</strong> first, then an optional <code style="font-size:11px;">Title</code> (space / track)â€”see <code style="font-size:11px;">EventColorOptions</code> in the filter, add/edit, details, or agenda grouped by color.
+            </p>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <button type="button"
+                    style="font-size:13px;padding:5px 10px;border:1px solid var(--demo-border);border-radius:6px;background:var(--demo-bg);color:var(--demo-text);cursor:pointer;outline:none;"
+                    @onclick="ToggleRecentChangesPanel"
+                    aria-expanded="@_recentChangesPanelVisible"
+                    title="@(_recentChangesPanelVisible ? "Hide the recent changes sidebar" : "Show the recent changes sidebar")">
+                @(_recentChangesPanelVisible ? "Hide recent changes" : "Show recent changes")
+            </button>
+            <!-- Theme -->
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span style="font-size:12px;color:var(--demo-text-secondary);white-space:nowrap;">Theme</span>
+                <select style="font-size:13px;padding:5px 8px;border:1px solid var(--demo-border);border-radius:6px;background:var(--demo-bg);color:var(--demo-text);cursor:pointer;outline:none;"
+                        @bind="_selectedTheme">
+                    <option value="@BlazorFullCalendarTheme.Default">Default</option>
+                    <option value="@BlazorFullCalendarTheme.Fluent">Fluent</option>
+                </select>
+            </div>
+            <!-- Culture selector -->
+            <div style="display:flex;align-items:center;gap:6px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--demo-text-secondary);flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <select style="font-size:13px;padding:5px 8px;border:1px solid var(--demo-border);border-radius:6px;background:var(--demo-bg);color:var(--demo-text);cursor:pointer;outline:none;"
+                        @bind="_selectedCultureName">
+                    @foreach (var opt in _cultureOptions)
+                    {
+                        <option value="@opt.Name">@opt.Label</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div style="flex:1;padding:16px 24px 24px;min-height:0;display:grid;grid-template-columns:@(_recentChangesPanelVisible ? "minmax(0,1fr) 320px" : "minmax(0,1fr)");gap:16px;">
+        <div style="height:100%;border:1px solid var(--demo-border);border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+            <BlazorFullCalendar Events="_demoEvents"
+                            CultureName="@_selectedCultureName"
+                            Theme="_selectedTheme"
+                            Texts="@SelectedTexts"
+                            EventColorOptions="DemoEventColorOptions"
+                            OnChange="HandleCalendarChange" />
+        </div>
+        @if (_recentChangesPanelVisible)
+        {
+        <aside style="border:1px solid var(--demo-border);border-radius:12px;background:var(--demo-bg);padding:12px;overflow:auto;">
+            <h3 style="margin:0 0 8px 0;font-size:14px;">Recent Changes</h3>
+            @if (_recentChanges.Count == 0)
+            {
+                <p style="margin:0;color:var(--demo-text-secondary);font-size:12px;">No event changes yet.</p>
+            }
+            else
+            {
+                <ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:8px;">
+                    @foreach (var change in _recentChanges)
+                    {
+                        <li style="font-size:12px;line-height:1.35;">
+                            <strong>@change.Kind</strong> via @change.Source<br />
+                            <span>@change.Title</span><br />
+                            <span style="color:var(--demo-text-secondary);">@change.AtLocal.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </aside>
+        }
+    </div>
+</div>
+
+@code {
+    // Showcases EventColorOptions: custom order; Title is shown after the localized color name (e.g. Blue â€” â€¦).
+    private static readonly IReadOnlyList<BlazorFullCalendarColorOption> DemoEventColorOptions =
+    [
+        new() { Color = BlazorFullCalendarEventColor.Blue,   Title = "HQ â€” Bay Wing Â· open Â· 2nd floor" },
+        new() { Color = BlazorFullCalendarEventColor.Green,  Title = "The Garden Â· room 204" },
+        new() { Color = BlazorFullCalendarEventColor.Purple, Title = "Executive studio Â· 14th floor" },
+        new() { Color = BlazorFullCalendarEventColor.Yellow, Title = "Deep work pods Â· quiet floor" },
+        new() { Color = BlazorFullCalendarEventColor.Red,    Title = "War room Â· B1" },
+        new() { Color = BlazorFullCalendarEventColor.Orange, Title = "Customer lab Â· ground floor" },
+    ];
+
+    private static readonly List<BlazorFullCalendarEvent> _demoEvents = DemoSampleData.CreateEvents();
+    private readonly List<ChangeLogItem> _recentChanges = [];
+
+    private sealed record ChangeLogItem(string Title, BlazorFullCalendarChangeKind Kind, BlazorFullCalendarChangeSource Source, DateTime AtLocal);
+
+    private record CultureOption(string Label, string Name);
+
+    private static readonly CultureOption[] _cultureOptions =
+    [
+        new("English (en-US)",          "en-US"),
+        new("Persian / فارسی (fa-IR)", "fa-IR"),
+    ];
+
+    private string _selectedCultureName = "en-US";
+    private BlazorFullCalendarTheme _selectedTheme = BlazorFullCalendarTheme.Default;
+    private bool _recentChangesPanelVisible;
+
+    private void ToggleRecentChangesPanel() => _recentChangesPanelVisible = !_recentChangesPanelVisible;
+
+    private static readonly BlazorFullCalendarTexts _defaultTexts = new();
+
+    private static readonly Dictionary<string, BlazorFullCalendarTexts> _textsByCulture = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["en-US"] = new BlazorFullCalendarTexts(),
+        ["fa-IR"] = new BlazorFullCalendarTexts
+        {
+            ViewDay = "روز",
+            ViewWeek = "هفته",
+            ViewMonth = "ماه",
+            ViewYear = "سال",
+            ViewAgenda = "برنامه",
+            TodayButton = "امروز",
+            AddEventButton = "افزودن رویداد",
+            AddEventHoverHint = "افزودن رویداد",
+            PreviousButtonTitle = "قبلی",
+            NextButtonTitle = "بعدی",
+            SettingsButtonTitle = "تنظیمات",
+            CalendarSettingsLabel = "تنظیمات تقویم",
+            DarkModeLabel = "حالت تاریک",
+            DotBadgeLabel = "نشان نقطه ای",
+            TwentyFourHourFormatLabel = "فرمت 24 ساعته",
+            DayStartsAtLabel = "شروع روز از",
+            HourSuffix = "ساعت",
+            AgendaGroupByLabel = "گروه بندی برنامه",
+            AgendaGroupByDate = "تاریخ",
+            AgendaGroupByColor = "رنگ",
+            SearchEventsPlaceholder = "جستجوی رویدادها...",
+            NoEventsFound = "رویدادی پیدا نشد.",
+            AddEventDialogTitle = "افزودن رویداد جدید",
+            EditEventDialogTitle = "ویرایش رویداد",
+            CreateEventButton = "ایجاد رویداد",
+            SaveChangesButton = "ذخیره تغییرات",
+            CloseButton = "بستن",
+            EditButton = "ویرایش",
+            CancelButton = "لغو",
+            DeleteButton = "حذف",
+            TitleLabel = "عنوان",
+            StartDateTimeLabel = "تاریخ و زمان شروع",
+            EndDateTimeLabel = "تاریخ و زمان پایان",
+            ColorLabel = "رنگ",
+            DescriptionLabel = "توضیحات",
+            AttendeesLabel = "شرکت کنندگان",
+            FirstNamePlaceholder = "نام",
+            LastNamePlaceholder = "نام خانوادگی",
+            IdOptionalPlaceholder = "شناسه (اختیاری)",
+            AddButton = "افزودن",
+            CloseAriaLabel = "بستن",
+            AddEventDialogSubtitle = "یک رویداد جدید برای تقویم خود ایجاد کنید.",
+            EditEventDialogSubtitle = "رویداد موجود خود را ویرایش کنید.",
+            EventTitlePlaceholder = "عنوان رویداد",
+            EventDescriptionPlaceholder = "توضیحات رویداد",
+            NoAttendeesText = "شرکت کننده ای وجود ندارد",
+            StartDateLabel = "تاریخ شروع",
+            EndDateLabel = "تاریخ پایان",
+            AtWord = "ساعت",
+            ValidationTitleRequired = "عنوان الزامی است",
+            ValidationDescriptionRequired = "توضیحات الزامی است",
+            ValidationEndAfterStart = "تاریخ پایان باید بعد از تاریخ شروع باشد",
+            ValidationAttendeeNameRequired = "نام یا نام خانوادگی الزامی است"
+        }
+        
+    };
+
+    private BlazorFullCalendarTexts SelectedTexts =>
+        _textsByCulture.TryGetValue(_selectedCultureName, out var texts)
+            ? texts
+            : _defaultTexts;
+
+    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
+    {
+        _recentChanges.Insert(0, new ChangeLogItem(args.Event.Title, args.Kind, args.Source, DateTime.Now));
+        if (_recentChanges.Count > 5)
+            _recentChanges.RemoveRange(5, _recentChanges.Count - 5);
+
+        return Task.CompletedTask;
+    }
+}
+

@@ -1,4 +1,4 @@
-# BlazorCalendar
+﻿# BlazorFullCalendar
 
 A feature-rich, interactive calendar component for Blazor applications. Built with pure Blazor and .NET - no JavaScript frameworks required.
 
@@ -9,16 +9,16 @@ A feature-rich, interactive calendar component for Blazor applications. Built wi
 - **Culture-Aware Date-Time Picker**: Built-in dropdown date-time picker in add/edit dialogs (no browser-native `datetime-local`) with culture calendar rendering support (including `fa-IR`)
 - **Drag & Drop**: Move events between time slots and dates with native HTML5 drag-and-drop
 - **Multi-User Support**: Filter events by user or color with avatar initials and color badges
-- **Text Customization**: Override UI labels, button text, placeholders, aria labels, and validation messages with `BlazorCalendarTexts`
+- **Text Customization**: Override UI labels, button text, placeholders, aria labels, and validation messages with `BlazorFullCalendarTexts`
 - **Customizable**: Dark mode, 12/24-hour format, dot vs colored badges, configurable start hour, and agenda grouping options
 - **Live Timeline**: Real-time current-time indicator in day and week views with "Happening Now" sidebar
 
 ## Installation
 
-1. Install the [NuGet package](https://www.nuget.org/packages/BlazorCalendar) (or add a project reference to this repository):
+1. Install the [NuGet package](https://www.nuget.org/packages/BlazorFullCalendar) (or add a project reference to this repository):
 
 ```bash
-dotnet add package BlazorCalendar
+dotnet add package BlazorFullCalendar
 ```
 
 2. Register the Razor Class Library assembly in your `Program.cs`:
@@ -26,13 +26,13 @@ dotnet add package BlazorCalendar
 ```csharp
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
-    .AddAdditionalAssemblies(BlazorCalendar.BlazorCalendarAssembly.Value);
+    .AddAdditionalAssemblies(BlazorFullCalendar.BlazorFullCalendarAssembly.Value);
 ```
 
 3. Add the namespace imports to your `_Imports.razor`:
 
 ```razor
-@using BlazorCalendar
+@using BlazorFullCalendar
 ```
 
 ## Usage
@@ -42,12 +42,12 @@ app.MapRazorComponents<App>()
 ```razor
 @page "/calendar"
 
-<BlazorCalendar Events="myEvents"
+<BlazorFullCalendar Events="myEvents"
                 OnChange="HandleCalendarChange"
                 @rendermode="InteractiveServer" />
 
 @code {
-    private List<BlazorCalendarEvent> myEvents = new()
+    private List<BlazorFullCalendarEvent> myEvents = new()
     {
         new() {
             Id = 1,
@@ -55,11 +55,11 @@ app.MapRazorComponents<App>()
             Description = "Weekly sync",
             StartDate = DateTime.Today.AddHours(10),
             EndDate = DateTime.Today.AddHours(11),
-            Color = BlazorCalendarEventColor.Blue
+            Color = BlazorFullCalendarEventColor.Blue
         }
     };
 
-    private Task HandleCalendarChange(BlazorCalendarChangeEventArgs args)
+    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
     {
         // Persist args.Event or synchronize with your backend/store.
         return Task.CompletedTask;
@@ -72,41 +72,41 @@ app.MapRazorComponents<App>()
 - The event add/edit dialog uses a custom dropdown date-time picker instead of native browser date inputs.
 - Date cells, weekday headers, month names, and year/day values are rendered from the active `CultureInfo` calendar.
 - This improves consistency for non-Gregorian cultures such as Persian (`fa-IR`) and other localized calendars.
-- Dialog labels and validation text can be localized by supplying a customized `BlazorCalendarTexts` instance.
+- Dialog labels and validation text can be localized by supplying a customized `BlazorFullCalendarTexts` instance.
 
 ### Text Customization Example
 
 ```razor
-<BlazorCalendar Events="myEvents"
+<BlazorFullCalendar Events="myEvents"
                 CultureName="fa-IR"
                 Texts="calendarTexts"
                 @rendermode="InteractiveServer" />
 
 @code {
-    private readonly BlazorCalendarTexts calendarTexts = new()
+    private readonly BlazorFullCalendarTexts calendarTexts = new()
     {
-        AddEventButton = "افزودن رویداد",
-        AddEventDialogTitle = "افزودن رویداد جدید",
-        StartDateTimeLabel = "تاریخ و زمان شروع",
-        EndDateTimeLabel = "تاریخ و زمان پایان",
-        CreateEventButton = "ایجاد رویداد"
+        AddEventButton = "Ø§ÙØ²ÙˆØ¯Ù† Ø±ÙˆÛŒØ¯Ø§Ø¯",
+        AddEventDialogTitle = "Ø§ÙØ²ÙˆØ¯Ù† Ø±ÙˆÛŒØ¯Ø§Ø¯ Ø¬Ø¯ÛŒØ¯",
+        StartDateTimeLabel = "ØªØ§Ø±ÛŒØ® Ùˆ Ø²Ù…Ø§Ù† Ø´Ø±ÙˆØ¹",
+        EndDateTimeLabel = "ØªØ§Ø±ÛŒØ® Ùˆ Ø²Ù…Ø§Ù† Ù¾Ø§ÛŒØ§Ù†",
+        CreateEventButton = "Ø§ÛŒØ¬Ø§Ø¯ Ø±ÙˆÛŒØ¯Ø§Ø¯"
     };
 }
 ```
 
 ### Models
 
-#### BlazorCalendarEvent
+#### BlazorFullCalendarEvent
 
 ```csharp
-public class BlazorCalendarEvent
+public class BlazorFullCalendarEvent
 {
     public int Id { get; set; }
     public string Title { get; set; }
     public string? Description { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public BlazorCalendarEventColor Color { get; set; }
+    public BlazorFullCalendarEventColor Color { get; set; }
     public CalendarUser User { get; set; }
 }
 ```
@@ -121,7 +121,7 @@ public class CalendarUser
 }
 ```
 
-#### BlazorCalendarEventColor
+#### BlazorFullCalendarEventColor
 
 Available colors: `Blue`, `Green`, `Red`, `Yellow`, `Purple`, `Orange`
 
@@ -129,12 +129,12 @@ Available colors: `Blue`, `Green`, `Red`, `Yellow`, `Purple`, `Orange`
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `Events` | `List<BlazorCalendarEvent>?` | List of calendar events to display |
+| `Events` | `List<BlazorFullCalendarEvent>?` | List of calendar events to display |
 | `Users` | `List<CalendarUser>?` | List of users for event assignment and filtering |
-| `Texts` | `BlazorCalendarTexts` | Custom UI strings for labels, placeholders, action buttons, aria labels, and validation messages |
+| `Texts` | `BlazorFullCalendarTexts` | Custom UI strings for labels, placeholders, action buttons, aria labels, and validation messages |
 | `Culture` | `CultureInfo?` | Sets calendar/date rendering and formatting |
 | `CultureName` | `string?` | Culture name shortcut (for example `fa-IR`, `ar-SA`, `fr-FR`) |
-| `OnChange` | `EventCallback<BlazorCalendarChangeEventArgs>` | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`) |
+| `OnChange` | `EventCallback<BlazorFullCalendarChangeEventArgs>` | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`) |
 
 ## Views
 
@@ -165,3 +165,4 @@ Original concept inspired by [yassir-jeraidi/full-calendar](https://github.com/y
 ## License
 
 MIT, use it and be happy :)
+

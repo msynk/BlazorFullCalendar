@@ -1,0 +1,33 @@
+﻿@namespace BlazorFullCalendar
+@implements IDisposable
+
+<div class="cal-timeline" style="top:@(_positionPx.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))px;">
+    <span class="cal-timeline-label">@BlazorFullCalendarHelpers.FormatTime(DateTime.Now, State.Use24HourFormat)</span>
+    <span class="cal-timeline-dot"></span>
+    <span class="cal-timeline-line"></span>
+</div>
+
+@code {
+    [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
+
+    private double _positionPx;
+    private Timer? _timer;
+
+    protected override void OnInitialized()
+    {
+        UpdatePosition();
+        _timer = new Timer(_ =>
+        {
+            UpdatePosition();
+            InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+    }
+
+    private void UpdatePosition()
+    {
+        _positionPx = BlazorFullCalendarHelpers.GetCurrentTimeLineTopPx();
+    }
+
+    public void Dispose() => _timer?.Dispose();
+}
+
