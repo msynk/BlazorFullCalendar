@@ -85,11 +85,11 @@ app.MapRazorComponents<App>()
 @code {
     private readonly BlazorFullCalendarTexts calendarTexts = new()
     {
-        AddEventButton = "Ø§ÙØ²ÙˆØ¯Ù† Ø±ÙˆÛŒØ¯Ø§Ø¯",
-        AddEventDialogTitle = "Ø§ÙØ²ÙˆØ¯Ù† Ø±ÙˆÛŒØ¯Ø§Ø¯ Ø¬Ø¯ÛŒØ¯",
-        StartDateTimeLabel = "ØªØ§Ø±ÛŒØ® Ùˆ Ø²Ù…Ø§Ù† Ø´Ø±ÙˆØ¹",
-        EndDateTimeLabel = "ØªØ§Ø±ÛŒØ® Ùˆ Ø²Ù…Ø§Ù† Ù¾Ø§ÛŒØ§Ù†",
-        CreateEventButton = "Ø§ÛŒØ¬Ø§Ø¯ Ø±ÙˆÛŒØ¯Ø§Ø¯"
+        AddEventButton = "افزودن رویداد",
+        AddEventDialogTitle = "افزودن رویداد جدید",
+        StartDateTimeLabel = "تاریخ و زمان شروع",
+        EndDateTimeLabel = "تاریخ و زمان پایان",
+        CreateEventButton = "ایجاد رویداد"
     };
 }
 ```
