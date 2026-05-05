@@ -1,3 +1,5 @@
+@import url("calendar.theme-fluent.css");
+
 /* ===== CSS Variables ===== */
 :root {
     --cal-bg: #ffffff;
