@@ -1,6 +1,6 @@
 ﻿# BlazorFullCalendar
 
-A feature-rich, interactive calendar component for Blazor applications. Built with pure Blazor and .NET - no JavaScript frameworks required.
+A feature-rich, interactive calendar component for Blazor applications. Built with pure Blazor and .NET — no JavaScript frameworks required.
 
 ## Features
 
@@ -8,20 +8,27 @@ A feature-rich, interactive calendar component for Blazor applications. Built wi
 - **Event Management**: Create, edit, and delete events with a polished dialog and form validation
 - **Culture-Aware Date-Time Picker**: Built-in dropdown date-time picker in add/edit dialogs (no browser-native `datetime-local`) with culture calendar rendering support (including `fa-IR`)
 - **Drag & Drop**: Move events between time slots and dates with native HTML5 drag-and-drop
-- **Multi-User Support**: Filter events by user or color with avatar initials and color badges
+- **Resize**: Drag the top or bottom handle of any day/week event block to adjust its start or end time
+- **Multi-User Support**: Filter events by attendee or color with avatar initials and color badges
 - **Text Customization**: Override UI labels, button text, placeholders, aria labels, and validation messages with `BlazorFullCalendarTexts`
 - **Customizable**: Dark mode, 12/24-hour format, dot vs colored badges, configurable start hour, and agenda grouping options
 - **Live Timeline**: Real-time current-time indicator in day and week views with "Happening Now" sidebar
+- **Themes**: Default and Fluent (WinUI-style) built-in themes; dark mode supported for both
+- **Self-Loading Assets**: The component can inject its own CSS and JS automatically — no manual `<link>` or `<script>` tags required
 
 ## Installation
 
-1. Install the [NuGet package](https://www.nuget.org/packages/BlazorFullCalendar) (or add a project reference to this repository):
+### 1. Install the NuGet package
 
 ```bash
 dotnet add package BlazorFullCalendar
 ```
 
-2. Register the Razor Class Library assembly in your `Program.cs`:
+Or add a project reference if you are working from this repository.
+
+### 2. Register the assembly
+
+**Blazor Server / Interactive Server**
 
 ```csharp
 app.MapRazorComponents<App>()
@@ -29,11 +36,36 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(BlazorFullCalendar.BlazorFullCalendarAssembly.Value);
 ```
 
-3. Add the namespace imports to your `_Imports.razor`:
+**Blazor WebAssembly**
+
+```csharp
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
+// The assembly is discovered automatically for WASM.
+```
+
+### 3. Add the namespace import
+
+In your `_Imports.razor`:
 
 ```razor
 @using BlazorFullCalendar
 ```
+
+### 4. Asset loading
+
+By default the component automatically injects its stylesheet and JavaScript into the page the first time it renders (`LoadAssets="true"`). **No extra tags are needed in your host page.**
+
+If you prefer to control asset loading yourself — for example to set a specific load order, use a bundler, or serve the files from a CDN — set `LoadAssets="false"` and add the tags manually to your host page (`index.html` or `App.razor`):
+
+```html
+<link rel="stylesheet" href="_content/BlazorFullCalendar/css/blazor-fullcalendar.css" />
+<script src="_content/BlazorFullCalendar/js/blazor-fullcalendar.js"></script>
+```
+
+> The Fluent theme overrides are bundled inside `blazor-fullcalendar.css` and activated automatically when `Theme="BlazorFullCalendarTheme.Fluent"` is set on the component — no second stylesheet is required.
+
+---
 
 ## Usage
 
@@ -43,8 +75,8 @@ app.MapRazorComponents<App>()
 @page "/calendar"
 
 <BlazorFullCalendar Events="myEvents"
-                OnChange="HandleCalendarChange"
-                @rendermode="InteractiveServer" />
+                    OnChange="HandleCalendarChange"
+                    @rendermode="InteractiveServer" />
 
 @code {
     private List<BlazorFullCalendarEvent> myEvents = new()
@@ -67,20 +99,45 @@ app.MapRazorComponents<App>()
 }
 ```
 
+### Fluent Theme Example
+
+```razor
+<BlazorFullCalendar Events="myEvents"
+                    Theme="BlazorFullCalendarTheme.Fluent"
+                    OnChange="HandleCalendarChange"
+                    @rendermode="InteractiveServer" />
+```
+
+### Manual Asset Loading Example
+
+```razor
+<!-- In your host page when LoadAssets="false" -->
+<link rel="stylesheet" href="_content/BlazorFullCalendar/css/blazor-fullcalendar.css" />
+<script src="_content/BlazorFullCalendar/js/blazor-fullcalendar.js"></script>
+```
+
+```razor
+<BlazorFullCalendar Events="myEvents"
+                    LoadAssets="false"
+                    OnChange="HandleCalendarChange"
+                    @rendermode="InteractiveServer" />
+```
+
 ### Localization Notes
 
 - The event add/edit dialog uses a custom dropdown date-time picker instead of native browser date inputs.
 - Date cells, weekday headers, month names, and year/day values are rendered from the active `CultureInfo` calendar.
 - This improves consistency for non-Gregorian cultures such as Persian (`fa-IR`) and other localized calendars.
 - Dialog labels and validation text can be localized by supplying a customized `BlazorFullCalendarTexts` instance.
+- Use `CultureName` (a plain string) instead of `Culture` (a `CultureInfo`) when using `@rendermode="InteractiveServer"`, because `CultureInfo` is not JSON-serializable by Blazor's parameter persistence.
 
 ### Text Customization Example
 
 ```razor
 <BlazorFullCalendar Events="myEvents"
-                CultureName="fa-IR"
-                Texts="calendarTexts"
-                @rendermode="InteractiveServer" />
+                    CultureName="fa-IR"
+                    Texts="calendarTexts"
+                    @rendermode="InteractiveServer" />
 
 @code {
     private readonly BlazorFullCalendarTexts calendarTexts = new()
@@ -94,9 +151,26 @@ app.MapRazorComponents<App>()
 }
 ```
 
-### Models
+---
 
-#### BlazorFullCalendarEvent
+## Component Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Events` | `List<BlazorFullCalendarEvent>?` | `null` | List of calendar events to display |
+| `Culture` | `CultureInfo?` | `CultureInfo.CurrentUICulture` | Sets calendar/date rendering and formatting. Do not use with `@rendermode="InteractiveServer"` — use `CultureName` instead |
+| `CultureName` | `string?` | `null` | Culture name shortcut (e.g. `"fa-IR"`, `"ar-SA"`, `"fr-FR"`). Takes precedence over `Culture` when both are supplied |
+| `Texts` | `BlazorFullCalendarTexts` | `new()` | Custom UI strings for labels, placeholders, action buttons, aria labels, and validation messages |
+| `Theme` | `BlazorFullCalendarTheme` | `Default` | Visual theme — `Default` or `Fluent` (WinUI-style). Dark mode is supported for both |
+| `EventColorOptions` | `IReadOnlyList<BlazorFullCalendarColorOption>?` | `null` | Ordered list of event colors shown in pickers and filters. When `null` all colors are shown in enum order |
+| `OnChange` | `EventCallback<BlazorFullCalendarChangeEventArgs>` | — | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`; `Source`: `Dialog`, `Drag`, `Resize`) |
+| `LoadAssets` | `bool` | `true` | When `true` the component automatically injects its CSS and JS into the page on first render. Set to `false` to manage assets manually (see [Asset loading](#4-asset-loading)) |
+
+---
+
+## Models
+
+### BlazorFullCalendarEvent
 
 ```csharp
 public class BlazorFullCalendarEvent
@@ -107,56 +181,80 @@ public class BlazorFullCalendarEvent
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public BlazorFullCalendarEventColor Color { get; set; }
-    public CalendarUser User { get; set; }
+    public List<BlazorFullCalendarAttendee> Attendees { get; set; }
 }
 ```
 
-#### CalendarUser
+### BlazorFullCalendarAttendee
 
 ```csharp
-public class CalendarUser
+public class BlazorFullCalendarAttendee
 {
     public string Id { get; set; }
-    public string Name { get; set; }
+    public string FullName { get; set; }
 }
 ```
 
-#### BlazorFullCalendarEventColor
+### BlazorFullCalendarEventColor
 
-Available colors: `Blue`, `Green`, `Red`, `Yellow`, `Purple`, `Orange`
+Available values: `Blue`, `Green`, `Red`, `Yellow`, `Purple`, `Orange`
 
-## Component Parameters
+### BlazorFullCalendarChangeEventArgs
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Events` | `List<BlazorFullCalendarEvent>?` | List of calendar events to display |
-| `Users` | `List<CalendarUser>?` | List of users for event assignment and filtering |
-| `Texts` | `BlazorFullCalendarTexts` | Custom UI strings for labels, placeholders, action buttons, aria labels, and validation messages |
-| `Culture` | `CultureInfo?` | Sets calendar/date rendering and formatting |
-| `CultureName` | `string?` | Culture name shortcut (for example `fa-IR`, `ar-SA`, `fr-FR`) |
-| `OnChange` | `EventCallback<BlazorFullCalendarChangeEventArgs>` | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`) |
+```csharp
+public class BlazorFullCalendarChangeEventArgs
+{
+    public BlazorFullCalendarEvent Event { get; set; }    // the new/updated state
+    public BlazorFullCalendarEvent? OldEvent { get; set; } // previous state (Edit/Delete)
+    public BlazorFullCalendarChangeKind Kind { get; set; } // Add | Edit | Delete
+    public BlazorFullCalendarChangeSource Source { get; set; } // Dialog | Drag | Resize
+}
+```
+
+---
 
 ## Views
 
-- **Month View**: Grid layout with multi-day event support
-- **Week View**: 7-day view with hourly time slots
-- **Day View**: Single-day detailed view with timeline
-- **Year View**: 12-month overview with event indicators
-- **Agenda View**: List view grouped by date or user
+- **Month View**: Grid layout with multi-day event support and "+N more" overflow
+- **Week View**: 7-day view with hourly time slots, drag-and-drop, and event resize
+- **Day View**: Single-day detailed view with timeline, sidebar mini-calendar, and "Happening Now" panel
+- **Year View**: 12-month overview with per-day event bullet indicators
+- **Agenda View**: Searchable list grouped by date or user
+
+---
 
 ## Customization
 
-The calendar includes built-in settings accessible via the settings button:
+The calendar includes built-in settings accessible via the gear icon in the header:
+
 - Toggle dark mode
 - Switch between 12/24-hour time format
-- Choose badge style (colored or dots)
+- Choose badge style (colored or dot)
 - Set start hour for day/week views
 - Configure agenda view grouping
+
+---
+
+## Static Asset Paths
+
+When `LoadAssets="false"`, the files are served from the Razor Class Library's static web assets path:
+
+| Asset | Path |
+|-------|------|
+| Stylesheet (base + Fluent theme) | `_content/BlazorFullCalendar/css/blazor-fullcalendar.css` |
+| Fluent theme overrides only | `_content/BlazorFullCalendar/css/blazor-fullcalendar.fluent.css` |
+| JavaScript interop | `_content/BlazorFullCalendar/js/blazor-fullcalendar.js` |
+
+> `blazor-fullcalendar.css` already `@import`s `blazor-fullcalendar.fluent.css`, so you only need to reference the main stylesheet.
+
+---
 
 ## Browser Support
 
 - Modern browsers with CSS Grid and Flexbox support
-- HTML5 Drag and Drop API support recommended
+- HTML5 Drag and Drop API support required for drag-and-drop
+
+---
 
 ## Credits
 
@@ -165,4 +263,3 @@ Original concept inspired by [yassir-jeraidi/full-calendar](https://github.com/y
 ## License
 
 MIT, use it and be happy :)
-
