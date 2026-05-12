@@ -117,10 +117,17 @@
         if (_resizeInitialized)
             return;
 
-        _dotNetRef = DotNetObjectReference.Create(this);
-        await JS.InvokeVoidAsync("calendarInterop.initResize", _dotNetRef, _topHandleId, "top");
-        await JS.InvokeVoidAsync("calendarInterop.initResize", _dotNetRef, _bottomHandleId, "bottom");
-        _resizeInitialized = true;
+        try
+        {
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("calendarInterop.initResize", _dotNetRef, _topHandleId, "top");
+            await JS.InvokeVoidAsync("calendarInterop.initResize", _dotNetRef, _bottomHandleId, "bottom");
+            _resizeInitialized = true;
+        }
+        catch (JSException)
+        {
+            // calendarInterop not yet available; will retry on the next render triggered by LoadAssets
+        }
     }
 
     [JSInvokable]

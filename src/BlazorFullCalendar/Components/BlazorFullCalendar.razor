@@ -1,6 +1,7 @@
 ﻿@using System.Globalization
 @namespace BlazorFullCalendar
 @implements IDisposable
+@inject IJSRuntime JS
 
 <CascadingValue Value="State">
     <CascadingValue Value="Texts">
@@ -37,7 +38,9 @@
     [Parameter] public BlazorFullCalendarTexts Texts { get; set; } = new();
 
     /// <summary>
-    /// Visual theme for calendar surfaces and controls. Requires <c>_content/BlazorFullCalendar/css/calendar.css</c> (imports Fluent tokens when applicable).
+    /// Visual theme for calendar surfaces and controls.
+    /// When <see cref="LoadAssets"/> is <c>true</c> (default) the stylesheet is injected automatically.
+    /// Otherwise add <c>_content/BlazorFullCalendar/css/blazor-fullcalendar.css</c> to your host page.
     /// </summary>
     [Parameter] public BlazorFullCalendarTheme Theme { get; set; } = BlazorFullCalendarTheme.Default;
 
@@ -52,9 +55,22 @@
     /// </summary>
     [Parameter] public EventCallback<BlazorFullCalendarChangeEventArgs> OnChange { get; set; }
 
+    /// <summary>
+    /// When <c>true</c> (default) the component automatically injects its CSS stylesheet and JavaScript
+    /// into the page on first render — no manual <c>&lt;link&gt;</c> or <c>&lt;script&gt;</c> tags needed.
+    /// Set to <c>false</c> when you prefer to manage assets yourself, for example to control load order
+    /// or when using a bundler. In that case add the following to your host page:
+    /// <code>
+    /// &lt;link rel="stylesheet" href="_content/BlazorFullCalendar/css/blazor-fullcalendar.css" /&gt;
+    /// &lt;script src="_content/BlazorFullCalendar/js/blazor-fullcalendar.js"&gt;&lt;/script&gt;
+    /// </code>
+    /// </summary>
+    [Parameter] public bool LoadAssets { get; set; } = true;
+
     public BlazorFullCalendarState State { get; set; } = new();
     private BlazorFullCalendarChangeNotifier _changeNotifier = default!;
     private BlazorFullCalendarColorScheme _colorScheme = new(null);
+    private bool _loadAttempted;
 
     private string RootCssClass =>
         string.Join(' ', new[]
@@ -84,8 +100,53 @@
             State.SetCulture(resolved);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || !LoadAssets || _loadAttempted)
+            return;
+
+        _loadAttempted = true;
+        try
+        {
+            await JS.InvokeVoidAsync("eval", AssetLoaderScript);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch { /* JS unavailable (e.g. prerendering) or asset load failed; load assets manually */ }
+    }
+
     private void HandleStateChanged() => InvokeAsync(StateHasChanged);
 
     public void Dispose() => State.OnStateChanged -= HandleStateChanged;
+
+    private const string AssetLoaderScript = """
+        (() => {
+            var cssId = 'blazor-fullcalendar-css';
+            var jsId  = 'blazor-fullcalendar-js';
+            if (!document.getElementById(cssId)) {
+                var link = document.createElement('link');
+                link.rel  = 'stylesheet';
+                link.href = '_content/BlazorFullCalendar/css/blazor-fullcalendar.css';
+                link.id   = cssId;
+                document.head.appendChild(link);
+            }
+            if (window.calendarInterop) return Promise.resolve();
+            var existing = document.getElementById(jsId);
+            if (existing) {
+                return new Promise(function(resolve) {
+                    if (window.calendarInterop) { resolve(); return; }
+                    existing.addEventListener('load',  resolve, { once: true });
+                    existing.addEventListener('error', resolve, { once: true });
+                });
+            }
+            return new Promise(function(resolve, reject) {
+                var script  = document.createElement('script');
+                script.src  = '_content/BlazorFullCalendar/js/blazor-fullcalendar.js';
+                script.id   = jsId;
+                script.onload  = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        })()
+        """;
 }
 
