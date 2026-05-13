@@ -192,7 +192,7 @@
 
         var ev = new BlazorFullCalendarEvent
         {
-            Id = _isEditing ? ExistingEvent!.Id : Random.Shared.Next(100000, 999999),
+            Id = _isEditing ? ExistingEvent!.Id : Guid.NewGuid().ToString("N"),
             Title = _title,
             Description = _description,
             StartDate = _startDate,

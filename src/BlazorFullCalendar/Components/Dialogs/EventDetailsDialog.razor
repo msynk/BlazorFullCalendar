@@ -67,7 +67,7 @@
         <div class="cal-dialog-footer" style="justify-content:space-between;">
             <button class="cal-btn" @onclick="OnClose">@Texts.CloseButton</button>
             <div style="display:flex;gap:8px;">
-                <button class="cal-btn" @onclick="Edit">@Texts.EditButton</button>
+                <button class="cal-btn" @onclick="EditAsync">@Texts.EditButton</button>
                 <button class="cal-btn cal-btn-danger" @onclick="Delete">@Texts.DeleteButton</button>
             </div>
         </div>
@@ -84,12 +84,22 @@
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarColorScheme ColorScheme { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarChangeNotifier Notifier { get; set; } = default!;
+    [CascadingParameter(Name = "OnAddOrEditClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
     [Parameter] public BlazorFullCalendarEvent Event { get; set; } = default!;
     [Parameter] public EventCallback OnClose { get; set; }
 
     private bool _showEdit;
 
-    private void Edit() => _showEdit = true;
+    private async Task EditAsync()
+    {
+        if (OnAddOrEditClick.HasDelegate)
+        {
+            await OnAddOrEditClick.InvokeAsync(BlazorFullCalendarChangeNotifier.CloneEvent(Event));
+            await OnClose.InvokeAsync();
+        }
+        else
+            _showEdit = true;
+    }
 
     private void OnEditClose()
     {

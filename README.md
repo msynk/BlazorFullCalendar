@@ -82,7 +82,7 @@ If you prefer to control asset loading yourself — for example to set a specifi
     private List<BlazorFullCalendarEvent> myEvents = new()
     {
         new() {
-            Id = 1,
+            Id = "1",
             Title = "Team Meeting",
             Description = "Weekly sync",
             StartDate = DateTime.Today.AddHours(10),
@@ -175,7 +175,7 @@ If you prefer to control asset loading yourself — for example to set a specifi
 ```csharp
 public class BlazorFullCalendarEvent
 {
-    public int Id { get; set; }
+    public string Id { get; set; }
     public string Title { get; set; }
     public string? Description { get; set; }
     public DateTime StartDate { get; set; }

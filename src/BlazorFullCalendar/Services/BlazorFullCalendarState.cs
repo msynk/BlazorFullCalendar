@@ -136,7 +136,7 @@ public class BlazorFullCalendarState
         NotifyStateChanged();
     }
 
-    public void RemoveEvent(int eventId)
+    public void RemoveEvent(string eventId)
     {
         _allEvents.RemoveAll(e => e.Id == eventId);
         ApplyFilters();

@@ -66,9 +66,10 @@
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarChangeNotifier Notifier { get; set; } = default!;
+    [CascadingParameter(Name = "OnAddOrEditClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
     [Parameter] public BlazorFullCalendarCell Cell { get; set; } = default!;
     [Parameter] public List<BlazorFullCalendarEvent> Events { get; set; } = [];
-    [Parameter] public Dictionary<int, int> EventPositions { get; set; } = new();
+    [Parameter] public Dictionary<string, int> EventPositions { get; set; } = new();
 
     private bool _showEventList;
     private bool _showAddDialog;
@@ -77,10 +78,18 @@
     private void ShowEventDetails(BlazorFullCalendarEvent ev) => _selectedEvent = ev;
     private void CloseEventDetails() => _selectedEvent = null;
 
-    private void OnCellClick()
+    private async Task OnCellClick()
     {
         State.SetSelectedDate(Cell.Date);
-        _showAddDialog = true;
+        if (OnAddOrEditClick.HasDelegate)
+        {
+            var draft = BlazorFullCalendarHelpers.CreateDraftEventForTimeSlot(
+                Cell.Date,
+                DateTime.Now.Hour);
+            await OnAddOrEditClick.InvokeAsync(draft);
+        }
+        else
+            _showAddDialog = true;
     }
 
     private string GetBadgePosition(BlazorFullCalendarEvent ev, DateTime cellDate)

@@ -43,7 +43,7 @@
 
     private DateTime[] _weekDays = [];
     private List<BlazorFullCalendarEvent> _weekEvents = [];
-    private Dictionary<int, int> _eventRows = new();
+    private Dictionary<string, int> _eventRows = new();
     private int _rowCount;
     private BlazorFullCalendarEvent? _selectedEvent;
 
@@ -56,7 +56,7 @@
             .ThenBy(e => e.StartDate)
             .ToList();
 
-        _eventRows = new Dictionary<int, int>();
+        _eventRows = new Dictionary<string, int>();
         var rowUsageByDay = _weekDays.ToDictionary(d => d.Date, _ => new HashSet<int>());
 
         foreach (var ev in _weekEvents)

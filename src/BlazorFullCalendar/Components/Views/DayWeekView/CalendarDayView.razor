@@ -35,7 +35,7 @@
                              @ondragenter="() => OnDragEnterHour(hour, 0)"
                              @ondragover:preventDefault="true"
                              @ondrop="() => OnDropHour(hour, 0)"
-                             @onclick="() => OnHourClick(hour)">
+                             @onclick="() => OnHourClickAsync(hour)">
                             @if (h > 0)
                             {
                                 <div style="position:absolute;top:0;left:0;right:0;border-top:1px solid var(--cal-border);"></div>
@@ -109,6 +109,7 @@
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarChangeNotifier Notifier { get; set; } = default!;
+    [CascadingParameter(Name = "OnAddOrEditClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
     [Parameter] public List<BlazorFullCalendarEvent> SingleDayEvents { get; set; } = [];
     [Parameter] public List<BlazorFullCalendarEvent> MultiDayEvents { get; set; } = [];
 
@@ -125,8 +126,15 @@
     private void SelectEvent(BlazorFullCalendarEvent ev) => _selectedEvent = ev;
     private void CloseEventDetails() => _selectedEvent = null;
 
-    private void OnHourClick(int hour)
+    private async Task OnHourClickAsync(int hour)
     {
+        if (OnAddOrEditClick.HasDelegate)
+        {
+            var draft = BlazorFullCalendarHelpers.CreateDraftEventForTimeSlot(State.SelectedDate, hour);
+            await OnAddOrEditClick.InvokeAsync(draft);
+            return;
+        }
+
         _addStartDate = State.SelectedDate;
         _addStartHour = hour;
         _showAddDialog = true;

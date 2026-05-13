@@ -263,7 +263,7 @@ public static class BlazorFullCalendarHelpers
         return (d.Year, d.Month, d.Day);
     }
 
-    public static Dictionary<int, int> CalculateMonthEventPositions(
+    public static Dictionary<string, int> CalculateMonthEventPositions(
         List<BlazorFullCalendarEvent> multiDayEvents,
         List<BlazorFullCalendarEvent> singleDayEvents,
         DateTime selectedDate,
@@ -276,7 +276,7 @@ public static class BlazorFullCalendarHelpers
         DateTime monthStart = cal.ToDateTime(y, m, 1, 0, 0, 0, 0);
         DateTime monthEnd   = cal.AddMonths(monthStart, 1).AddDays(-1);
 
-        var eventPositions = new Dictionary<int, int>();
+        var eventPositions = new Dictionary<string, int>();
         var occupiedPositions = new Dictionary<(int Year, int Month, int Day), bool[]>();
 
         for (var d = monthStart; d <= monthEnd; d = d.AddDays(1))
@@ -329,7 +329,7 @@ public static class BlazorFullCalendarHelpers
     }
 
     public static List<(BlazorFullCalendarEvent Event, int Position, bool IsMultiDay)> GetMonthCellEvents(
-        DateTime date, List<BlazorFullCalendarEvent> events, Dictionary<int, int> eventPositions)
+        DateTime date, List<BlazorFullCalendarEvent> events, Dictionary<string, int> eventPositions)
     {
         var dayStart = date.Date;
         var eventsForDate = events.Where(ev =>
@@ -519,6 +519,24 @@ public static class BlazorFullCalendarHelpers
     {
         double minutes = DateTime.Now.TimeOfDay.TotalMinutes;
         return minutes / 60.0 * HourHeightPx;
+    }
+
+    /// <summary>
+    /// New event with only <see cref="BlazorFullCalendarEvent.StartDate"/> and <see cref="BlazorFullCalendarEvent.EndDate"/>
+    /// set (same default duration as the built-in add dialog: 30 minutes from the slot start).
+    /// </summary>
+    public static BlazorFullCalendarEvent CreateDraftEventForTimeSlot(
+        DateTime day,
+        int hour,
+        int startMinute = 0,
+        int durationMinutes = 30)
+    {
+        var start = day.Date.AddHours(hour).AddMinutes(startMinute);
+        return new BlazorFullCalendarEvent
+        {
+            StartDate = start,
+            EndDate = start.AddMinutes(durationMinutes)
+        };
     }
 
     public static string Capitalize(string str)

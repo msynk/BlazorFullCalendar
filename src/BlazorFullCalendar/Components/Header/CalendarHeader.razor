@@ -13,7 +13,7 @@
 
     <div class="cal-header-right">
         <FilterEvents />
-        <button class="cal-btn cal-btn-primary cal-btn-sm" @onclick="() => _showAddDialog = true">
+        <button class="cal-btn cal-btn-primary cal-btn-sm" @onclick="OnAddEventClick">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             @Texts.AddEventButton
         </button>
@@ -29,8 +29,22 @@
 @code {
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter(Name = "OnAddOrEditClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
 
     private bool _showAddDialog;
+
+    private async Task OnAddEventClick()
+    {
+        if (OnAddOrEditClick.HasDelegate)
+        {
+            var draft = BlazorFullCalendarHelpers.CreateDraftEventForTimeSlot(
+                State.SelectedDate,
+                DateTime.Now.Hour);
+            await OnAddOrEditClick.InvokeAsync(draft);
+        }
+        else
+            _showAddDialog = true;
+    }
 
     protected override void OnInitialized() => State.OnStateChanged += Refresh;
     private void Refresh() => InvokeAsync(StateHasChanged);
