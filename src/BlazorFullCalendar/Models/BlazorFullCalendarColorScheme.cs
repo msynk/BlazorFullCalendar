@@ -36,7 +36,7 @@ public sealed class BlazorFullCalendarColorScheme
     {
         var name = texts.GetColorLabel(color);
         var t = Find(color)?.Title?.Trim();
-        return string.IsNullOrEmpty(t) ? name : $"{name} â€” {t}";
+        return string.IsNullOrEmpty(t) ? name : $"{name} - {t}";
     }
 
     /// <summary>

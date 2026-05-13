@@ -8,7 +8,7 @@ public enum BlazorFullCalendarTheme
     /// <summary>Built-in neutral palette (original styling).</summary>
     Default,
 
-    /// <summary>Microsoft Fluentâ€“inspired light/dark tokens (Segoe-centric, brand blue, WinUI-like surfaces).</summary>
+    /// <summary>Microsoft Fluent-inspired light/dark tokens (Segoe-centric, brand blue, WinUI-like surfaces).</summary>
     Fluent
 }
 

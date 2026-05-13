@@ -8,7 +8,7 @@
             <h1 style="font-size:18px;font-weight:700;margin:0;">Live Demo</h1>
             <p style="font-size:12px;color:var(--demo-text-secondary);margin:0;">
                 Create events, switch views, drag &amp; drop, toggle settings.
-                Colors show the <strong>localized color name</strong> first, then an optional <code style="font-size:11px;">Title</code> (space / track)â€”see <code style="font-size:11px;">EventColorOptions</code> in the filter, add/edit, details, or agenda grouped by color.
+                Colors show the <strong>localized color name</strong> first, then an optional <code style="font-size:11px;">Title</code> (space / track)-see <code style="font-size:11px;">EventColorOptions</code> in the filter, add/edit, details, or agenda grouped by color.
             </p>
         </div>
 
@@ -79,15 +79,15 @@
 </div>
 
 @code {
-    // Showcases EventColorOptions: custom order; Title is shown after the localized color name (e.g. Blue â€” â€¦).
+    // Showcases EventColorOptions: custom order; Title is shown after the localized color name (e.g. Blue - ...).
     private static readonly IReadOnlyList<BlazorFullCalendarColorOption> DemoEventColorOptions =
     [
-        new() { Color = BlazorFullCalendarEventColor.Blue,   Title = "HQ â€” Bay Wing Â· open Â· 2nd floor" },
-        new() { Color = BlazorFullCalendarEventColor.Green,  Title = "The Garden Â· room 204" },
-        new() { Color = BlazorFullCalendarEventColor.Purple, Title = "Executive studio Â· 14th floor" },
-        new() { Color = BlazorFullCalendarEventColor.Yellow, Title = "Deep work pods Â· quiet floor" },
-        new() { Color = BlazorFullCalendarEventColor.Red,    Title = "War room Â· B1" },
-        new() { Color = BlazorFullCalendarEventColor.Orange, Title = "Customer lab Â· ground floor" },
+        new() { Color = BlazorFullCalendarEventColor.Blue,   Title = "HQ - Bay Wing" },
+        new() { Color = BlazorFullCalendarEventColor.Green,  Title = "The Garden - room 204" },
+        new() { Color = BlazorFullCalendarEventColor.Purple, Title = "Executive studio - 14th floor" },
+        new() { Color = BlazorFullCalendarEventColor.Yellow, Title = "Deep work pods - quiet floor" },
+        new() { Color = BlazorFullCalendarEventColor.Red,    Title = "War room - B1" },
+        new() { Color = BlazorFullCalendarEventColor.Orange, Title = "Customer lab - ground floor" },
     ];
 
     private static readonly List<BlazorFullCalendarEvent> _demoEvents = DemoSampleData.CreateEvents();

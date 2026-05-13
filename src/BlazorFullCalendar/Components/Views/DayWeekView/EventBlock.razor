@@ -62,7 +62,7 @@
     {
         <div class="cal-resize-preview" role="status" aria-live="polite" aria-label="@Texts.ResizePreviewAriaLabel">
             <svg class="cal-resize-preview-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span class="cal-resize-preview-time">@BlazorFullCalendarHelpers.FormatTime(displayStart, State.Use24HourFormat) â€“ @BlazorFullCalendarHelpers.FormatTime(displayEnd, State.Use24HourFormat)</span>
+            <span class="cal-resize-preview-time">@BlazorFullCalendarHelpers.FormatTime(displayStart, State.Use24HourFormat) - @BlazorFullCalendarHelpers.FormatTime(displayEnd, State.Use24HourFormat)</span>
         </div>
     }
 </div>
@@ -149,7 +149,7 @@
         if (!_isResizing || _resizeBaseEvent == null)
             return Task.CompletedTask;
 
-        // Finger back at (or very near) the grab point â†’ show the original span again and cancel
+        // Finger back at (or very near) the grab point → show the original span again and cancel
         // any in-progress preview so the user can "undo" without releasing early.
         if (deltaMinutes == 0 || Math.Abs(deltaMinutes) <= ResizeDeadZoneMinutes)
         {
@@ -190,7 +190,7 @@
                 newEnd = minEnd;
         }
 
-        // Snapped range matches drag-start range â†’ treat as restored original (clear preview).
+        // Snapped range matches drag-start range → treat as restored original (clear preview).
         if (newStart == baseEvent.StartDate && newEnd == baseEvent.EndDate)
         {
             if (_previewStart.HasValue || _previewEnd.HasValue)

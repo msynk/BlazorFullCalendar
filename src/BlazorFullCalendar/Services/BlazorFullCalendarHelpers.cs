@@ -7,7 +7,7 @@ public static class BlazorFullCalendarHelpers
     public const int HourHeightPx = 96;
     private const string FormatString = "MMM d, yyyy";
 
-    // â”€â”€ Culture-aware: Range text â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Culture-aware: Range text ------------------------------
 
     public static string RangeText(BlazorFullCalendarView view, DateTime date, CultureInfo? culture = null)
     {
@@ -29,7 +29,7 @@ public static class BlazorFullCalendarHelpers
             {
                 var start = StartOfWeek(date, culture);
                 var end = start.AddDays(6);
-                return $"{FormatCultureDate(start, culture)} â€“ {FormatCultureDate(end, culture)}";
+                return $"{FormatCultureDate(start, culture)} - {FormatCultureDate(end, culture)}";
             }
             case BlazorFullCalendarView.Day:
                 return FormatCultureDate(date, culture);
@@ -56,7 +56,7 @@ public static class BlazorFullCalendarHelpers
         return $"{abbr} {d}, {y}";
     }
 
-    // â”€â”€ Culture-aware: Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Culture-aware: Navigation ------------------------------
 
     public static DateTime NavigateDate(DateTime date, BlazorFullCalendarView view, bool forward, CultureInfo? culture = null)
     {
@@ -74,7 +74,7 @@ public static class BlazorFullCalendarHelpers
         };
     }
 
-    // â”€â”€ Culture-aware: Week helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Culture-aware: Week helpers ------------------------------
 
     public static DateTime StartOfWeek(DateTime date, CultureInfo? culture = null)
     {
@@ -94,7 +94,7 @@ public static class BlazorFullCalendarHelpers
         return Enumerable.Range(0, 7).Select(i => start.AddDays(i)).ToArray();
     }
 
-    // â”€â”€ Culture-aware: Weekday header names â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Culture-aware: Weekday header names ------------------------------
 
     /// <summary>
     /// Returns 7 shortest day-name strings (1 char) starting from
@@ -111,7 +111,7 @@ public static class BlazorFullCalendarHelpers
     }
 
     /// <summary>
-    /// Returns 7 abbreviated day-name strings (2â€“3 chars) starting from
+    /// Returns 7 abbreviated day-name strings (2-3 chars) starting from
     /// culture.DateTimeFormat.FirstDayOfWeek.
     /// </summary>
     public static string[] GetAbbreviatedWeekDayHeaders(CultureInfo? culture = null)
@@ -124,7 +124,7 @@ public static class BlazorFullCalendarHelpers
             .ToArray();
     }
 
-    // â”€â”€ Culture-aware: Calendar grid cells â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Culture-aware: Calendar grid cells ------------------------------
 
     public static List<BlazorFullCalendarCell> GetCalendarCells(DateTime selectedDate, CultureInfo? culture = null)
     {
@@ -184,7 +184,7 @@ public static class BlazorFullCalendarHelpers
         return cells;
     }
 
-    // â”€â”€ Culture-aware: Day-of-month display â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Culture-aware: Day-of-month display ------------------------------
 
     public static int GetCulturalDayOfMonth(DateTime date, CultureInfo? culture = null)
     {
@@ -192,7 +192,7 @@ public static class BlazorFullCalendarHelpers
         return culture.Calendar.GetDayOfMonth(date);
     }
 
-    // â”€â”€ Culture-aware: Events for year â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Culture-aware: Events for year ------------------------------
 
     public static List<BlazorFullCalendarEvent> GetEventsForYear(List<BlazorFullCalendarEvent> events, DateTime date, CultureInfo? culture = null)
     {
