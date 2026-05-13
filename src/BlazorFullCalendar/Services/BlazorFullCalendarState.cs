@@ -36,29 +36,25 @@ public class BlazorFullCalendarState
         _allEvents = [.. events];
         if (culture != null)
             Culture = culture;
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void SetCulture(CultureInfo culture)
     {
         Culture = culture;
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void SetSelectedDate(DateTime date)
     {
         SelectedDate = date;
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void SetView(BlazorFullCalendarView view)
     {
         View = view;
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void SetUse24HourFormat(bool value)
@@ -103,44 +99,67 @@ public class BlazorFullCalendarState
     public void NavigatePrevious()
     {
         SelectedDate = BlazorFullCalendarHelpers.NavigateDate(SelectedDate, View, false, Culture);
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void NavigateNext()
     {
         SelectedDate = BlazorFullCalendarHelpers.NavigateDate(SelectedDate, View, true, Culture);
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void GoToToday()
     {
         SelectedDate = DateTime.Today;
+        UpdateUI();
+    }
+
+    /// <summary>
+    /// Replaces the internal event list with the supplied collection when the contents differ.
+    /// Safe to call from <c>OnParametersSet</c> — it short-circuits when the list hasn't changed,
+    /// preventing infinite re-render loops.
+    /// </summary>
+    public void SyncEvents(List<BlazorFullCalendarEvent> events)
+    {
+        if (EventsMatch(events))
+            return;
+
+        _allEvents = [.. events];
         ApplyFilters();
         NotifyStateChanged();
+    }
+
+    private bool EventsMatch(List<BlazorFullCalendarEvent> events)
+    {
+        if (_allEvents.Count != events.Count)
+            return false;
+
+        for (var i = 0; i < _allEvents.Count; i++)
+        {
+            if (!ReferenceEquals(_allEvents[i], events[i]))
+                return false;
+        }
+
+        return true;
     }
 
     public void AddEvent(BlazorFullCalendarEvent ev)
     {
         _allEvents.Add(ev);
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void UpdateEvent(BlazorFullCalendarEvent ev)
     {
         var idx = _allEvents.FindIndex(e => e.Id == ev.Id);
         if (idx >= 0) _allEvents[idx] = ev;
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void RemoveEvent(string eventId)
     {
         _allEvents.RemoveAll(e => e.Id == eventId);
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void FilterByColor(BlazorFullCalendarEventColor color)
@@ -149,8 +168,7 @@ public class BlazorFullCalendarState
             SelectedColors.Remove(color);
         else
             SelectedColors.Add(color);
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void SetColorFilter(BlazorFullCalendarEventColor? color)
@@ -159,13 +177,17 @@ public class BlazorFullCalendarState
         if (color.HasValue)
             SelectedColors.Add(color.Value);
 
-        ApplyFilters();
-        NotifyStateChanged();
+        UpdateUI();
     }
 
     public void SetAttendeeFilter(string? attendeeKey)
     {
         SelectedAttendeeKey = string.IsNullOrWhiteSpace(attendeeKey) ? null : attendeeKey.Trim();
+        UpdateUI();
+    }
+
+    public void UpdateUI()
+    {
         ApplyFilters();
         NotifyStateChanged();
     }

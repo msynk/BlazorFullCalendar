@@ -8,11 +8,13 @@
         <CascadingValue Value="_changeNotifier">
             <CascadingValue Value="_colorScheme">
                 <CascadingValue Value="OnAddOrEditClick" Name="OnAddOrEditClick">
-                    <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
-                        <CalendarHeader />
-                        <CalendarBody />
-                        <CalendarToast />
-                    </div>
+                    <CascadingValue Value="OnSave" Name="OnSave">
+                        <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
+                            <CalendarHeader />
+                            <CalendarBody />
+                            <CalendarToast />
+                        </div>
+                    </CascadingValue>
                 </CascadingValue>
             </CascadingValue>
         </CascadingValue>
@@ -56,6 +58,14 @@
     /// Raised when a user adds, edits, or deletes an event in the calendar UI.
     /// </summary>
     [Parameter] public EventCallback<BlazorFullCalendarChangeEventArgs> OnChange { get; set; }
+
+    /// <summary>
+    /// When assigned, the built-in add/edit dialog does <b>not</b> mutate the internal event list.
+    /// Instead it invokes this callback with the <see cref="BlazorFullCalendarEvent"/> that the user
+    /// created or edited. The consumer is responsible for persisting the change and updating the
+    /// <see cref="Events"/> collection so the calendar reflects the new state on next render.
+    /// </summary>
+    [Parameter] public EventCallback<BlazorFullCalendarEvent> OnSave { get; set; }
 
     /// <summary>
     /// When assigned, the built-in add/edit dialog is suppressed. For a new event, the callback receives a draft
@@ -111,6 +121,9 @@
         var resolved = ResolveCulture();
         if (!string.Equals(resolved.Name, State.Culture.Name, StringComparison.Ordinal))
             State.SetCulture(resolved);
+
+        if (OnSave.HasDelegate && Events is not null)
+            State.SyncEvents(Events);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
