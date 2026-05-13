@@ -6,6 +6,8 @@ A feature-rich, interactive calendar component for Blazor applications. Built wi
 
 - **5 View Modes**: Day, Week, Month, Year, and Agenda views with smooth transitions
 - **Event Management**: Create, edit, and delete events with a polished dialog and form validation
+- **External Save (`OnSave`)**: Keep the built-in add/edit dialog but delegate persistence to your own code — the component won't mutate its internal list, so you stay in full control of the data flow
+- **Custom Add/Edit UI (`OnAddOrEditClick`)**: Suppress the built-in dialog entirely and receive a draft or cloned event so you can show your own creation/editing experience
 - **Culture-Aware Date-Time Picker**: Built-in dropdown date-time picker in add/edit dialogs (no browser-native `datetime-local`) with culture calendar rendering support (including `fa-IR`)
 - **Drag & Drop**: Move events between time slots and dates with native HTML5 drag-and-drop
 - **Resize**: Drag the top or bottom handle of any day/week event block to adjust its start or end time
@@ -123,6 +125,70 @@ If you prefer to control asset loading yourself — for example to set a specifi
                     @rendermode="InteractiveServer" />
 ```
 
+### External Save Example (`OnSave`)
+
+When `OnSave` is assigned the built-in dialog still renders, but the component no longer mutates its internal event list. Instead it invokes the callback with the created or edited `BlazorFullCalendarEvent`. You persist the change and update the bound `Events` collection so the calendar reflects the new state on next render.
+
+```razor
+<BlazorFullCalendar Events="myEvents"
+                    OnSave="HandleSave"
+                    OnChange="HandleCalendarChange"
+                    @rendermode="InteractiveServer" />
+
+@code {
+    private List<BlazorFullCalendarEvent> myEvents = new();
+
+    private Task HandleSave(BlazorFullCalendarEvent ev)
+    {
+        // Persist to your backend, then update the list:
+        var idx = myEvents.FindIndex(e => e.Id == ev.Id);
+        if (idx >= 0)
+            myEvents[idx] = ev;   // edit
+        else
+            myEvents.Add(ev);     // add
+
+        return Task.CompletedTask;
+    }
+
+    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
+        => Task.CompletedTask;
+}
+```
+
+### Custom Add/Edit UI Example (`OnAddOrEditClick`)
+
+When `OnAddOrEditClick` is assigned the built-in add/edit dialog is suppressed entirely. For a new event the callback receives a draft with `StartDate`/`EndDate` pre-filled from the clicked slot and an empty `Id`; for an edit it receives a clone of the existing event. Use `string.IsNullOrEmpty(ev.Id)` to distinguish create from edit.
+
+```razor
+<BlazorFullCalendar Events="myEvents"
+                    OnAddOrEditClick="HandleAddOrEdit"
+                    OnChange="HandleCalendarChange"
+                    @rendermode="InteractiveServer" />
+
+@code {
+    private List<BlazorFullCalendarEvent> myEvents = new();
+
+    private Task HandleAddOrEdit(BlazorFullCalendarEvent? ev)
+    {
+        if (ev is null) return Task.CompletedTask;
+
+        if (string.IsNullOrEmpty(ev.Id))
+        {
+            // New event — open your own creation dialog
+        }
+        else
+        {
+            // Existing event — open your own edit dialog
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
+        => Task.CompletedTask;
+}
+```
+
 ### Localization Notes
 
 - The event add/edit dialog uses a custom dropdown date-time picker instead of native browser date inputs.
@@ -163,7 +229,9 @@ If you prefer to control asset loading yourself — for example to set a specifi
 | `Texts` | `BlazorFullCalendarTexts` | `new()` | Custom UI strings for labels, placeholders, action buttons, aria labels, and validation messages |
 | `Theme` | `BlazorFullCalendarTheme` | `Default` | Visual theme — `Default` or `Fluent` (WinUI-style). Dark mode is supported for both |
 | `EventColorOptions` | `IReadOnlyList<BlazorFullCalendarColorOption>?` | `null` | Ordered list of event colors shown in pickers and filters. When `null` all colors are shown in enum order |
-| `OnChange` | `EventCallback<BlazorFullCalendarChangeEventArgs>` | — | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`; `Source`: `Dialog`, `Drag`, `Resize`) |
+| `OnChange` | `EventCallback<BlazorFullCalendarChangeEventArgs>` | — | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`; `Source`: `Dialog`, `Drag`, `Resize`, `Delete`) |
+| `OnSave` | `EventCallback<BlazorFullCalendarEvent>` | — | When assigned, the built-in dialog does **not** mutate the internal event list. The callback receives the created/edited event; you persist the change and update `Events` yourself |
+| `OnAddOrEditClick` | `EventCallback<BlazorFullCalendarEvent?>` | — | When assigned, the built-in add/edit dialog is suppressed. Receives a draft event (empty `Id` = create) or a clone of the existing event (edit). Show your own UI and update `Events` after persisting |
 | `LoadAssets` | `bool` | `true` | When `true` the component automatically injects its CSS and JS into the page on first render. Set to `false` to manage assets manually (see [Asset loading](#4-asset-loading)) |
 
 ---
@@ -177,11 +245,16 @@ public class BlazorFullCalendarEvent
 {
     public string Id { get; set; }
     public string Title { get; set; }
-    public string? Description { get; set; }
+    public string Description { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public BlazorFullCalendarEventColor Color { get; set; }
     public List<BlazorFullCalendarAttendee> Attendees { get; set; }
+
+    // Computed
+    public bool IsSingleDay { get; }    // StartDate.Date == EndDate.Date
+    public bool IsMultiDay { get; }     // !IsSingleDay
+    public TimeSpan Duration { get; }   // EndDate - StartDate
 }
 ```
 
@@ -190,8 +263,13 @@ public class BlazorFullCalendarEvent
 ```csharp
 public class BlazorFullCalendarAttendee
 {
-    public string Id { get; set; }
-    public string FullName { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string? Id { get; set; }
+
+    // Computed
+    public string FullName { get; }   // "FirstName LastName"
+    public string Initials { get; }   // e.g. "AJ"
 }
 ```
 
@@ -202,12 +280,12 @@ Available values: `Blue`, `Green`, `Red`, `Yellow`, `Purple`, `Orange`
 ### BlazorFullCalendarChangeEventArgs
 
 ```csharp
-public class BlazorFullCalendarChangeEventArgs
+public sealed class BlazorFullCalendarChangeEventArgs
 {
-    public BlazorFullCalendarEvent Event { get; set; }    // the new/updated state
-    public BlazorFullCalendarEvent? OldEvent { get; set; } // previous state (Edit/Delete)
-    public BlazorFullCalendarChangeKind Kind { get; set; } // Add | Edit | Delete
-    public BlazorFullCalendarChangeSource Source { get; set; } // Dialog | Drag | Resize
+    public required BlazorFullCalendarEvent Event { get; init; }   // new/updated state (or removed snapshot for Delete)
+    public BlazorFullCalendarEvent? OldEvent { get; init; }        // previous state (Edit/Delete); null for Add
+    public required BlazorFullCalendarChangeKind Kind { get; init; } // Add | Edit | Delete
+    public BlazorFullCalendarChangeSource Source { get; init; }      // Dialog | Drag | Resize | Delete
 }
 ```
 
