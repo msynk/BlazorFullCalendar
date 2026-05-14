@@ -84,21 +84,14 @@
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarColorScheme ColorScheme { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarChangeNotifier Notifier { get; set; } = default!;
-    [CascadingParameter(Name = "OnAddOrEditClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
     [Parameter] public BlazorFullCalendarEvent Event { get; set; } = default!;
     [Parameter] public EventCallback OnClose { get; set; }
 
     private bool _showEdit;
 
-    private async Task EditAsync()
+    private void EditAsync()
     {
-        if (OnAddOrEditClick.HasDelegate)
-        {
-            await OnAddOrEditClick.InvokeAsync(BlazorFullCalendarChangeNotifier.CloneEvent(Event));
-            await OnClose.InvokeAsync();
-        }
-        else
-            _showEdit = true;
+        _showEdit = true;
     }
 
     private void OnEditClose()

@@ -89,7 +89,7 @@
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarChangeNotifier Notifier { get; set; } = default!;
-    [CascadingParameter(Name = "OnAddOrEditClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
+    [CascadingParameter(Name = "OnAddClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddClick { get; set; }
     [CascadingParameter(Name = "OnEventClick")] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
     [Parameter] public List<BlazorFullCalendarEvent> SingleDayEvents { get; set; } = [];
     [Parameter] public List<BlazorFullCalendarEvent> MultiDayEvents { get; set; } = [];
@@ -119,11 +119,11 @@
 
     private async Task OnHourClickAsync(DateTime day, int hour)
     {
-        if (OnAddOrEditClick.HasDelegate)
+        if (OnAddClick.HasDelegate)
         {
             State.SetSelectedDate(day);
             var draft = BlazorFullCalendarHelpers.CreateDraftEventForTimeSlot(day, hour);
-            await OnAddOrEditClick.InvokeAsync(draft);
+            await OnAddClick.InvokeAsync(draft);
             return;
         }
 

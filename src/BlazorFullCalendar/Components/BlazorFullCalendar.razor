@@ -7,7 +7,7 @@
     <CascadingValue Value="Texts">
         <CascadingValue Value="_changeNotifier">
             <CascadingValue Value="_colorScheme">
-                <CascadingValue Value="OnAddOrEditClick" Name="OnAddOrEditClick">
+                <CascadingValue Value="OnAddClick" Name="OnAddClick">
                     <CascadingValue Value="OnEventClick" Name="OnEventClick">
                         <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
                             <CalendarHeader />
@@ -62,15 +62,14 @@
     [Parameter] public EventCallback<BlazorFullCalendarChangeEventArgs> OnChange { get; set; }
 
     /// <summary>
-    /// When assigned, the built-in add/edit dialog is suppressed. For a new event, the callback receives a draft
+    /// When assigned, the built-in add dialog is suppressed. The callback receives a draft
     /// <see cref="BlazorFullCalendarEvent"/> with <see cref="BlazorFullCalendarEvent.StartDate"/> and
     /// <see cref="BlazorFullCalendarEvent.EndDate"/> set from the interaction (for example the clicked day/week slot);
-    /// <see cref="BlazorFullCalendarEvent.Id"/> is empty and other fields are left at defaults (use
-    /// <see cref="string.IsNullOrEmpty"/> on <c>Id</c> to treat the payload as create). For edit, it receives a clone of
-    /// the existing event (for example after Edit in the event details dialog). Consumers should show their own UI and
+    /// <see cref="BlazorFullCalendarEvent.Id"/> is empty and other fields are left at defaults.
+    /// Consumers should show their own UI and
     /// raise <see cref="OnChange"/> (or mutate <see cref="Events"/> bound to parent state) after persisting changes.
     /// </summary>
-    [Parameter] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
+    [Parameter] public EventCallback<BlazorFullCalendarEvent?> OnAddClick { get; set; }
 
     /// <summary>
     /// When assigned, the built-in event details dialog is suppressed when an event is clicked.

@@ -29,18 +29,18 @@
 @code {
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
-    [CascadingParameter(Name = "OnAddOrEditClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
+    [CascadingParameter(Name = "OnAddClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddClick { get; set; }
 
     private bool _showAddDialog;
 
     private async Task OnAddEventClick()
     {
-        if (OnAddOrEditClick.HasDelegate)
+        if (OnAddClick.HasDelegate)
         {
             var draft = BlazorFullCalendarHelpers.CreateDraftEventForTimeSlot(
                 State.SelectedDate,
                 DateTime.Now.Hour);
-            await OnAddOrEditClick.InvokeAsync(draft);
+            await OnAddClick.InvokeAsync(draft);
         }
         else
             _showAddDialog = true;

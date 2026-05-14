@@ -6,7 +6,7 @@ A feature-rich, interactive calendar component for Blazor applications. Built wi
 
 - **5 View Modes**: Day, Week, Month, Year, and Agenda views with smooth transitions
 - **Event Management**: Create, edit, and delete events with a polished dialog and form validation
-- **Custom Add/Edit UI (`OnAddOrEditClick`)**: Suppress the built-in dialog entirely and receive a draft or cloned event so you can show your own creation/editing experience
+- **Custom Add UI (`OnAddClick`)**: Suppress the built-in add dialog and receive a draft event so you can show your own creation experience
 - **Custom Event Click (`OnEventClick`)**: Suppress the built-in event details dialog and handle event clicks yourself
 - **Culture-Aware Date-Time Picker**: Built-in dropdown date-time picker in add/edit dialogs (no browser-native `datetime-local`) with culture calendar rendering support (including `fa-IR`)
 - **Drag & Drop**: Move events between time slots and dates with native HTML5 drag-and-drop
@@ -125,31 +125,24 @@ If you prefer to control asset loading yourself — for example to set a specifi
                     @rendermode="InteractiveServer" />
 ```
 
-### Custom Add/Edit UI Example (`OnAddOrEditClick`)
+### Custom Add UI Example (`OnAddClick`)
 
-When `OnAddOrEditClick` is assigned the built-in add/edit dialog is suppressed entirely. For a new event the callback receives a draft with `StartDate`/`EndDate` pre-filled from the clicked slot and an empty `Id`; for an edit it receives a clone of the existing event. Use `string.IsNullOrEmpty(ev.Id)` to distinguish create from edit.
+When `OnAddClick` is assigned the built-in add dialog is suppressed. The callback receives a draft event with `StartDate`/`EndDate` pre-filled from the clicked slot. Show your own creation UI and add the event to `Events` after persisting.
 
 ```razor
 <BlazorFullCalendar Events="myEvents"
-                    OnAddOrEditClick="HandleAddOrEdit"
+                    OnAddClick="HandleAdd"
                     OnChange="HandleCalendarChange"
                     @rendermode="InteractiveServer" />
 
 @code {
     private List<BlazorFullCalendarEvent> myEvents = new();
 
-    private Task HandleAddOrEdit(BlazorFullCalendarEvent? ev)
+    private Task HandleAdd(BlazorFullCalendarEvent? ev)
     {
         if (ev is null) return Task.CompletedTask;
 
-        if (string.IsNullOrEmpty(ev.Id))
-        {
-            // New event — open your own creation dialog
-        }
-        else
-        {
-            // Existing event — open your own edit dialog
-        }
+        // Open your own creation dialog with the pre-filled draft
 
         return Task.CompletedTask;
     }
@@ -224,7 +217,7 @@ When `OnEventClick` is assigned the built-in event details dialog is suppressed 
 | `Theme` | `BlazorFullCalendarTheme` | `Default` | Visual theme — `Default` or `Fluent` (WinUI-style). Dark mode is supported for both |
 | `EventColorOptions` | `IReadOnlyList<BlazorFullCalendarColorOption>?` | `null` | Ordered list of event colors shown in pickers and filters. When `null` all colors are shown in enum order |
 | `OnChange` | `EventCallback<BlazorFullCalendarChangeEventArgs>` | — | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`; `Source`: `Dialog`, `Drag`, `Resize`, `Delete`) |
-| `OnAddOrEditClick` | `EventCallback<BlazorFullCalendarEvent?>` | — | When assigned, the built-in add/edit dialog is suppressed. Receives a draft event (empty `Id` = create) or a clone of the existing event (edit). Show your own UI and update `Events` after persisting |
+| `OnAddClick` | `EventCallback<BlazorFullCalendarEvent?>` | — | When assigned, the built-in add dialog is suppressed. Receives a draft event with pre-filled dates from the clicked slot. Show your own creation UI and update `Events` after persisting |
 | `OnEventClick` | `EventCallback<BlazorFullCalendarEvent>` | — | When assigned, the built-in event details dialog is suppressed when an event is clicked. Receives the clicked event so you can show your own details UI |
 | `LoadAssets` | `bool` | `true` | When `true` the component automatically injects its CSS and JS into the page on first render. Set to `false` to manage assets manually (see [Asset loading](#4-asset-loading)) |
 
