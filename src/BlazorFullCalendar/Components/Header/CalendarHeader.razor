@@ -12,12 +12,15 @@
     </div>
 
     <div class="bfc-header-right">
-        <FilterEvents />
+        @if (!HideFilters)
+        {
+            <FilterEvents />
+        }
         <button class="bfc-btn bfc-btn-primary bfc-btn-sm" @onclick="OnAddEventClick">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             @Texts.AddEventButton
         </button>
-        @if (Options.ShowSettingsButton)
+        @if (!HideSettings)
         {
             <Settings />
         }
@@ -33,6 +36,8 @@
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarOptions Options { get; set; } = default!;
+    [CascadingParameter(Name = "HideFilters")] public bool HideFilters { get; set; }
+    [CascadingParameter(Name = "HideSettings")] public bool HideSettings { get; set; }
     [CascadingParameter(Name = "OnAddClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddClick { get; set; }
 
     private bool _showAddDialog;

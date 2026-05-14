@@ -8,15 +8,19 @@
         <CascadingValue Value="_changeNotifier">
             <CascadingValue Value="_colorScheme">
                 <CascadingValue Value="Options">
-                    <CascadingValue Value="OnAddClick" Name="OnAddClick">
-                        <CascadingValue Value="OnEventClick" Name="OnEventClick">
-                            <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
-                                <CalendarHeader />
-                                <CalendarBody MonthEventTemplate="MonthEventTemplate"
-                                              WeekEventTemplate="WeekEventTemplate"
-                                              DayEventTemplate="DayEventTemplate" />
-                                <CalendarToast />
-                            </div>
+                    <CascadingValue Value="HideFilters" Name="HideFilters">
+                        <CascadingValue Value="HideSettings" Name="HideSettings">
+                            <CascadingValue Value="OnAddClick" Name="OnAddClick">
+                                <CascadingValue Value="OnEventClick" Name="OnEventClick">
+                                    <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
+                                        <CalendarHeader />
+                                        <CalendarBody MonthEventTemplate="MonthEventTemplate"
+                                                      WeekEventTemplate="WeekEventTemplate"
+                                                      DayEventTemplate="DayEventTemplate" />
+                                        <CalendarToast />
+                                    </div>
+                                </CascadingValue>
+                            </CascadingValue>
                         </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
@@ -112,7 +116,19 @@
     [Parameter] public bool LoadAssets { get; set; } = true;
 
     /// <summary>
-    /// Configuration options controlling the settings button visibility and initial calendar preferences
+    /// When <c>true</c>, the built-in color and attendee filter dropdowns are hidden from the calendar header.
+    /// Consumers can provide their own external filter UI and pass pre-filtered events to the calendar.
+    /// </summary>
+    [Parameter] public bool HideFilters { get; set; }
+
+    /// <summary>
+    /// When <c>true</c>, the built-in settings gear button is hidden from the calendar header.
+    /// Consumers can still drive settings programmatically through the <see cref="Options"/> object.
+    /// </summary>
+    [Parameter] public bool HideSettings { get; set; }
+
+    /// <summary>
+    /// Configuration options controlling initial calendar preferences
     /// such as dark mode, time format, badge variant, day start hour, and agenda grouping.
     /// Values are applied when the component initializes or when a new instance is assigned.
     /// </summary>

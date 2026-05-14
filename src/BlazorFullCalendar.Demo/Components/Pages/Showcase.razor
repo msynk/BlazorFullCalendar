@@ -7,10 +7,10 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
         Customization
     </div>
-    <h1>Templates &amp;<br/>Custom Handlers</h1>
+    <h1>Templates, Handlers<br/>&amp; Custom Filters</h1>
     <p>
         See how to customize event rendering with templates, attach metadata via the <code>Data</code> property,
-        and replace built-in dialogs with your own UI using <code>OnEventClick</code> and <code>OnAddClick</code>.
+        replace built-in dialogs with your own UI, and build external filter controls with <code>HideFilters</code>.
     </p>
 </section>
 
@@ -344,8 +344,8 @@
         </div>
         <h2>Calendar Options</h2>
         <p>
-            Use the <code>Options</code> parameter to configure calendar preferences and control whether
-            the built-in settings button is visible. When hidden, drive the same settings programmatically.
+            Use the <code>Options</code> parameter to configure calendar preferences. Use <code>HideSettings</code>
+            to remove the gear button and drive settings programmatically from your own UI.
         </p>
     </div>
 
@@ -359,14 +359,14 @@
             </div>
             <div class="demo-showcase-card-body">
                 <p>
-                    Set <code>ShowSettingsButton</code> to <code>false</code> to hide the gear icon.
+                    Set <code>HideSettings</code> to <code>true</code> to hide the gear icon.
                     This is useful when you want a cleaner header or prefer to control settings from your own UI.
                 </p>
                 <div class="demo-code-block" style="margin:0;">
                     <div class="demo-code-label">Hide settings button</div>
                     <pre><span class="tag">&lt;BlazorFullCalendar</span>
     <span class="attr">Events</span>=<span class="str">"events"</span>
-    <span class="attr">Options</span>=<span class="str">"new() { ShowSettingsButton = false }"</span> <span class="tag">/&gt;</span></pre>
+    <span class="attr">HideSettings</span>=<span class="str">"true"</span> <span class="tag">/&gt;</span></pre>
                 </div>
             </div>
         </div>
@@ -388,12 +388,12 @@
                     <div class="demo-code-label">Full options</div>
                     <pre><span class="tag">&lt;BlazorFullCalendar</span>
     <span class="attr">Events</span>=<span class="str">"events"</span>
+    <span class="attr">HideSettings</span>=<span class="str">"true"</span>
     <span class="attr">Options</span>=<span class="str">"@@_options"</span> <span class="tag">/&gt;</span>
 
 <span class="kw">@@code</span> {
     <span class="type">BlazorFullCalendarOptions</span> _options = <span class="kw">new</span>()
     {
-        ShowSettingsButton = <span class="kw">false</span>,
         IsDarkMode = <span class="kw">true</span>,
         Use24HourFormat = <span class="kw">false</span>,
         StartOfDayHour = 6
@@ -423,8 +423,8 @@
         </label>
 
         <label class="demo-toggle-label">
-            <input type="checkbox" checked="@_optionsShowSettings" @onchange="ToggleOptionsShowSettings" />
-            <span>Show Settings Button</span>
+            <input type="checkbox" checked="@_optionsHideSettings" @onchange="ToggleOptionsHideSettings" />
+            <span>Hide Settings</span>
         </label>
 
         <div style="display:flex;align-items:center;gap:6px;">
@@ -439,6 +439,132 @@
     <div class="demo-showcase-calendar">
         <BlazorFullCalendar Events="_optionsDemoEvents"
                             Options="_calendarOptions"
+                            HideSettings="_optionsHideSettings"
+                            OnChange="HandleCalendarChange" />
+    </div>
+</section>
+
+<!-- Hide Filters & Custom Filter UI -->
+<section class="demo-showcase">
+    <div class="demo-showcase-header">
+        <div class="demo-showcase-badge" style="background:#fef3c7;color:#d97706;border:1px solid #fde68a;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            Custom Filters
+        </div>
+        <h2>External Filter UI</h2>
+        <p>
+            Set <code>HideFilters</code> to <code>true</code> to remove the built-in color and people dropdowns.
+            Build your own filter UI and pass pre-filtered events to the calendar. This example adds a text search
+            across event <code>Title</code> and <code>Description</code>.
+        </p>
+    </div>
+
+    <div class="demo-showcase-grid">
+        <div class="demo-showcase-card">
+            <div class="demo-showcase-card-header">
+                <span style="width:28px;height:28px;border-radius:8px;background:#fef3c7;color:#d97706;display:inline-flex;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </span>
+                <h3>HideFilters Option</h3>
+            </div>
+            <div class="demo-showcase-card-body">
+                <p>
+                    When <code>HideFilters = true</code>, the built-in color and people dropdowns are removed
+                    from the header. You provide your own filter UI and supply already-filtered events.
+                </p>
+                <div class="demo-code-block" style="margin:0;">
+                    <div class="demo-code-label">Hide built-in filters</div>
+                    <pre><span class="tag">&lt;BlazorFullCalendar</span>
+    <span class="attr">Events</span>=<span class="str">"filteredEvents"</span>
+    <span class="attr">HideFilters</span>=<span class="str">"true"</span> <span class="tag">/&gt;</span></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-showcase-card">
+            <div class="demo-showcase-card-header">
+                <span style="width:28px;height:28px;border-radius:8px;background:#dbeafe;color:#3b82f6;display:inline-flex;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </span>
+                <h3>Text Search &amp; Custom Filters</h3>
+            </div>
+            <div class="demo-showcase-card-body">
+                <p>
+                    Filter events externally by any criteria &mdash; color, attendee, or free-text search across
+                    <code>Title</code> and <code>Description</code>. Pass the filtered list to the calendar.
+                </p>
+                <div class="demo-code-block" style="margin:0;">
+                    <div class="demo-code-label">External filtering</div>
+                    <pre><span class="kw">@@code</span> {
+    <span class="type">List&lt;BlazorFullCalendarEvent&gt;</span> all = ...;
+
+    <span class="type">List&lt;BlazorFullCalendarEvent&gt;</span> Filtered =>
+        all.Where(e =>
+            e.Title.Contains(search) ||
+            e.Description.Contains(search))
+        .ToList();
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:12px;padding:0 24px 20px;align-items:end;">
+        <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:200px;">
+            <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Search</label>
+            <div style="position:relative;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:0.4;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" placeholder="Search title or description..."
+                       value="@_filterSearchText"
+                       @oninput="OnFilterSearchInput"
+                       style="width:100%;padding:8px 12px 8px 32px;border:1px solid var(--demo-border);border-radius:8px;font-size:13px;outline:none;background:var(--demo-bg);color:var(--demo-text);" />
+            </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:140px;">
+            <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Color</label>
+            <select @onchange="OnFilterColorChange"
+                    style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:13px;outline:none;background:var(--demo-bg);color:var(--demo-text);cursor:pointer;">
+                <option value="">All Colors</option>
+                @foreach (var c in Enum.GetValues<BlazorFullCalendarEventColor>())
+                {
+                    <option value="@c">@c</option>
+                }
+            </select>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:160px;">
+            <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Person</label>
+            <select @onchange="OnFilterAttendeeChange"
+                    style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:13px;outline:none;background:var(--demo-bg);color:var(--demo-text);cursor:pointer;">
+                <option value="">All People</option>
+                @foreach (var a in _filterDistinctAttendees)
+                {
+                    <option value="@a.Id">@a.FullName</option>
+                }
+            </select>
+        </div>
+
+        @if (_filterSearchText.Length > 0 || _filterSelectedColor.HasValue || !string.IsNullOrEmpty(_filterSelectedAttendeeId))
+        {
+            <button type="button" class="demo-btn demo-btn-secondary" style="padding:8px 16px;font-size:12px;white-space:nowrap;" @onclick="ClearCustomFilters">
+                Clear Filters
+            </button>
+        }
+    </div>
+
+    @if (_filterSearchText.Length > 0 || _filterSelectedColor.HasValue || !string.IsNullOrEmpty(_filterSelectedAttendeeId))
+    {
+        <div style="padding:0 24px 12px;">
+            <span style="font-size:12px;color:var(--demo-text-secondary);">
+                Showing @_filterDemoEventsFiltered.Count of @_filterDemoEventsAll.Count events
+            </span>
+        </div>
+    }
+
+    <div class="demo-showcase-calendar">
+        <BlazorFullCalendar Events="_filterDemoEventsFiltered"
+                            HideFilters="true"
                             OnChange="HandleCalendarChange" />
     </div>
 </section>
@@ -568,8 +694,8 @@
 
     // --- Options demo ---
     private readonly List<BlazorFullCalendarEvent> _optionsDemoEvents = DemoSampleData.CreateEvents();
-    private BlazorFullCalendarOptions _calendarOptions = new() { ShowSettingsButton = false };
-    private bool _optionsShowSettings;
+    private BlazorFullCalendarOptions _calendarOptions = new();
+    private bool _optionsHideSettings;
     private bool _optionsDarkMode;
     private bool _options24Hour = true;
     private bool _optionsDotBadge;
@@ -577,7 +703,6 @@
 
     private void RebuildOptions() => _calendarOptions = new BlazorFullCalendarOptions
     {
-        ShowSettingsButton = _optionsShowSettings,
         IsDarkMode = _optionsDarkMode,
         Use24HourFormat = _options24Hour,
         BadgeVariant = _optionsDotBadge ? BlazorFullCalendarBadgeVariant.Dot : BlazorFullCalendarBadgeVariant.Colored,
@@ -587,7 +712,7 @@
     private void ToggleOptionsDarkMode(ChangeEventArgs e) { _optionsDarkMode = (bool)e.Value!; RebuildOptions(); }
     private void ToggleOptions24Hour(ChangeEventArgs e) { _options24Hour = (bool)e.Value!; RebuildOptions(); }
     private void ToggleOptionsDotBadge(ChangeEventArgs e) { _optionsDotBadge = (bool)e.Value!; RebuildOptions(); }
-    private void ToggleOptionsShowSettings(ChangeEventArgs e) { _optionsShowSettings = (bool)e.Value!; RebuildOptions(); }
+    private void ToggleOptionsHideSettings(ChangeEventArgs e) { _optionsHideSettings = (bool)e.Value!; }
 
     private void OnOptionsStartHourChange(ChangeEventArgs e)
     {
@@ -599,4 +724,73 @@
     }
 
     private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args) => Task.CompletedTask;
+
+    // --- Hide filters / custom filter UI demo ---
+    private readonly List<BlazorFullCalendarEvent> _filterDemoEventsAll = DemoSampleData.CreateEvents();
+    private List<BlazorFullCalendarEvent> _filterDemoEventsFiltered = [];
+
+
+    private string _filterSearchText = string.Empty;
+    private BlazorFullCalendarEventColor? _filterSelectedColor;
+    private string? _filterSelectedAttendeeId;
+    private List<BlazorFullCalendarAttendee> _filterDistinctAttendees = [];
+
+    protected override void OnInitialized()
+    {
+        _filterDistinctAttendees = _filterDemoEventsAll
+            .SelectMany(e => e.Attendees)
+            .GroupBy(a => a.Id ?? a.FullName)
+            .Select(g => g.First())
+            .OrderBy(a => a.FullName, StringComparer.CurrentCultureIgnoreCase)
+            .ToList();
+
+        ApplyCustomFilters();
+    }
+
+    private void OnFilterSearchInput(ChangeEventArgs e)
+    {
+        _filterSearchText = e.Value?.ToString() ?? string.Empty;
+        ApplyCustomFilters();
+    }
+
+    private void OnFilterColorChange(ChangeEventArgs e)
+    {
+        var val = e.Value?.ToString();
+        _filterSelectedColor = !string.IsNullOrWhiteSpace(val) && Enum.TryParse<BlazorFullCalendarEventColor>(val, out var c) ? c : null;
+        ApplyCustomFilters();
+    }
+
+    private void OnFilterAttendeeChange(ChangeEventArgs e)
+    {
+        _filterSelectedAttendeeId = string.IsNullOrWhiteSpace(e.Value?.ToString()) ? null : e.Value!.ToString();
+        ApplyCustomFilters();
+    }
+
+    private void ClearCustomFilters()
+    {
+        _filterSearchText = string.Empty;
+        _filterSelectedColor = null;
+        _filterSelectedAttendeeId = null;
+        ApplyCustomFilters();
+    }
+
+    private void ApplyCustomFilters()
+    {
+        var result = _filterDemoEventsAll.AsEnumerable();
+
+        if (_filterSearchText.Length > 0)
+        {
+            result = result.Where(e =>
+                e.Title.Contains(_filterSearchText, StringComparison.OrdinalIgnoreCase) ||
+                e.Description.Contains(_filterSearchText, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (_filterSelectedColor.HasValue)
+            result = result.Where(e => e.Color == _filterSelectedColor.Value);
+
+        if (!string.IsNullOrEmpty(_filterSelectedAttendeeId))
+            result = result.Where(e => e.Attendees.Any(a => a.Id == _filterSelectedAttendeeId));
+
+        _filterDemoEventsFiltered = result.ToList();
+    }
 }

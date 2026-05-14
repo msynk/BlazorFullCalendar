@@ -7,12 +7,6 @@ namespace BlazorFullCalendar;
 /// </summary>
 public class BlazorFullCalendarOptions
 {
-    /// <summary>
-    /// Whether the settings gear button is visible in the calendar header.
-    /// When <c>false</c>, consumers can still configure settings through this options object.
-    /// </summary>
-    public bool ShowSettingsButton { get; set; } = true;
-
     /// <summary>Starts the calendar in dark mode.</summary>
     public bool IsDarkMode { get; set; }
 
@@ -27,4 +21,5 @@ public class BlazorFullCalendarOptions
 
     /// <summary>How events are grouped in the agenda view.</summary>
     public BlazorFullCalendarAgendaGroupBy AgendaModeGroupBy { get; set; } = BlazorFullCalendarAgendaGroupBy.Date;
+
 }
