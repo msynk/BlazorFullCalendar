@@ -1,0 +1,483 @@
+@page "/showcase"
+
+<PageTitle>Showcase - Blazor Calendar</PageTitle>
+
+<section class="demo-hero" style="padding-bottom:32px;">
+    <div class="demo-hero-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        Customization
+    </div>
+    <h1>Templates &amp;<br/>Custom Handlers</h1>
+    <p>
+        See how to customize event rendering with templates, attach metadata via the <code>Data</code> property,
+        and replace built-in dialogs with your own UI using <code>OnEventClick</code> and <code>OnAddOrEditClick</code>.
+    </p>
+</section>
+
+<!-- Event Templates & Customization -->
+<section class="demo-showcase">
+    <div class="demo-showcase-header">
+        <div class="demo-showcase-badge" style="background:#eff6ff;color:#3b82f6;border:1px solid #bfdbfe;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            Event Templates
+        </div>
+        <h2>Custom Event Cards</h2>
+        <p>
+            Use <code>MonthEventTemplate</code>, <code>WeekEventTemplate</code>, and <code>DayEventTemplate</code>
+            to fully customize how events render. Attach arbitrary data via the <code>Data</code> property.
+        </p>
+    </div>
+
+    <div class="demo-showcase-grid">
+        <div class="demo-showcase-card">
+            <div class="demo-showcase-card-header">
+                <span style="width:28px;height:28px;border-radius:8px;background:#dbeafe;color:#3b82f6;display:inline-flex;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </span>
+                <h3>RenderFragment&lt;T&gt; Templates</h3>
+            </div>
+            <div class="demo-showcase-card-body">
+                <p>
+                    Each template receives the <code>BlazorFullCalendarEvent</code> as <code>context</code>.
+                    The structural wrapper (drag, click, resize, positioning) stays intact &mdash; only the visual content is replaced.
+                </p>
+                <div class="demo-code-block" style="margin:0;">
+                    <div class="demo-code-label">MonthEventTemplate</div>
+                    <pre><span class="tag">&lt;BlazorFullCalendar</span> <span class="attr">Events</span>=<span class="str">"events"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;MonthEventTemplate&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="str">"font-weight:600;"</span><span class="tag">&gt;</span>
+            @@context.Title
+        <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/MonthEventTemplate&gt;</span>
+<span class="tag">&lt;/BlazorFullCalendar&gt;</span></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-showcase-card">
+            <div class="demo-showcase-card-header">
+                <span style="width:28px;height:28px;border-radius:8px;background:#fef3c7;color:#d97706;display:inline-flex;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </span>
+                <h3>Data Property &amp; CSS Classes</h3>
+            </div>
+            <div class="demo-showcase-card-body">
+                <p>
+                    Use <code>Data</code> (<code>object?</code>) to attach any payload &mdash; priority levels, category objects, URLs. Cast it inside your template. The calendar also exposes <code>bfc-color-*</code> and <code>bfc-bg-*</code> CSS classes for each event color.
+                </p>
+                <div class="demo-code-block" style="margin:0;">
+                    <div class="demo-code-label">Data property</div>
+                    <pre><span class="kw">new</span> <span class="type">BlazorFullCalendarEvent</span>
+{
+    Title = <span class="str">"Sprint Review"</span>,
+    Data = <span class="kw">new</span> { Priority = <span class="str">"High"</span>, Room = <span class="str">"B2"</span> }
+};
+
+<span class="cmt">// Inside template:</span>
+<span class="kw">@@</span>{
+    <span class="kw">var</span> data = context.Data <span class="kw">as dynamic</span>;
+}
+<span class="tag">&lt;span&gt;</span>@@data?.Priority<span class="tag">&lt;/span&gt;</span></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-showcase-calendar">
+        <BlazorFullCalendar Events="_templateDemoEvents"
+                        OnChange="HandleCalendarChange">
+            <MonthEventTemplate>
+                @{
+                    var monthData = context.Data as EventMeta;
+                }
+                <div style="display:flex;align-items:center;gap:5px;overflow:hidden;">
+                    <span style="font-size:11px;">@(monthData?.Icon ?? "📅")</span>
+                    <span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@context.Title</span>
+                    @if (monthData?.Priority == "High")
+                    {
+                        <span style="background:#fee2e2;color:#dc2626;font-size:9px;padding:1px 4px;border-radius:4px;font-weight:700;flex-shrink:0;">!</span>
+                    }
+                </div>
+            </MonthEventTemplate>
+            <DayEventTemplate>
+                @{
+                    var dayData = context.Data as EventMeta;
+                }
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                    <div style="display:flex;align-items:center;gap:5px;">
+                        <span style="font-size:13px;">@(dayData?.Icon ?? "📅")</span>
+                        <span style="font-weight:700;font-size:12px;">@context.Title</span>
+                    </div>
+                    @if (dayData?.Room is not null)
+                    {
+                        <span style="font-size:10px;opacity:0.8;">📍 @dayData.Room</span>
+                    }
+                    @if (context.Attendees.Count > 0)
+                    {
+                        <span style="font-size:10px;opacity:0.75;">👥 @string.Join(", ", context.Attendees.Select(a => a.FirstName))</span>
+                    }
+                </div>
+            </DayEventTemplate>
+            <WeekEventTemplate>
+                @{
+                    var weekData = context.Data as EventMeta;
+                }
+                <div style="display:flex;align-items:center;gap:4px;overflow:hidden;">
+                    <span style="font-size:12px;">@(weekData?.Icon ?? "📅")</span>
+                    <span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@context.Title</span>
+                    @if (weekData?.Priority == "High")
+                    {
+                        <span style="background:#fee2e2;color:#dc2626;font-size:9px;padding:1px 4px;border-radius:4px;font-weight:700;flex-shrink:0;">!</span>
+                    }
+                </div>
+            </WeekEventTemplate>
+        </BlazorFullCalendar>
+    </div>
+</section>
+
+<!-- Custom Event Handlers -->
+<section class="demo-showcase">
+    <div class="demo-showcase-header">
+        <div class="demo-showcase-badge" style="background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Custom Handlers
+        </div>
+        <h2>Custom Event Dialogs</h2>
+        <p>
+            Use <code>OnEventClick</code> to replace the built-in event details dialog and
+            <code>OnAddOrEditClick</code> to replace the add/edit dialog with your own UI.
+        </p>
+    </div>
+
+    <div class="demo-showcase-grid">
+        <div class="demo-showcase-card">
+            <div class="demo-showcase-card-header">
+                <span style="width:28px;height:28px;border-radius:8px;background:#f0fdf4;color:#16a34a;display:inline-flex;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </span>
+                <h3>OnEventClick</h3>
+            </div>
+            <div class="demo-showcase-card-body">
+                <p>
+                    Intercepts clicks on any event badge or block. The built-in details dialog is suppressed &mdash; show your own modal, side panel, or navigate to a detail page.
+                </p>
+                <div class="demo-code-block" style="margin:0;">
+                    <div class="demo-code-label">Custom event click</div>
+                    <pre><span class="tag">&lt;BlazorFullCalendar</span>
+    <span class="attr">Events</span>=<span class="str">"events"</span>
+    <span class="attr">OnEventClick</span>=<span class="str">"ShowMyModal"</span> <span class="tag">/&gt;</span>
+
+<span class="kw">@@code</span> {
+    <span class="type">BlazorFullCalendarEvent</span>? selected;
+
+    <span class="kw">void</span> ShowMyModal(<span class="type">BlazorFullCalendarEvent</span> ev)
+        => selected = ev;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-showcase-card">
+            <div class="demo-showcase-card-header">
+                <span style="width:28px;height:28px;border-radius:8px;background:#faf5ff;color:#9333ea;display:inline-flex;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+                <h3>OnAddOrEditClick</h3>
+            </div>
+            <div class="demo-showcase-card-body">
+                <p>
+                    Intercepts the add-event and edit-event actions. Receives a draft event for new events (empty <code>Id</code>) or a clone for edits. Build your own form in a custom dialog.
+                </p>
+                <div class="demo-code-block" style="margin:0;">
+                    <div class="demo-code-label">Custom add/edit</div>
+                    <pre><span class="tag">&lt;BlazorFullCalendar</span>
+    <span class="attr">Events</span>=<span class="str">"events"</span>
+    <span class="attr">OnAddOrEditClick</span>=<span class="str">"HandleAddEdit"</span> <span class="tag">/&gt;</span>
+
+<span class="kw">@@code</span> {
+    <span class="kw">void</span> HandleAddEdit(<span class="type">BlazorFullCalendarEvent</span>? ev)
+    {
+        <span class="kw">var</span> isNew = <span class="type">string</span>.IsNullOrEmpty(ev?.Id);
+        <span class="cmt">// show your own dialog…</span>
+    }
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-showcase-calendar">
+        <BlazorFullCalendar Events="_handlerDemoEvents"
+                        OnEventClick="OnCustomEventClick"
+                        OnAddOrEditClick="OnCustomAddOrEditClick"
+                        OnChange="HandleCalendarChange" />
+    </div>
+</section>
+
+@if (_clickedEvent is not null)
+{
+    <div class="demo-modal-backdrop" @onclick="CloseEventModal">
+        <div class="demo-modal" @onclick:stopPropagation="true">
+            <div class="demo-modal-header">
+                <h3>Edit Event</h3>
+                <button type="button" class="demo-modal-close" @onclick="CloseEventModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="demo-modal-body" style="display:flex;flex-direction:column;gap:14px;">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                    <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Title</label>
+                    <input type="text" @bind="_clickedEvent.Title" placeholder="Event title"
+                           style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:14px;outline:none;background:var(--demo-bg);color:var(--demo-text);" />
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                    <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Description</label>
+                    <input type="text" @bind="_clickedEvent.Description" placeholder="Event description"
+                           style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:14px;outline:none;background:var(--demo-bg);color:var(--demo-text);" />
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                        <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Start</label>
+                        <input type="datetime-local" @bind="_clickedEvent.StartDate"
+                               style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:13px;outline:none;background:var(--demo-bg);color:var(--demo-text);" />
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                        <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">End</label>
+                        <input type="datetime-local" @bind="_clickedEvent.EndDate"
+                               style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:13px;outline:none;background:var(--demo-bg);color:var(--demo-text);" />
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                    <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Color</label>
+                    <select @bind="_clickedEvent.Color"
+                            style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:14px;outline:none;background:var(--demo-bg);color:var(--demo-text);cursor:pointer;">
+                        @foreach (var c in Enum.GetValues<BlazorFullCalendarEventColor>())
+                        {
+                            <option value="@c">@c</option>
+                        }
+                    </select>
+                </div>
+                @if (_clickedEvent.Attendees.Count > 0)
+                {
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                        <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Attendees</label>
+                        <span style="font-size:13px;color:var(--demo-text);">@string.Join(", ", _clickedEvent.Attendees.Select(a => a.FullName))</span>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(_editError))
+                {
+                    <p style="font-size:12px;color:#dc2626;margin:0;">@_editError</p>
+                }
+            </div>
+            <div class="demo-modal-footer">
+                <button type="button" class="demo-btn demo-btn-secondary" style="padding:8px 16px;font-size:13px;" @onclick="CloseEventModal">Cancel</button>
+                <button type="button" class="demo-btn demo-btn-primary" style="padding:8px 16px;font-size:13px;" @onclick="SaveClickedEvent">Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_draftEvent is not null)
+{
+    var isNew = string.IsNullOrEmpty(_draftEvent.Id);
+    <div class="demo-modal-backdrop" @onclick="CloseAddEditModal">
+        <div class="demo-modal" @onclick:stopPropagation="true">
+            <div class="demo-modal-header">
+                <h3>
+                    @if (isNew)
+                    {
+                        <span style="background:#dcfce7;color:#16a34a;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600;margin-inline-end:8px;">New</span>
+                    }
+                    else
+                    {
+                        <span style="background:#dbeafe;color:#2563eb;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600;margin-inline-end:8px;">Edit</span>
+                    }
+                    @(isNew ? "Add Event" : "Edit Event")
+                </h3>
+                <button type="button" class="demo-modal-close" @onclick="CloseAddEditModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="demo-modal-body" style="display:flex;flex-direction:column;gap:14px;">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                    <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Title</label>
+                    <input type="text" @bind="_draftEvent.Title" placeholder="Event title"
+                           style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:14px;outline:none;background:var(--demo-bg);color:var(--demo-text);" />
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                    <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Description</label>
+                    <input type="text" @bind="_draftEvent.Description" placeholder="Event description"
+                           style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:14px;outline:none;background:var(--demo-bg);color:var(--demo-text);" />
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                        <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Start</label>
+                        <input type="datetime-local" @bind="_draftEvent.StartDate"
+                               style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:13px;outline:none;background:var(--demo-bg);color:var(--demo-text);" />
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                        <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">End</label>
+                        <input type="datetime-local" @bind="_draftEvent.EndDate"
+                               style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:13px;outline:none;background:var(--demo-bg);color:var(--demo-text);" />
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                    <label style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">Color</label>
+                    <select @bind="_draftEvent.Color"
+                            style="padding:8px 12px;border:1px solid var(--demo-border);border-radius:8px;font-size:14px;outline:none;background:var(--demo-bg);color:var(--demo-text);cursor:pointer;">
+                        @foreach (var c in Enum.GetValues<BlazorFullCalendarEventColor>())
+                        {
+                            <option value="@c">@c</option>
+                        }
+                    </select>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(_addEditError))
+                {
+                    <p style="font-size:12px;color:#dc2626;margin:0;">@_addEditError</p>
+                }
+            </div>
+            <div class="demo-modal-footer">
+                <button type="button" class="demo-btn demo-btn-secondary" style="padding:8px 16px;font-size:13px;" @onclick="CloseAddEditModal">Cancel</button>
+                <button type="button" class="demo-btn demo-btn-primary" style="padding:8px 16px;font-size:13px;" @onclick="SaveDraftEvent">
+                    @(isNew ? "Create" : "Save")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<footer class="demo-footer">
+    <p>
+        Blazor Calendar &mdash; Inspired by
+        <a href="https://github.com/yassir-jeraidi/full-calendar" target="_blank">yassir-jeraidi/full-calendar</a>
+    </p>
+</footer>
+
+@code {
+    private sealed record EventMeta(string? Icon, string? Priority, string? Room);
+
+    private static readonly List<BlazorFullCalendarEvent> _templateDemoEvents = CreateTemplateDemoEvents();
+    private readonly List<BlazorFullCalendarEvent> _handlerDemoEvents = DemoSampleData.CreateEvents();
+    private int _nextId = 1000;
+
+    private BlazorFullCalendarEvent? _clickedEvent;
+    private string? _clickedEventOriginalId;
+    private string? _editError;
+    private BlazorFullCalendarEvent? _draftEvent;
+    private string? _addEditError;
+
+    private static List<BlazorFullCalendarEvent> CreateTemplateDemoEvents()
+    {
+        var today = DateTime.Today;
+        return
+        [
+            new() { Id = "t1", Title = "Sprint Review",        Description = "Demo features to stakeholders.",     StartDate = today.AddHours(9),              EndDate = today.AddHours(10),            Color = BlazorFullCalendarEventColor.Blue,   Attendees = [new() { FirstName = "Alice", LastName = "J", Id = "1" }], Data = new EventMeta("🎯", "High", "Room A1") },
+            new() { Id = "t2", Title = "Design Sync",          Description = "Review new dashboard mockups.",       StartDate = today.AddHours(10).AddMinutes(30), EndDate = today.AddHours(11).AddMinutes(30), Color = BlazorFullCalendarEventColor.Purple, Attendees = [new() { FirstName = "Bob", LastName = "S", Id = "2" }], Data = new EventMeta("🎨", null, "Studio B") },
+            new() { Id = "t3", Title = "Prod Incident Review", Description = "Postmortem for last week's outage.", StartDate = today.AddHours(13),             EndDate = today.AddHours(14),            Color = BlazorFullCalendarEventColor.Red,    Attendees = [new() { FirstName = "Carol", LastName = "D", Id = "3" }, new() { FirstName = "David", LastName = "L", Id = "4" }], Data = new EventMeta("🔥", "High", null) },
+            new() { Id = "t4", Title = "Lunch & Learn",        Description = "Intro to Blazor SSR.",               StartDate = today.AddHours(12),             EndDate = today.AddHours(13),            Color = BlazorFullCalendarEventColor.Green,  Attendees = [], Data = new EventMeta("📚", null, "Cafeteria") },
+            new() { Id = "t5", Title = "Focus Block",          Description = "Deep work - no interruptions.",       StartDate = today.AddHours(14).AddMinutes(30), EndDate = today.AddHours(16),            Color = BlazorFullCalendarEventColor.Yellow, Attendees = [], Data = new EventMeta("🧘", null, null) },
+            new() { Id = "t6", Title = "Client Call",          Description = "Quarterly business review.",          StartDate = today.AddHours(16),             EndDate = today.AddHours(17),            Color = BlazorFullCalendarEventColor.Orange, Attendees = [new() { FirstName = "Eva", LastName = "M", Id = "5" }], Data = new EventMeta("📞", "High", "Board Room") },
+            new() { Id = "t7", Title = "Team Offsite",         Description = "Strategy planning at the lake house.",StartDate = today.AddDays(2).AddHours(9),   EndDate = today.AddDays(4).AddHours(17), Color = BlazorFullCalendarEventColor.Purple, Attendees = [new() { FirstName = "Alice", LastName = "J", Id = "1" }, new() { FirstName = "Bob", LastName = "S", Id = "2" }], Data = new EventMeta("🏕️", null, null) },
+            new() { Id = "t8", Title = "Release Day",          Description = "v3.0 go-live.",                       StartDate = today.AddDays(5).AddHours(10),  EndDate = today.AddDays(5).AddHours(12), Color = BlazorFullCalendarEventColor.Green,  Attendees = [], Data = new EventMeta("🚀", "High", null) },
+            new() { Id = "t9", Title = "Workshop",             Description = "Component architecture deep dive.",   StartDate = today.AddDays(1).AddHours(10),  EndDate = today.AddDays(1).AddHours(12), Color = BlazorFullCalendarEventColor.Blue,   Attendees = [new() { FirstName = "Frank", LastName = "C", Id = "6" }], Data = new EventMeta("🛠️", null, "Lab 3") },
+            new() { Id = "t10", Title = "All Hands",           Description = "Company-wide monthly meeting.",       StartDate = today.AddDays(1).AddHours(14),  EndDate = today.AddDays(1).AddHours(15), Color = BlazorFullCalendarEventColor.Orange, Attendees = [], Data = new EventMeta("📣", null, "Main Hall") },
+        ];
+    }
+
+    private void OnCustomEventClick(BlazorFullCalendarEvent ev)
+    {
+        _clickedEventOriginalId = ev.Id;
+        _clickedEvent = new BlazorFullCalendarEvent
+        {
+            Id = ev.Id,
+            Title = ev.Title,
+            Description = ev.Description,
+            StartDate = ev.StartDate,
+            EndDate = ev.EndDate,
+            Color = ev.Color,
+            Attendees = [.. ev.Attendees],
+            Data = ev.Data
+        };
+        _editError = null;
+    }
+
+    private void OnCustomAddOrEditClick(BlazorFullCalendarEvent? ev)
+    {
+        _draftEvent = ev;
+    }
+
+    private void CloseEventModal()
+    {
+        _clickedEvent = null;
+        _clickedEventOriginalId = null;
+        _editError = null;
+    }
+
+    private void SaveClickedEvent()
+    {
+        if (_clickedEvent is null) return;
+
+        if (string.IsNullOrWhiteSpace(_clickedEvent.Title))
+        {
+            _editError = "Title is required.";
+            return;
+        }
+
+        if (_clickedEvent.EndDate <= _clickedEvent.StartDate)
+        {
+            _editError = "End date must be after start date.";
+            return;
+        }
+
+        var idx = _handlerDemoEvents.FindIndex(e => e.Id == _clickedEventOriginalId);
+        if (idx >= 0)
+        {
+            _handlerDemoEvents[idx] = _clickedEvent;
+        }
+
+        _clickedEvent = null;
+        _clickedEventOriginalId = null;
+        _editError = null;
+    }
+
+    private void CloseAddEditModal()
+    {
+        _draftEvent = null;
+        _addEditError = null;
+    }
+
+    private void SaveDraftEvent()
+    {
+        if (_draftEvent is null) return;
+
+        if (string.IsNullOrWhiteSpace(_draftEvent.Title))
+        {
+            _addEditError = "Title is required.";
+            return;
+        }
+
+        if (_draftEvent.EndDate <= _draftEvent.StartDate)
+        {
+            _addEditError = "End date must be after start date.";
+            return;
+        }
+
+        var isNew = string.IsNullOrEmpty(_draftEvent.Id);
+        if (isNew)
+        {
+            _draftEvent.Id = (++_nextId).ToString();
+            _handlerDemoEvents.Add(_draftEvent);
+        }
+        else
+        {
+            var idx = _handlerDemoEvents.FindIndex(e => e.Id == _draftEvent.Id);
+            if (idx >= 0)
+                _handlerDemoEvents[idx] = _draftEvent;
+        }
+
+        _draftEvent = null;
+        _addEditError = null;
+    }
+
+    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args) => Task.CompletedTask;
+}
