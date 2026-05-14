@@ -13,5 +13,7 @@ public class BlazorFullCalendarEvent
     public bool IsSingleDay => StartDate.Date == EndDate.Date;
     public bool IsMultiDay => !IsSingleDay;
     public TimeSpan Duration => EndDate - StartDate;
+
+    public object? Data { get; set; }
 }
 
