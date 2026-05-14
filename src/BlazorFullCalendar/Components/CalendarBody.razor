@@ -5,13 +5,13 @@
     @switch (State.View)
     {
         case BlazorFullCalendarView.Month:
-            <CalendarMonthView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
+            <CalendarMonthView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" EventTemplate="MonthEventTemplate" />
             break;
         case BlazorFullCalendarView.Week:
-            <CalendarWeekView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
+            <CalendarWeekView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" EventTemplate="WeekEventTemplate" />
             break;
         case BlazorFullCalendarView.Day:
-            <CalendarDayView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
+            <CalendarDayView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" EventTemplate="DayEventTemplate" />
             break;
         case BlazorFullCalendarView.Year:
             <CalendarYearView SingleDayEvents="_singleDayEvents" MultiDayEvents="_multiDayEvents" />
@@ -24,6 +24,10 @@
 
 @code {
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
+
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? MonthEventTemplate { get; set; }
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? WeekEventTemplate { get; set; }
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? DayEventTemplate { get; set; }
 
     private List<BlazorFullCalendarEvent> _singleDayEvents = [];
     private List<BlazorFullCalendarEvent> _multiDayEvents = [];

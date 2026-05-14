@@ -18,7 +18,7 @@
                         {
                             var position = ev.StartDate.Date == d.Date ? "first"
                                 : ev.EndDate.Date == d.Date ? "last" : "middle";
-                            <MonthEventBadge Event="ev" CellDate="d" Position="@position" OnSelected="ShowEventDetails" />
+                            <MonthEventBadge Event="ev" CellDate="d" Position="@position" OnSelected="ShowEventDetails" EventTemplate="EventTemplate" />
                         }
                         else
                         {
@@ -41,6 +41,7 @@
     [CascadingParameter(Name = "OnEventClick")] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
     [Parameter] public List<BlazorFullCalendarEvent> MultiDayEvents { get; set; } = [];
     [Parameter] public DateTime Date { get; set; }
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? EventTemplate { get; set; }
 
     private DateTime[] _weekDays = [];
     private List<BlazorFullCalendarEvent> _weekEvents = [];

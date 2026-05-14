@@ -37,19 +37,26 @@
          @onpointerdown:preventDefault="true"
          @onpointerdown:stopPropagation="true"></div>
 
-    <div style="display:flex;align-items:center;gap:4px;">
-        @if (isDotVariant)
-        {
-            <EventBullet Color="Event.Color" />
-        }
-        <span class="bfc-event-block-title">@Event.Title</span>
-    </div>
-
-    @if (durationMin > 25)
+    @if (EventTemplate != null)
     {
-        <div class="bfc-event-block-time">
-            @BlazorFullCalendarHelpers.FormatTime(displayStart, State.Use24HourFormat) - @BlazorFullCalendarHelpers.FormatTime(displayEnd, State.Use24HourFormat)
+        @EventTemplate(Event)
+    }
+    else
+    {
+        <div style="display:flex;align-items:center;gap:4px;">
+            @if (isDotVariant)
+            {
+                <EventBullet Color="Event.Color" />
+            }
+            <span class="bfc-event-block-title">@Event.Title</span>
         </div>
+
+        @if (durationMin > 25)
+        {
+            <div class="bfc-event-block-time">
+                @BlazorFullCalendarHelpers.FormatTime(displayStart, State.Use24HourFormat) - @BlazorFullCalendarHelpers.FormatTime(displayEnd, State.Use24HourFormat)
+            </div>
+        }
     }
 
     <div id="@_bottomHandleId"
@@ -73,6 +80,7 @@
     [CascadingParameter] public BlazorFullCalendarChangeNotifier Notifier { get; set; } = default!;
     [Parameter] public BlazorFullCalendarEvent Event { get; set; } = default!;
     [Parameter] public EventCallback<BlazorFullCalendarEvent> OnSelected { get; set; }
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? EventTemplate { get; set; }
 
     private readonly string _instanceId = Guid.NewGuid().ToString("N");
     private DotNetObjectReference<EventBlock>? _dotNetRef;

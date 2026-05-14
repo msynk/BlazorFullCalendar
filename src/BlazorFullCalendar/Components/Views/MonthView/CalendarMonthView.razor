@@ -18,7 +18,7 @@
     <div class="bfc-month-grid">
         @foreach (var cell in cells)
         {
-            <DayCell Cell="cell" Events="allEvents" EventPositions="eventPositions" />
+            <DayCell Cell="cell" Events="allEvents" EventPositions="eventPositions" EventTemplate="EventTemplate" />
         }
     </div>
 </div>
@@ -27,5 +27,6 @@
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
     [Parameter] public List<BlazorFullCalendarEvent> SingleDayEvents { get; set; } = [];
     [Parameter] public List<BlazorFullCalendarEvent> MultiDayEvents { get; set; } = [];
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? EventTemplate { get; set; }
 }
 

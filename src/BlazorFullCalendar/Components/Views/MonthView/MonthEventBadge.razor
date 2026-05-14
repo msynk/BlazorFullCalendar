@@ -23,20 +23,27 @@
      @onclick="() => OnSelected.InvokeAsync(Event)"
      @onclick:stopPropagation="true">
 
-    <div style="display:flex;align-items:center;gap:4px;overflow:hidden;">
-        @if (isDotVariant && Position is not "middle" and not "last")
-        {
-            <EventBullet Color="Event.Color" />
-        }
-        @if (showTitle)
-        {
-            <span class="bfc-event-badge-title">@Event.Title</span>
-        }
-    </div>
-
-    @if (showTime)
+    @if (EventTemplate != null)
     {
-        <span class="bfc-event-badge-time">@BlazorFullCalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)</span>
+        @EventTemplate(Event)
+    }
+    else
+    {
+        <div style="display:flex;align-items:center;gap:4px;overflow:hidden;">
+            @if (isDotVariant && Position is not "middle" and not "last")
+            {
+                <EventBullet Color="Event.Color" />
+            }
+            @if (showTitle)
+            {
+                <span class="bfc-event-badge-title">@Event.Title</span>
+            }
+        </div>
+
+        @if (showTime)
+        {
+            <span class="bfc-event-badge-time">@BlazorFullCalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)</span>
+        }
     }
 </div>
 
@@ -46,6 +53,7 @@
     [Parameter] public DateTime CellDate { get; set; }
     [Parameter] public string Position { get; set; } = "none";
     [Parameter] public EventCallback<BlazorFullCalendarEvent> OnSelected { get; set; }
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? EventTemplate { get; set; }
 
     private string MarginStyle
     {

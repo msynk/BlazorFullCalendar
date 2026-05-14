@@ -11,7 +11,9 @@
                     <CascadingValue Value="OnEventClick" Name="OnEventClick">
                         <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
                             <CalendarHeader />
-                            <CalendarBody />
+                            <CalendarBody MonthEventTemplate="MonthEventTemplate"
+                                          WeekEventTemplate="WeekEventTemplate"
+                                          DayEventTemplate="DayEventTemplate" />
                             <CalendarToast />
                         </div>
                     </CascadingValue>
@@ -77,6 +79,24 @@
     /// to multi-day event rows and event list dialogs.
     /// </summary>
     [Parameter] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
+
+    /// <summary>
+    /// Optional template for customizing event rendering in the day view.
+    /// When provided, replaces the default event card content inside the time-grid blocks.
+    /// </summary>
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? DayEventTemplate { get; set; }
+
+    /// <summary>
+    /// Optional template for customizing event rendering in the week view.
+    /// When provided, replaces the default event card content inside the time-grid blocks.
+    /// </summary>
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? WeekEventTemplate { get; set; }
+
+    /// <summary>
+    /// Optional template for customizing event rendering in the month view.
+    /// When provided, replaces the default event badge content inside month grid cells.
+    /// </summary>
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? MonthEventTemplate { get; set; }
 
     /// <summary>
     /// When <c>true</c> (default) the component automatically injects its CSS stylesheet and JavaScript

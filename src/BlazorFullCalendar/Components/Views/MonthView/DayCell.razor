@@ -26,7 +26,7 @@
             {
                 var position = GetBadgePosition(item.Event, Cell.Date);
                 <div class="bfc-month-event-slot">
-                    <MonthEventBadge Event="item.Event" CellDate="Cell.Date" Position="@position" OnSelected="ShowEventDetails" />
+                    <MonthEventBadge Event="item.Event" CellDate="Cell.Date" Position="@position" OnSelected="ShowEventDetails" EventTemplate="EventTemplate" />
                 </div>
             }
             else
@@ -71,6 +71,7 @@
     [Parameter] public BlazorFullCalendarCell Cell { get; set; } = default!;
     [Parameter] public List<BlazorFullCalendarEvent> Events { get; set; } = [];
     [Parameter] public Dictionary<string, int> EventPositions { get; set; } = new();
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? EventTemplate { get; set; }
 
     private bool _showEventList;
     private bool _showAddDialog;

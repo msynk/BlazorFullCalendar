@@ -11,7 +11,7 @@
         @Texts.WeekMobileWarning
     </div>
 
-    <WeekViewMultiDayEventsRow MultiDayEvents="MultiDayEvents" Date="State.SelectedDate" />
+    <WeekViewMultiDayEventsRow MultiDayEvents="MultiDayEvents" Date="State.SelectedDate" EventTemplate="EventTemplate" />
 
     <div id="bfc-week-timegrid-scroll" class="bfc-week-scroll">
         <div class="bfc-week-header">
@@ -62,7 +62,7 @@
                             </div>
                         }
 
-                        <RenderGroupedEvents GroupedEvents="grouped" Day="d" OnEventSelected="SelectEvent" />
+                        <RenderGroupedEvents GroupedEvents="grouped" Day="d" OnEventSelected="SelectEvent" EventTemplate="EventTemplate" />
 
                         @if (d.Date == DateTime.Today)
                         {
@@ -93,6 +93,7 @@
     [CascadingParameter(Name = "OnEventClick")] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
     [Parameter] public List<BlazorFullCalendarEvent> SingleDayEvents { get; set; } = [];
     [Parameter] public List<BlazorFullCalendarEvent> MultiDayEvents { get; set; } = [];
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? EventTemplate { get; set; }
 
     private string? _timeGridScrollSignature;
 

@@ -14,7 +14,7 @@
         var left = hasOverlap ? style.LeftPercent : 0.0;
 
         <div style="position:absolute;top:@(style.TopPx.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))px;width:@(width.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;left:@(left.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;z-index:2;pointer-events:none;">
-            <EventBlock Event="ev" OnSelected="OnEventSelected" />
+            <EventBlock Event="ev" OnSelected="OnEventSelected" EventTemplate="EventTemplate" />
         </div>
     }
 }
@@ -23,5 +23,6 @@
     [Parameter] public List<List<BlazorFullCalendarEvent>> GroupedEvents { get; set; } = [];
     [Parameter] public DateTime Day { get; set; }
     [Parameter] public EventCallback<BlazorFullCalendarEvent> OnEventSelected { get; set; }
+    [Parameter] public RenderFragment<BlazorFullCalendarEvent>? EventTemplate { get; set; }
 }
 
