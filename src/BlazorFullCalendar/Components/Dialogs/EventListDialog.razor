@@ -37,6 +37,7 @@
 @code {
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
+    [CascadingParameter(Name = "OnEventClick")] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
     [Parameter] public DateTime Date { get; set; }
     [Parameter] public List<BlazorFullCalendarEvent> Events { get; set; } = [];
     [Parameter] public EventCallback OnClose { get; set; }
@@ -44,8 +45,13 @@
     private bool _showDetails;
     private BlazorFullCalendarEvent? _selectedEvent;
 
-    private void SelectEvent(BlazorFullCalendarEvent ev)
+    private async Task SelectEvent(BlazorFullCalendarEvent ev)
     {
+        if (OnEventClick.HasDelegate)
+        {
+            await OnEventClick.InvokeAsync(ev);
+            return;
+        }
         _selectedEvent = ev;
         _showDetails = true;
     }

@@ -8,11 +8,13 @@
         <CascadingValue Value="_changeNotifier">
             <CascadingValue Value="_colorScheme">
                 <CascadingValue Value="OnAddOrEditClick" Name="OnAddOrEditClick">
+                    <CascadingValue Value="OnEventClick" Name="OnEventClick">
                         <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
                             <CalendarHeader />
                             <CalendarBody />
                             <CalendarToast />
                         </div>
+                    </CascadingValue>
                 </CascadingValue>
             </CascadingValue>
         </CascadingValue>
@@ -67,6 +69,14 @@
     /// raise <see cref="OnChange"/> (or mutate <see cref="Events"/> bound to parent state) after persisting changes.
     /// </summary>
     [Parameter] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
+
+    /// <summary>
+    /// When assigned, the built-in event details dialog is suppressed when an event is clicked.
+    /// The callback receives the clicked <see cref="BlazorFullCalendarEvent"/>. Consumers should
+    /// show their own event details UI. This applies to all views (day, week, month, agenda) and
+    /// to multi-day event rows and event list dialogs.
+    /// </summary>
+    [Parameter] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
 
     /// <summary>
     /// When <c>true</c> (default) the component automatically injects its CSS stylesheet and JavaScript

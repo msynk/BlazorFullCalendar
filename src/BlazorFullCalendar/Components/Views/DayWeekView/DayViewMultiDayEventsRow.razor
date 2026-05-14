@@ -18,6 +18,7 @@
 
 @code {
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
+    [CascadingParameter(Name = "OnEventClick")] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
     [Parameter] public List<BlazorFullCalendarEvent> MultiDayEvents { get; set; } = [];
     [Parameter] public DateTime Date { get; set; }
 
@@ -36,7 +37,15 @@
         return "middle";
     }
 
-    private void ShowEventDetails(BlazorFullCalendarEvent ev) => _selectedEvent = ev;
+    private async Task ShowEventDetails(BlazorFullCalendarEvent ev)
+    {
+        if (OnEventClick.HasDelegate)
+        {
+            await OnEventClick.InvokeAsync(ev);
+            return;
+        }
+        _selectedEvent = ev;
+    }
     private void CloseEventDetails() => _selectedEvent = null;
 }
 

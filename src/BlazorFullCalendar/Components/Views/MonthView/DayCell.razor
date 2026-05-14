@@ -67,6 +67,7 @@
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarChangeNotifier Notifier { get; set; } = default!;
     [CascadingParameter(Name = "OnAddOrEditClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
+    [CascadingParameter(Name = "OnEventClick")] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
     [Parameter] public BlazorFullCalendarCell Cell { get; set; } = default!;
     [Parameter] public List<BlazorFullCalendarEvent> Events { get; set; } = [];
     [Parameter] public Dictionary<string, int> EventPositions { get; set; } = new();
@@ -75,7 +76,15 @@
     private bool _showAddDialog;
     private BlazorFullCalendarEvent? _selectedEvent;
 
-    private void ShowEventDetails(BlazorFullCalendarEvent ev) => _selectedEvent = ev;
+    private async Task ShowEventDetails(BlazorFullCalendarEvent ev)
+    {
+        if (OnEventClick.HasDelegate)
+        {
+            await OnEventClick.InvokeAsync(ev);
+            return;
+        }
+        _selectedEvent = ev;
+    }
     private void CloseEventDetails() => _selectedEvent = null;
 
     private async Task OnCellClick()

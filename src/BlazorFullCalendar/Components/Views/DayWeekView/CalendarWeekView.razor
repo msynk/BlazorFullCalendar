@@ -90,6 +90,7 @@
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarChangeNotifier Notifier { get; set; } = default!;
     [CascadingParameter(Name = "OnAddOrEditClick")] public EventCallback<BlazorFullCalendarEvent?> OnAddOrEditClick { get; set; }
+    [CascadingParameter(Name = "OnEventClick")] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
     [Parameter] public List<BlazorFullCalendarEvent> SingleDayEvents { get; set; } = [];
     [Parameter] public List<BlazorFullCalendarEvent> MultiDayEvents { get; set; } = [];
 
@@ -104,7 +105,15 @@
     private int? _dragHour;
     private int? _dragMinute;
 
-    private void SelectEvent(BlazorFullCalendarEvent ev) => _selectedEvent = ev;
+    private async Task SelectEvent(BlazorFullCalendarEvent ev)
+    {
+        if (OnEventClick.HasDelegate)
+        {
+            await OnEventClick.InvokeAsync(ev);
+            return;
+        }
+        _selectedEvent = ev;
+    }
     private void CloseEventDetails() => _selectedEvent = null;
 
     private async Task OnHourClickAsync(DateTime day, int hour)

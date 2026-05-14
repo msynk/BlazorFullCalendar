@@ -95,6 +95,7 @@
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarColorScheme ColorScheme { get; set; } = default!;
+    [CascadingParameter(Name = "OnEventClick")] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
 
     private string _search = "";
     private bool _showDetails;
@@ -104,8 +105,13 @@
     private void Refresh() => InvokeAsync(StateHasChanged);
     public void Dispose() => State.OnStateChanged -= Refresh;
 
-    private void ShowDetails(BlazorFullCalendarEvent ev)
+    private async Task ShowDetails(BlazorFullCalendarEvent ev)
     {
+        if (OnEventClick.HasDelegate)
+        {
+            await OnEventClick.InvokeAsync(ev);
+            return;
+        }
         _selectedEvent = ev;
         _showDetails = true;
     }
