@@ -1,4 +1,4 @@
-window.calendarInterop = {
+window.BlazorFullCalendar = {
     scrollToHour: function (elementId, hour, pixelsPerHour) {
         const el = document.getElementById(elementId);
         if (!el) return;

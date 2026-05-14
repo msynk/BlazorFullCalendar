@@ -155,11 +155,11 @@
                 link.id   = cssId;
                 document.head.appendChild(link);
             }
-            if (window.calendarInterop) return Promise.resolve();
+            if (window.BlazorFullCalendar) return Promise.resolve();
             var existing = document.getElementById(jsId);
             if (existing) {
                 return new Promise(function(resolve) {
-                    if (window.calendarInterop) { resolve(); return; }
+                    if (window.BlazorFullCalendar) { resolve(); return; }
                     existing.addEventListener('load',  resolve, { once: true });
                     existing.addEventListener('error', resolve, { once: true });
                 });

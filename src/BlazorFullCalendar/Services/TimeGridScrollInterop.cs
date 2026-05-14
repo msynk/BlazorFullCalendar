@@ -13,7 +13,7 @@ internal static class TimeGridScrollInterop
         try
         {
             await js.InvokeVoidAsync(
-                "calendarInterop.scrollToHour",
+                "BlazorFullCalendar.scrollToHour",
                 cancellationToken,
                 elementId,
                 startOfDayHour,
