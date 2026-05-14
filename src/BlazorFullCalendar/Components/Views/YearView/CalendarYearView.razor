@@ -11,23 +11,23 @@
     var yearWeekDayHeaders = BlazorFullCalendarHelpers.GetAbbreviatedWeekDayHeaders(State.Culture);
 }
 
-<div class="cal-year">
+<div class="bfc-year">
     @foreach (var monthDate in months)
     {
         var cells = BlazorFullCalendarHelpers.GetCalendarCells(monthDate, State.Culture);
         var monthIndex = cal.GetMonth(monthDate);
         var monthName = dtf.GetMonthName(monthIndex);
-        <div class="cal-year-month">
-            <div class="cal-year-month-title" @onclick="() => GoToMonth(monthDate)">
+        <div class="bfc-year-month">
+            <div class="bfc-year-month-title" @onclick="() => GoToMonth(monthDate)">
                 @monthName
             </div>
-            <div class="cal-year-weekdays">
+            <div class="bfc-year-weekdays">
                 @foreach (var wd in yearWeekDayHeaders)
                 {
-                    <div class="cal-year-weekday">@(wd.Length > 2 ? wd[..2] : wd)</div>
+                    <div class="bfc-year-weekday">@(wd.Length > 2 ? wd[..2] : wd)</div>
                 }
             </div>
-            <div class="cal-year-days">
+            <div class="bfc-year-days">
                 @foreach (var cell in cells)
                 {
                     var cellCulturalMonth = cal.GetMonth(cell.Date);
@@ -37,12 +37,12 @@
                     var dayEvents = allEvents.Where(e => e.StartDate.Date == cell.Date.Date).ToList();
                     var hasEvents = isCurrentMonth && dayEvents.Count > 0;
 
-                    <div class="cal-year-day @(!isCurrentMonth ? "other-month" : "") @(hasEvents ? "has-events" : "")"
+                    <div class="bfc-year-day @(!isCurrentMonth ? "other-month" : "") @(hasEvents ? "has-events" : "")"
                          @onclick="() => { if (hasEvents) ShowEventsForDay(cell.Date, dayEvents); }">
-                        <span class="cal-year-day-number @(isToday ? "today" : "")">@cell.Day</span>
+                        <span class="bfc-year-day-number @(isToday ? "today" : "")">@cell.Day</span>
                         @if (hasEvents)
                         {
-                            <div class="cal-year-day-bullets">
+                            <div class="bfc-year-day-bullets">
                                 @foreach (var ev in dayEvents.Take(3))
                                 {
                                     <EventBullet Color="ev.Color" />

@@ -1,41 +1,41 @@
 ﻿@namespace BlazorFullCalendar
 
-<div class="cal-overlay" @onclick="OnClose">
-    <div class="cal-dialog" @onclick:stopPropagation="true">
-        <div class="cal-dialog-header cal-dialog-header-row">
+<div class="bfc-overlay" @onclick="OnClose">
+    <div class="bfc-dialog" @onclick:stopPropagation="true">
+        <div class="bfc-dialog-header bfc-dialog-header-row">
             <div>
                 <h3>@(_isEditing ? Texts.EditEventDialogTitle : Texts.AddEventDialogTitle)</h3>
                 <p>@(_isEditing ? Texts.EditEventDialogSubtitle : Texts.AddEventDialogSubtitle)</p>
             </div>
-            <button class="cal-dialog-close-btn" @onclick="OnClose" aria-label="@Texts.CloseAriaLabel">
+            <button class="bfc-dialog-close-btn" @onclick="OnClose" aria-label="@Texts.CloseAriaLabel">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
-        <div class="cal-dialog-body">
-            <div class="cal-field">
+        <div class="bfc-dialog-body">
+            <div class="bfc-field">
                 <label>@Texts.TitleLabel</label>
                 <input type="text" @bind="_title" placeholder="@Texts.EventTitlePlaceholder" />
                 @if (_errors.ContainsKey("title"))
                 {
-                    <div class="cal-field-error">@_errors["title"]</div>
+                    <div class="bfc-field-error">@_errors["title"]</div>
                 }
             </div>
 
-            <div class="cal-field">
+            <div class="bfc-field">
                 <label>@Texts.StartDateTimeLabel</label>
                 <DateTimePicker Value="_startDate" ValueChanged="OnStartDateChanged" Culture="State.Culture" />
             </div>
 
-            <div class="cal-field">
+            <div class="bfc-field">
                 <label>@Texts.EndDateTimeLabel</label>
                 <DateTimePicker Value="_endDate" ValueChanged="OnEndDateChanged" Culture="State.Culture" />
                 @if (_errors.ContainsKey("endDate"))
                 {
-                    <div class="cal-field-error">@_errors["endDate"]</div>
+                    <div class="bfc-field-error">@_errors["endDate"]</div>
                 }
             </div>
 
-            <div class="cal-field">
+            <div class="bfc-field">
                 <label>@Texts.ColorLabel</label>
                 <select @bind="_color" aria-label="@Texts.EventColorAriaLabel">
                     @foreach (var opt in ColorScheme.GetEditorOptions(_isEditing ? _color : null))
@@ -45,48 +45,48 @@
                 </select>
             </div>
 
-            <div class="cal-field">
+            <div class="bfc-field">
                 <label>@Texts.DescriptionLabel</label>
                 <textarea @bind="_description" placeholder="@Texts.EventDescriptionPlaceholder"></textarea>
                 @if (_errors.ContainsKey("description"))
                 {
-                    <div class="cal-field-error">@_errors["description"]</div>
+                    <div class="bfc-field-error">@_errors["description"]</div>
                 }
             </div>
 
-            <div class="cal-field">
+            <div class="bfc-field">
                 <label>@Texts.AttendeesLabel</label>
                 @if (_attendees.Count > 0)
                 {
-                    <div class="cal-attendees-chips">
+                    <div class="bfc-attendees-chips">
                         @foreach (var a in _attendees)
                         {
                             var attendee = a;
-                            <span class="cal-attendee-chip">
-                                <span class="cal-attendee-chip-avatar">@attendee.Initials</span>
+                            <span class="bfc-attendee-chip">
+                                <span class="bfc-attendee-chip-avatar">@attendee.Initials</span>
                                 @attendee.FullName
-                                <button class="cal-attendee-chip-remove" type="button" @onclick="() => RemoveAttendee(attendee)">
+                                <button class="bfc-attendee-chip-remove" type="button" @onclick="() => RemoveAttendee(attendee)">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                 </button>
                             </span>
                         }
                     </div>
                 }
-                <div class="cal-attendee-add-row">
+                <div class="bfc-attendee-add-row">
                     <input type="text" @bind="_newFirstName" placeholder="@Texts.FirstNamePlaceholder" />
                     <input type="text" @bind="_newLastName" placeholder="@Texts.LastNamePlaceholder" />
                     <input type="text" @bind="_newId" placeholder="@Texts.IdOptionalPlaceholder" />
-                    <button class="cal-btn cal-btn-sm" type="button" @onclick="AddAttendee">@Texts.AddButton</button>
+                    <button class="bfc-btn bfc-btn-sm" type="button" @onclick="AddAttendee">@Texts.AddButton</button>
                 </div>
                 @if (_errors.ContainsKey("attendee"))
                 {
-                    <div class="cal-field-error">@_errors["attendee"]</div>
+                    <div class="bfc-field-error">@_errors["attendee"]</div>
                 }
             </div>
         </div>
-        <div class="cal-dialog-footer">
-            <button class="cal-btn" @onclick="OnClose">@Texts.CancelButton</button>
-            <button class="cal-btn cal-btn-primary" @onclick="Submit">
+        <div class="bfc-dialog-footer">
+            <button class="bfc-btn" @onclick="OnClose">@Texts.CancelButton</button>
+            <button class="bfc-btn bfc-btn-primary" @onclick="Submit">
                 @(_isEditing ? Texts.SaveChangesButton : Texts.CreateEventButton)
             </button>
         </div>

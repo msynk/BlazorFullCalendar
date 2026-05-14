@@ -40,32 +40,32 @@
     }
 }
 
-<div class="cal-agenda">
-    <div class="cal-agenda-search">
+<div class="bfc-agenda">
+    <div class="bfc-agenda-search">
         <input type="text" placeholder="@Texts.SearchEventsPlaceholder" @bind="_search" @bind:event="oninput" />
     </div>
 
     @if (agendaGroups.Count == 0)
     {
-        <div class="cal-agenda-empty">@Texts.NoEventsFound</div>
+        <div class="bfc-agenda-empty">@Texts.NoEventsFound</div>
     }
     else
     {
         @foreach (var (groupTitle, items) in agendaGroups)
         {
-            <div class="cal-agenda-group">
-                <div class="cal-agenda-group-title">@groupTitle</div>
+            <div class="bfc-agenda-group">
+                <div class="bfc-agenda-group-title">@groupTitle</div>
                 @foreach (var ev in items)
                 {
-                    <div class="cal-agenda-item" @onclick="() => ShowDetails(ev)">
-                        <div class="cal-agenda-avatar @BlazorFullCalendarHelpers.GetBgColorCss(ev.Color)">
+                    <div class="bfc-agenda-item" @onclick="() => ShowDetails(ev)">
+                        <div class="bfc-agenda-avatar @BlazorFullCalendarHelpers.GetBgColorCss(ev.Color)">
                             @(ev.Attendees.Count > 0 ? ev.Attendees[0].Initials : "")
                         </div>
-                        <div class="cal-agenda-info">
-                            <div class="cal-agenda-title">@ev.Title</div>
-                            <div class="cal-agenda-desc">@ev.Description</div>
+                        <div class="bfc-agenda-info">
+                            <div class="bfc-agenda-title">@ev.Title</div>
+                            <div class="bfc-agenda-desc">@ev.Description</div>
                         </div>
-                        <div class="cal-agenda-time">
+                        <div class="bfc-agenda-time">
                             @if (State.AgendaModeGroupBy == BlazorFullCalendarAgendaGroupBy.Date)
                             {
                                 @BlazorFullCalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)

@@ -98,9 +98,9 @@
     private string RootCssClass =>
         string.Join(' ', new[]
         {
-            "cal-root",
-            State.IsDarkMode ? "cal-dark" : "",
-            Theme == BlazorFullCalendarTheme.Fluent ? "cal-theme-fluent" : ""
+            "bfc-root",
+            State.IsDarkMode ? "bfc-dark" : "",
+            Theme == BlazorFullCalendarTheme.Fluent ? "bfc-theme-fluent" : ""
         }.Where(s => !string.IsNullOrEmpty(s)));
 
     private CultureInfo ResolveCulture() =>

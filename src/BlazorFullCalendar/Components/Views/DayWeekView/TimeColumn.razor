@@ -1,10 +1,10 @@
 ﻿@namespace BlazorFullCalendar
 
-<div class="cal-time-column">
+<div class="bfc-time-column">
     @for (int h = 0; h < 24; h++)
     {
         var hour = h;
-        <div class="cal-time-slot-label">
+        <div class="bfc-time-slot-label">
             @if (hour > 0)
             {
                 @BlazorFullCalendarHelpers.FormatHourLabel(hour, State.Use24HourFormat)

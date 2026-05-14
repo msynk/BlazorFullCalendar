@@ -1,9 +1,9 @@
 ﻿@namespace BlazorFullCalendar
 
-<div class="cal-toast-container">
+<div class="bfc-toast-container">
     @foreach (var toast in _toasts)
     {
-        <div class="cal-toast @(toast.IsError ? "error" : "success")">
+        <div class="bfc-toast @(toast.IsError ? "error" : "success")">
             @toast.Message
         </div>
     }

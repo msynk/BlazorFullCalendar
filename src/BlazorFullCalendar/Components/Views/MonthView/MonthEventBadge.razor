@@ -15,7 +15,7 @@
     var showTime = Position is "last" or "none";
 }
 
-<div class="cal-event-badge @colorClass @positionClass"
+<div class="bfc-event-badge @colorClass @positionClass"
      style="@MarginStyle"
      draggable="true"
      @ondragstart="OnDragStart"
@@ -30,13 +30,13 @@
         }
         @if (showTitle)
         {
-            <span class="cal-event-badge-title">@Event.Title</span>
+            <span class="bfc-event-badge-title">@Event.Title</span>
         }
     </div>
 
     @if (showTime)
     {
-        <span class="cal-event-badge-time">@BlazorFullCalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)</span>
+        <span class="bfc-event-badge-time">@BlazorFullCalendarHelpers.FormatTime(Event.StartDate, State.Use24HourFormat)</span>
     }
 </div>
 

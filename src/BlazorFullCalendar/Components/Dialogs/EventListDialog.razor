@@ -1,30 +1,30 @@
 ﻿@namespace BlazorFullCalendar
 
-<div class="cal-overlay" @onclick="OnClose">
-    <div class="cal-dialog" @onclick:stopPropagation="true">
-        <div class="cal-dialog-header">
+<div class="bfc-overlay" @onclick="OnClose">
+    <div class="bfc-dialog" @onclick:stopPropagation="true">
+        <div class="bfc-dialog-header">
             <h3>@Texts.EventListTitlePrefix @Date.ToString("dddd, MMM d, yyyy")</h3>
             <p>@Events.Count @Texts.EventListCountSuffix</p>
         </div>
-        <div class="cal-dialog-body" style="max-height:400px;overflow-y:auto;">
+        <div class="bfc-dialog-body" style="max-height:400px;overflow-y:auto;">
             @foreach (var ev in Events)
             {
-                <div class="cal-agenda-item" @onclick="() => SelectEvent(ev)">
-                    <div class="cal-agenda-avatar @BlazorFullCalendarHelpers.GetBgColorCss(ev.Color)">
+                <div class="bfc-agenda-item" @onclick="() => SelectEvent(ev)">
+                    <div class="bfc-agenda-avatar @BlazorFullCalendarHelpers.GetBgColorCss(ev.Color)">
                         @(ev.Attendees.Count > 0 ? ev.Attendees[0].Initials : "")
                     </div>
-                    <div class="cal-agenda-info">
-                        <div class="cal-agenda-title">@ev.Title</div>
-                        <div class="cal-agenda-desc">@ev.Description</div>
+                    <div class="bfc-agenda-info">
+                        <div class="bfc-agenda-title">@ev.Title</div>
+                        <div class="bfc-agenda-desc">@ev.Description</div>
                     </div>
-                    <div class="cal-agenda-time">
+                    <div class="bfc-agenda-time">
                         @BlazorFullCalendarHelpers.FormatTime(ev.StartDate, State.Use24HourFormat)
                     </div>
                 </div>
             }
         </div>
-        <div class="cal-dialog-footer">
-            <button class="cal-btn" @onclick="OnClose">@Texts.CloseButton</button>
+        <div class="bfc-dialog-footer">
+            <button class="bfc-btn" @onclick="OnClose">@Texts.CloseButton</button>
         </div>
     </div>
 </div>

@@ -1,33 +1,33 @@
 ﻿@using System.Globalization
 @namespace BlazorFullCalendar
 
-<div class="cal-dtp" tabindex="-1" @onfocusout="OnFocusOut">
-    <button type="button" class="cal-dtp-trigger" @onclick="ToggleOpen" aria-expanded="@_isOpen">
+<div class="bfc-dtp" tabindex="-1" @onfocusout="OnFocusOut">
+    <button type="button" class="bfc-dtp-trigger" @onclick="ToggleOpen" aria-expanded="@_isOpen">
         <span>@GetDisplayText()</span>
-        <span class="cal-dtp-trigger-icon">&#9662;</span>
+        <span class="bfc-dtp-trigger-icon">&#9662;</span>
     </button>
 
     @if (_isOpen)
     {
-        <div class="cal-dtp-panel">
-            <div class="cal-dtp-header">
-                <button type="button" class="cal-dtp-nav-btn" @onclick="ShowPreviousMonth" aria-label="Previous month">
+        <div class="bfc-dtp-panel">
+            <div class="bfc-dtp-header">
+                <button type="button" class="bfc-dtp-nav-btn" @onclick="ShowPreviousMonth" aria-label="Previous month">
                     &#8249;
                 </button>
-                <div class="cal-dtp-month-label">@GetMonthYearLabel(_visibleMonthAnchor)</div>
-                <button type="button" class="cal-dtp-nav-btn" @onclick="ShowNextMonth" aria-label="Next month">
+                <div class="bfc-dtp-month-label">@GetMonthYearLabel(_visibleMonthAnchor)</div>
+                <button type="button" class="bfc-dtp-nav-btn" @onclick="ShowNextMonth" aria-label="Next month">
                     &#8250;
                 </button>
             </div>
 
-            <div class="cal-dtp-weekdays">
+            <div class="bfc-dtp-weekdays">
                 @foreach (var weekday in _weekdayHeaders)
                 {
                     <span>@weekday</span>
                 }
             </div>
 
-            <div class="cal-dtp-days">
+            <div class="bfc-dtp-days">
                 @foreach (var day in BuildCalendarDays())
                 {
                     var dayClass = GetDayCellClass(day);
@@ -37,7 +37,7 @@
                 }
             </div>
 
-            <div class="cal-dtp-time">
+            <div class="bfc-dtp-time">
                 <select @bind="_hour" @bind:after="OnTimeChanged">
                     @for (var i = 0; i < 24; i++)
                     {
@@ -165,11 +165,11 @@
 
     private string GetDayCellClass(CalendarDay day)
     {
-        var classes = "cal-dtp-day";
+        var classes = "bfc-dtp-day";
         if (!day.IsCurrentMonth)
-            classes += " cal-dtp-day-muted";
+            classes += " bfc-dtp-day-muted";
         if (day.IsSelected)
-            classes += " cal-dtp-day-selected";
+            classes += " bfc-dtp-day-selected";
         return classes;
     }
 

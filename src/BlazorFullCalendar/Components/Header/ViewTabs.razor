@@ -1,9 +1,9 @@
 ﻿@namespace BlazorFullCalendar
 
-<div class="cal-view-tabs">
+<div class="bfc-view-tabs">
     @foreach (var view in _views)
     {
-        <button class="cal-view-tab @(State.View == view ? "active" : "")"
+        <button class="bfc-view-tab @(State.View == view ? "active" : "")"
                 @onclick="() => State.SetView(view)">
             @Texts.GetViewLabel(view)
         </button>

@@ -7,15 +7,15 @@
     var weekDayHeaders = BlazorFullCalendarHelpers.GetWeekDayHeaders(State.Culture);
 }
 
-<div class="cal-month">
-    <div class="cal-month-header">
+<div class="bfc-month">
+    <div class="bfc-month-header">
         @foreach (var day in weekDayHeaders)
         {
-            <div class="cal-month-header-cell">@day</div>
+            <div class="bfc-month-header-cell">@day</div>
         }
     </div>
 
-    <div class="cal-month-grid">
+    <div class="bfc-month-grid">
         @foreach (var cell in cells)
         {
             <DayCell Cell="cell" Events="allEvents" EventPositions="eventPositions" />

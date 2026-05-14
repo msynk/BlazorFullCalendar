@@ -17,13 +17,13 @@
     var resizeClasses = "";
     if (_isResizing)
     {
-        resizeClasses = "cal-event-block-resizing";
+        resizeClasses = "bfc-event-block-resizing";
         if (_resizeDirection is "top" or "bottom")
-            resizeClasses += $" cal-resize-dir-{_resizeDirection}";
+            resizeClasses += $" bfc-resize-dir-{_resizeDirection}";
     }
 }
 
-<div class="cal-event-block @colorClass @(State.IsDragging ? "cal-event-block-pass-through" : "") @resizeClasses"
+<div class="bfc-event-block @colorClass @(State.IsDragging ? "bfc-event-block-pass-through" : "") @resizeClasses"
      style="@blockStyle"
      draggable="true"
      @ondragstart="OnDragStart"
@@ -32,7 +32,7 @@
      @onclick:stopPropagation="true">
 
     <div id="@_topHandleId"
-         class="cal-resize-handle cal-resize-handle-top"
+         class="bfc-resize-handle bfc-resize-handle-top"
          @onpointerdown="OnResizeTopStart"
          @onpointerdown:preventDefault="true"
          @onpointerdown:stopPropagation="true"></div>
@@ -42,27 +42,27 @@
         {
             <EventBullet Color="Event.Color" />
         }
-        <span class="cal-event-block-title">@Event.Title</span>
+        <span class="bfc-event-block-title">@Event.Title</span>
     </div>
 
     @if (durationMin > 25)
     {
-        <div class="cal-event-block-time">
+        <div class="bfc-event-block-time">
             @BlazorFullCalendarHelpers.FormatTime(displayStart, State.Use24HourFormat) - @BlazorFullCalendarHelpers.FormatTime(displayEnd, State.Use24HourFormat)
         </div>
     }
 
     <div id="@_bottomHandleId"
-         class="cal-resize-handle cal-resize-handle-bottom"
+         class="bfc-resize-handle bfc-resize-handle-bottom"
          @onpointerdown="OnResizeBottomStart"
          @onpointerdown:preventDefault="true"
          @onpointerdown:stopPropagation="true"></div>
 
     @if (_isResizing)
     {
-        <div class="cal-resize-preview" role="status" aria-live="polite" aria-label="@Texts.ResizePreviewAriaLabel">
-            <svg class="cal-resize-preview-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span class="cal-resize-preview-time">@BlazorFullCalendarHelpers.FormatTime(displayStart, State.Use24HourFormat) - @BlazorFullCalendarHelpers.FormatTime(displayEnd, State.Use24HourFormat)</span>
+        <div class="bfc-resize-preview" role="status" aria-live="polite" aria-label="@Texts.ResizePreviewAriaLabel">
+            <svg class="bfc-resize-preview-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="bfc-resize-preview-time">@BlazorFullCalendarHelpers.FormatTime(displayStart, State.Use24HourFormat) - @BlazorFullCalendarHelpers.FormatTime(displayEnd, State.Use24HourFormat)</span>
         </div>
     }
 </div>
@@ -83,8 +83,8 @@
     private bool _resizeInitialized;
     private bool _isResizing;
     private DateTime _suppressClickUntilUtc;
-    private string _topHandleId => $"cal-resize-top-{_instanceId}";
-    private string _bottomHandleId => $"cal-resize-bottom-{_instanceId}";
+    private string _topHandleId => $"bfc-resize-top-{_instanceId}";
+    private string _bottomHandleId => $"bfc-resize-bottom-{_instanceId}";
 
     /// <summary>Minimum event length enforced by resize (minutes).</summary>
     private const int MinEventDurationMinutes = 30;

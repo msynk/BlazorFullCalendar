@@ -495,24 +495,24 @@ public static class BlazorFullCalendarHelpers
 
     public static string GetColorCss(BlazorFullCalendarEventColor color) => color switch
     {
-        BlazorFullCalendarEventColor.Blue => "cal-color-blue",
-        BlazorFullCalendarEventColor.Green => "cal-color-green",
-        BlazorFullCalendarEventColor.Red => "cal-color-red",
-        BlazorFullCalendarEventColor.Yellow => "cal-color-yellow",
-        BlazorFullCalendarEventColor.Purple => "cal-color-purple",
-        BlazorFullCalendarEventColor.Orange => "cal-color-orange",
-        _ => "cal-color-blue"
+        BlazorFullCalendarEventColor.Blue => "bfc-color-blue",
+        BlazorFullCalendarEventColor.Green => "bfc-color-green",
+        BlazorFullCalendarEventColor.Red => "bfc-color-red",
+        BlazorFullCalendarEventColor.Yellow => "bfc-color-yellow",
+        BlazorFullCalendarEventColor.Purple => "bfc-color-purple",
+        BlazorFullCalendarEventColor.Orange => "bfc-color-orange",
+        _ => "bfc-color-blue"
     };
 
     public static string GetBgColorCss(BlazorFullCalendarEventColor color) => color switch
     {
-        BlazorFullCalendarEventColor.Blue => "cal-bg-blue",
-        BlazorFullCalendarEventColor.Green => "cal-bg-green",
-        BlazorFullCalendarEventColor.Red => "cal-bg-red",
-        BlazorFullCalendarEventColor.Yellow => "cal-bg-yellow",
-        BlazorFullCalendarEventColor.Purple => "cal-bg-purple",
-        BlazorFullCalendarEventColor.Orange => "cal-bg-orange",
-        _ => "cal-bg-blue"
+        BlazorFullCalendarEventColor.Blue => "bfc-bg-blue",
+        BlazorFullCalendarEventColor.Green => "bfc-bg-green",
+        BlazorFullCalendarEventColor.Red => "bfc-bg-red",
+        BlazorFullCalendarEventColor.Yellow => "bfc-bg-yellow",
+        BlazorFullCalendarEventColor.Purple => "bfc-bg-purple",
+        BlazorFullCalendarEventColor.Orange => "bfc-bg-orange",
+        _ => "bfc-bg-blue"
     };
 
     public static double GetCurrentTimeLineTopPx()

@@ -1,7 +1,7 @@
 ﻿@namespace BlazorFullCalendar
 
-<div class="cal-filter-row">
-    <select class="cal-filter-select" @onchange="HandleColorChange" value="@SelectedColorValue" aria-label="@Texts.FilterByColorAriaLabel">
+<div class="bfc-filter-row">
+    <select class="bfc-filter-select" @onchange="HandleColorChange" value="@SelectedColorValue" aria-label="@Texts.FilterByColorAriaLabel">
         <option value="">@Texts.AllColorsOption</option>
         @foreach (var opt in ColorScheme.Options)
         {
@@ -9,7 +9,7 @@
         }
     </select>
 
-    <select class="cal-filter-select cal-filter-select-person" @onchange="HandleAttendeeChange" value="@(State.SelectedAttendeeKey ?? "")" aria-label="@Texts.FilterByPersonAriaLabel">
+    <select class="bfc-filter-select bfc-filter-select-person" @onchange="HandleAttendeeChange" value="@(State.SelectedAttendeeKey ?? "")" aria-label="@Texts.FilterByPersonAriaLabel">
         <option value="">@Texts.AllPeopleOption</option>
         @foreach (var (key, name) in State.GetAttendeesInCurrentView(Texts.UnnamedAttendee))
         {

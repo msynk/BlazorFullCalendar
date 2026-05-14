@@ -1,6 +1,6 @@
 ﻿@namespace BlazorFullCalendar
 
-<button class="cal-btn cal-btn-sm" @onclick="State.GoToToday">@Texts.TodayButton</button>
+<button class="bfc-btn bfc-btn-sm" @onclick="State.GoToToday">@Texts.TodayButton</button>
 
 @code {
     [CascadingParameter] public BlazorFullCalendarState State { get; set; } = default!;

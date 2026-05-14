@@ -6,7 +6,7 @@
 /// </summary>
 public sealed class BlazorFullCalendarColorOption
 {
-    /// <summary>Palette slot; maps to built-in CSS classes (e.g. <c>cal-color-blue</c>).</summary>
+    /// <summary>Palette slot; maps to built-in CSS classes (e.g. <c>bfc-color-blue</c>).</summary>
     public BlazorFullCalendarEventColor Color { get; set; }
 
     /// <summary>
