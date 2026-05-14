@@ -6,7 +6,6 @@ A feature-rich, interactive calendar component for Blazor applications. Built wi
 
 - **5 View Modes**: Day, Week, Month, Year, and Agenda views with smooth transitions
 - **Event Management**: Create, edit, and delete events with a polished dialog and form validation
-- **External Save (`OnSave`)**: Keep the built-in add/edit dialog but delegate persistence to your own code — the component won't mutate its internal list, so you stay in full control of the data flow
 - **Custom Add/Edit UI (`OnAddOrEditClick`)**: Suppress the built-in dialog entirely and receive a draft or cloned event so you can show your own creation/editing experience
 - **Culture-Aware Date-Time Picker**: Built-in dropdown date-time picker in add/edit dialogs (no browser-native `datetime-local`) with culture calendar rendering support (including `fa-IR`)
 - **Drag & Drop**: Move events between time slots and dates with native HTML5 drag-and-drop
@@ -125,36 +124,6 @@ If you prefer to control asset loading yourself — for example to set a specifi
                     @rendermode="InteractiveServer" />
 ```
 
-### External Save Example (`OnSave`)
-
-When `OnSave` is assigned the built-in dialog still renders, but the component no longer mutates its internal event list. Instead it invokes the callback with the created or edited `BlazorFullCalendarEvent`. You persist the change and update the bound `Events` collection so the calendar reflects the new state on next render.
-
-```razor
-<BlazorFullCalendar Events="myEvents"
-                    OnSave="HandleSave"
-                    OnChange="HandleCalendarChange"
-                    @rendermode="InteractiveServer" />
-
-@code {
-    private List<BlazorFullCalendarEvent> myEvents = new();
-
-    private Task HandleSave(BlazorFullCalendarEvent ev)
-    {
-        // Persist to your backend, then update the list:
-        var idx = myEvents.FindIndex(e => e.Id == ev.Id);
-        if (idx >= 0)
-            myEvents[idx] = ev;   // edit
-        else
-            myEvents.Add(ev);     // add
-
-        return Task.CompletedTask;
-    }
-
-    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
-        => Task.CompletedTask;
-}
-```
-
 ### Custom Add/Edit UI Example (`OnAddOrEditClick`)
 
 When `OnAddOrEditClick` is assigned the built-in add/edit dialog is suppressed entirely. For a new event the callback receives a draft with `StartDate`/`EndDate` pre-filled from the clicked slot and an empty `Id`; for an edit it receives a clone of the existing event. Use `string.IsNullOrEmpty(ev.Id)` to distinguish create from edit.
@@ -230,7 +199,6 @@ When `OnAddOrEditClick` is assigned the built-in add/edit dialog is suppressed e
 | `Theme` | `BlazorFullCalendarTheme` | `Default` | Visual theme — `Default` or `Fluent` (WinUI-style). Dark mode is supported for both |
 | `EventColorOptions` | `IReadOnlyList<BlazorFullCalendarColorOption>?` | `null` | Ordered list of event colors shown in pickers and filters. When `null` all colors are shown in enum order |
 | `OnChange` | `EventCallback<BlazorFullCalendarChangeEventArgs>` | — | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`; `Source`: `Dialog`, `Drag`, `Resize`, `Delete`) |
-| `OnSave` | `EventCallback<BlazorFullCalendarEvent>` | — | When assigned, the built-in dialog does **not** mutate the internal event list. The callback receives the created/edited event; you persist the change and update `Events` yourself |
 | `OnAddOrEditClick` | `EventCallback<BlazorFullCalendarEvent?>` | — | When assigned, the built-in add/edit dialog is suppressed. Receives a draft event (empty `Id` = create) or a clone of the existing event (edit). Show your own UI and update `Events` after persisting |
 | `LoadAssets` | `bool` | `true` | When `true` the component automatically injects its CSS and JS into the page on first render. Set to `false` to manage assets manually (see [Asset loading](#4-asset-loading)) |
 
