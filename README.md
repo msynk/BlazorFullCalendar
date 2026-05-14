@@ -305,6 +305,40 @@ The calendar includes built-in settings accessible via the gear icon in the head
 - Set start hour for day/week views
 - Configure agenda view grouping
 
+### CSS Customization
+
+All CSS classes use the `bfc-` prefix (e.g. `bfc-root`, `bfc-header`, `bfc-btn`) and all CSS custom properties use `--bfc-` (e.g. `--bfc-primary`, `--bfc-bg`, `--bfc-border`). You can override any variable on `:root` or scope overrides to `.bfc-root`:
+
+```css
+.bfc-root {
+    --bfc-primary: #8b5cf6;
+    --bfc-radius: 12px;
+}
+```
+
+Key CSS variables:
+
+| Variable | Description |
+|----------|-------------|
+| `--bfc-bg` | Main background color |
+| `--bfc-bg-secondary` | Secondary/subtle background |
+| `--bfc-bg-hover` | Hover state background |
+| `--bfc-border` | Border color |
+| `--bfc-text` | Primary text color |
+| `--bfc-text-secondary` | Secondary text color |
+| `--bfc-text-muted` | Muted/disabled text color |
+| `--bfc-primary` | Accent/brand color |
+| `--bfc-primary-hover` | Accent hover state |
+| `--bfc-primary-text` | Text on accent backgrounds |
+| `--bfc-danger` | Destructive action color |
+| `--bfc-radius` | Border radius for panels |
+| `--bfc-radius-sm` | Border radius for small elements |
+| `--bfc-shadow` | Default box shadow |
+| `--bfc-shadow-lg` | Elevated box shadow |
+| `--bfc-hour-height` | Height of one hour row in day/week views (default `96px`) |
+
+Dark mode overrides are applied automatically via the `.bfc-dark` class.
+
 ---
 
 ## Static Asset Paths
