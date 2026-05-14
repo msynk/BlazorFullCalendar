@@ -415,6 +415,36 @@ h1:focus { outline: none; }
     height: 600px;
 }
 
+/* ===== Demo Toggle Label ===== */
+.demo-toggle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--demo-border);
+    background: var(--demo-surface);
+    transition: all 0.15s;
+    user-select: none;
+}
+.demo-toggle-label:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+.demo-toggle-label:has(input:checked) {
+    border-color: var(--demo-primary);
+    background: #eff6ff;
+    color: var(--demo-primary);
+}
+.demo-toggle-label input[type="checkbox"] {
+    accent-color: var(--demo-primary);
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
 /* ===== Demo Modal Overlay ===== */
 .demo-modal-backdrop {
     position: fixed;

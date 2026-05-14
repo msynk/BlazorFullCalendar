@@ -7,15 +7,17 @@
     <CascadingValue Value="Texts">
         <CascadingValue Value="_changeNotifier">
             <CascadingValue Value="_colorScheme">
-                <CascadingValue Value="OnAddClick" Name="OnAddClick">
-                    <CascadingValue Value="OnEventClick" Name="OnEventClick">
-                        <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
-                            <CalendarHeader />
-                            <CalendarBody MonthEventTemplate="MonthEventTemplate"
-                                          WeekEventTemplate="WeekEventTemplate"
-                                          DayEventTemplate="DayEventTemplate" />
-                            <CalendarToast />
-                        </div>
+                <CascadingValue Value="Options">
+                    <CascadingValue Value="OnAddClick" Name="OnAddClick">
+                        <CascadingValue Value="OnEventClick" Name="OnEventClick">
+                            <div class="@RootCssClass" dir="@(State.IsRtl ? "rtl" : "ltr")">
+                                <CalendarHeader />
+                                <CalendarBody MonthEventTemplate="MonthEventTemplate"
+                                              WeekEventTemplate="WeekEventTemplate"
+                                              DayEventTemplate="DayEventTemplate" />
+                                <CalendarToast />
+                            </div>
+                        </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
             </CascadingValue>
@@ -109,9 +111,17 @@
     /// </summary>
     [Parameter] public bool LoadAssets { get; set; } = true;
 
+    /// <summary>
+    /// Configuration options controlling the settings button visibility and initial calendar preferences
+    /// such as dark mode, time format, badge variant, day start hour, and agenda grouping.
+    /// Values are applied when the component initializes or when a new instance is assigned.
+    /// </summary>
+    [Parameter] public BlazorFullCalendarOptions Options { get; set; } = new();
+
     public BlazorFullCalendarState State { get; set; } = new();
     private BlazorFullCalendarChangeNotifier _changeNotifier = default!;
     private BlazorFullCalendarColorScheme _colorScheme = new(null);
+    private BlazorFullCalendarOptions? _appliedOptions;
     private bool _loadAttempted;
 
     private string RootCssClass =>
@@ -130,6 +140,7 @@
     protected override void OnInitialized()
     {
         State.Initialize(Events ?? [], ResolveCulture());
+        ApplyOptions();
         _changeNotifier = new BlazorFullCalendarChangeNotifier(State, args => OnChange.InvokeAsync(args));
         State.OnStateChanged += HandleStateChanged;
     }
@@ -143,6 +154,21 @@
 
         if (Events is not null)
             State.SyncEvents(Events);
+
+        ApplyOptions();
+    }
+
+    private void ApplyOptions()
+    {
+        if (ReferenceEquals(Options, _appliedOptions))
+            return;
+
+        _appliedOptions = Options;
+        State.SetDarkMode(Options.IsDarkMode);
+        State.SetUse24HourFormat(Options.Use24HourFormat);
+        State.SetBadgeVariant(Options.BadgeVariant);
+        State.SetStartOfDayHour(Options.StartOfDayHour);
+        State.SetAgendaModeGroupBy(Options.AgendaModeGroupBy);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

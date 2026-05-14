@@ -335,6 +335,114 @@
     </div>
 }
 
+<!-- Calendar Options -->
+<section class="demo-showcase">
+    <div class="demo-showcase-header">
+        <div class="demo-showcase-badge" style="background:#fdf4ff;color:#a855f7;border:1px solid #e9d5ff;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Options
+        </div>
+        <h2>Calendar Options</h2>
+        <p>
+            Use the <code>Options</code> parameter to configure calendar preferences and control whether
+            the built-in settings button is visible. When hidden, drive the same settings programmatically.
+        </p>
+    </div>
+
+    <div class="demo-showcase-grid">
+        <div class="demo-showcase-card">
+            <div class="demo-showcase-card-header">
+                <span style="width:28px;height:28px;border-radius:8px;background:#fdf4ff;color:#a855f7;display:inline-flex;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </span>
+                <h3>Show / Hide Settings</h3>
+            </div>
+            <div class="demo-showcase-card-body">
+                <p>
+                    Set <code>ShowSettingsButton</code> to <code>false</code> to hide the gear icon.
+                    This is useful when you want a cleaner header or prefer to control settings from your own UI.
+                </p>
+                <div class="demo-code-block" style="margin:0;">
+                    <div class="demo-code-label">Hide settings button</div>
+                    <pre><span class="tag">&lt;BlazorFullCalendar</span>
+    <span class="attr">Events</span>=<span class="str">"events"</span>
+    <span class="attr">Options</span>=<span class="str">"new() { ShowSettingsButton = false }"</span> <span class="tag">/&gt;</span></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-showcase-card">
+            <div class="demo-showcase-card-header">
+                <span style="width:28px;height:28px;border-radius:8px;background:#fff7ed;color:#ea580c;display:inline-flex;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                </span>
+                <h3>Programmatic Configuration</h3>
+            </div>
+            <div class="demo-showcase-card-body">
+                <p>
+                    Configure dark mode, time format, badge style, day start hour,
+                    and agenda grouping through the <code>Options</code> object.
+                    Assign a new instance to push updated values to the calendar.
+                </p>
+                <div class="demo-code-block" style="margin:0;">
+                    <div class="demo-code-label">Full options</div>
+                    <pre><span class="tag">&lt;BlazorFullCalendar</span>
+    <span class="attr">Events</span>=<span class="str">"events"</span>
+    <span class="attr">Options</span>=<span class="str">"@@_options"</span> <span class="tag">/&gt;</span>
+
+<span class="kw">@@code</span> {
+    <span class="type">BlazorFullCalendarOptions</span> _options = <span class="kw">new</span>()
+    {
+        ShowSettingsButton = <span class="kw">false</span>,
+        IsDarkMode = <span class="kw">true</span>,
+        Use24HourFormat = <span class="kw">false</span>,
+        StartOfDayHour = 6
+    };
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:16px;padding:0 24px 20px;align-items:center;">
+        <span style="font-size:13px;font-weight:600;color:var(--demo-text-secondary);">Controls:</span>
+
+        <label class="demo-toggle-label">
+            <input type="checkbox" checked="@_optionsDarkMode" @onchange="ToggleOptionsDarkMode" />
+            <span>Dark Mode</span>
+        </label>
+
+        <label class="demo-toggle-label">
+            <input type="checkbox" checked="@_options24Hour" @onchange="ToggleOptions24Hour" />
+            <span>24-Hour Format</span>
+        </label>
+
+        <label class="demo-toggle-label">
+            <input type="checkbox" checked="@_optionsDotBadge" @onchange="ToggleOptionsDotBadge" />
+            <span>Dot Badge</span>
+        </label>
+
+        <label class="demo-toggle-label">
+            <input type="checkbox" checked="@_optionsShowSettings" @onchange="ToggleOptionsShowSettings" />
+            <span>Show Settings Button</span>
+        </label>
+
+        <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:13px;">Day starts at</span>
+            <input type="number" min="0" max="16" value="@_optionsStartHour"
+                   @onchange="OnOptionsStartHourChange"
+                   style="width:52px;padding:4px 8px;font-size:13px;border:1px solid var(--demo-border);border-radius:6px;background:var(--demo-bg);color:var(--demo-text);" />
+            <span style="font-size:12px;color:var(--demo-text-secondary);">h</span>
+        </div>
+    </div>
+
+    <div class="demo-showcase-calendar">
+        <BlazorFullCalendar Events="_optionsDemoEvents"
+                            Options="_calendarOptions"
+                            OnChange="HandleCalendarChange" />
+    </div>
+</section>
+
 <footer class="demo-footer">
     <p>
         Blazor Calendar &mdash; Inspired by
@@ -456,6 +564,38 @@
 
         _draftEvent = null;
         _addEditError = null;
+    }
+
+    // --- Options demo ---
+    private readonly List<BlazorFullCalendarEvent> _optionsDemoEvents = DemoSampleData.CreateEvents();
+    private BlazorFullCalendarOptions _calendarOptions = new() { ShowSettingsButton = false };
+    private bool _optionsShowSettings;
+    private bool _optionsDarkMode;
+    private bool _options24Hour = true;
+    private bool _optionsDotBadge;
+    private int _optionsStartHour = 8;
+
+    private void RebuildOptions() => _calendarOptions = new BlazorFullCalendarOptions
+    {
+        ShowSettingsButton = _optionsShowSettings,
+        IsDarkMode = _optionsDarkMode,
+        Use24HourFormat = _options24Hour,
+        BadgeVariant = _optionsDotBadge ? BlazorFullCalendarBadgeVariant.Dot : BlazorFullCalendarBadgeVariant.Colored,
+        StartOfDayHour = _optionsStartHour,
+    };
+
+    private void ToggleOptionsDarkMode(ChangeEventArgs e) { _optionsDarkMode = (bool)e.Value!; RebuildOptions(); }
+    private void ToggleOptions24Hour(ChangeEventArgs e) { _options24Hour = (bool)e.Value!; RebuildOptions(); }
+    private void ToggleOptionsDotBadge(ChangeEventArgs e) { _optionsDotBadge = (bool)e.Value!; RebuildOptions(); }
+    private void ToggleOptionsShowSettings(ChangeEventArgs e) { _optionsShowSettings = (bool)e.Value!; RebuildOptions(); }
+
+    private void OnOptionsStartHourChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int val) && val is >= 0 and <= 16)
+        {
+            _optionsStartHour = val;
+            RebuildOptions();
+        }
     }
 
     private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args) => Task.CompletedTask;

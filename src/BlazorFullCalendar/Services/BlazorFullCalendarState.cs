@@ -59,6 +59,8 @@ public class BlazorFullCalendarState
 
     public void SetUse24HourFormat(bool value)
     {
+        if (Use24HourFormat == value)
+            return;
         Use24HourFormat = value;
         NotifyStateChanged();
     }
@@ -71,22 +73,33 @@ public class BlazorFullCalendarState
 
     public void SetBadgeVariant(BlazorFullCalendarBadgeVariant variant)
     {
+        if (BadgeVariant == variant)
+            return;
         BadgeVariant = variant;
         NotifyStateChanged();
     }
 
     public void SetStartOfDayHour(int hour)
     {
-        if (hour >= 0 && hour <= 16)
-        {
-            StartOfDayHour = hour;
-            NotifyStateChanged();
-        }
+        if (hour < 0 || hour > 16 || StartOfDayHour == hour)
+            return;
+        StartOfDayHour = hour;
+        NotifyStateChanged();
     }
 
     public void SetAgendaModeGroupBy(BlazorFullCalendarAgendaGroupBy groupBy)
     {
+        if (AgendaModeGroupBy == groupBy)
+            return;
         AgendaModeGroupBy = groupBy;
+        NotifyStateChanged();
+    }
+
+    public void SetDarkMode(bool value)
+    {
+        if (IsDarkMode == value)
+            return;
+        IsDarkMode = value;
         NotifyStateChanged();
     }
 
