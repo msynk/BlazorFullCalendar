@@ -331,6 +331,191 @@ h1:focus { outline: none; }
     font-weight: 500;
 }
 
+/* ===== Showcase Sections ===== */
+.demo-showcase {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px 64px;
+}
+
+.demo-showcase-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.demo-showcase-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.demo-showcase-header p {
+    color: var(--demo-text-secondary);
+    font-size: 16px;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.demo-showcase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.demo-showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.demo-showcase-card {
+    background: var(--demo-surface);
+    border: 1px solid var(--demo-border);
+    border-radius: var(--demo-radius);
+    overflow: hidden;
+}
+
+.demo-showcase-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--demo-border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.demo-showcase-card-header h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.demo-showcase-card-body {
+    padding: 20px;
+}
+
+.demo-showcase-card-body p {
+    font-size: 13px;
+    color: var(--demo-text-secondary);
+    line-height: 1.6;
+    margin: 0 0 16px;
+}
+
+.demo-showcase-calendar {
+    background: var(--demo-surface);
+    border: 1px solid var(--demo-border);
+    border-radius: var(--demo-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    height: 600px;
+}
+
+/* ===== Demo Modal Overlay ===== */
+.demo-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: demo-modal-fade-in 0.15s ease-out;
+}
+
+.demo-modal {
+    background: var(--demo-surface);
+    border-radius: var(--demo-radius);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    width: 90%;
+    max-width: 460px;
+    animation: demo-modal-slide-up 0.2s ease-out;
+    overflow: hidden;
+}
+
+.demo-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--demo-border);
+}
+
+.demo-modal-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.demo-modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--demo-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+.demo-modal-close:hover {
+    background: #f1f5f9;
+    color: var(--demo-text);
+}
+
+.demo-modal-body {
+    padding: 20px 24px 24px;
+}
+
+.demo-modal-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #f1f5f9;
+}
+.demo-modal-row:last-child { border-bottom: none; }
+
+.demo-modal-label {
+    font-weight: 600;
+    color: var(--demo-text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    min-width: 90px;
+    flex-shrink: 0;
+}
+
+.demo-modal-value {
+    color: var(--demo-text);
+    word-break: break-word;
+}
+
+.demo-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--demo-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+@keyframes demo-modal-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes demo-modal-slide-up {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
     .demo-hero h1 { font-size: 32px; }
