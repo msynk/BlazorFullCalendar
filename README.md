@@ -12,8 +12,9 @@ A feature-rich, interactive calendar component for Blazor applications. Built wi
 - **Drag & Drop**: Move events between time slots and dates with native HTML5 drag-and-drop
 - **Resize**: Drag the top or bottom handle of any day/week event block to adjust its start or end time
 - **Multi-User Support**: Filter events by attendee or color with avatar initials and color badges
+- **External Filter UI (`HideFilters`)**: Hide the built-in color and attendee dropdowns and supply your own filter controls with pre-filtered events
 - **Text Customization**: Override UI labels, button text, placeholders, aria labels, and validation messages with `BlazorFullCalendarTexts`
-- **Customizable**: Dark mode, 12/24-hour format, dot vs colored badges, configurable start hour, and agenda grouping options
+- **Customizable**: Dark mode, 12/24-hour format, dot vs colored badges, configurable start hour, agenda grouping, and hideable settings/filters
 - **Live Timeline**: Real-time current-time indicator in day and week views with "Happening Now" sidebar
 - **Themes**: Default and Fluent (WinUI-style) built-in themes; dark mode supported for both
 - **Self-Loading Assets**: The component can inject its own CSS and JS automatically — no manual `<link>` or `<script>` tags required
@@ -176,6 +177,52 @@ When `OnEventClick` is assigned the built-in event details dialog is suppressed 
 }
 ```
 
+### Hide Built-In Filters (`HideFilters`)
+
+When `HideFilters` is `true`, the built-in color and attendee dropdown filters are removed from the calendar header. You can then provide your own external filter UI and pass pre-filtered events to the calendar.
+
+```razor
+<BlazorFullCalendar Events="filteredEvents"
+                    HideFilters="true"
+                    OnChange="HandleCalendarChange"
+                    @rendermode="InteractiveServer" />
+
+@code {
+    private List<BlazorFullCalendarEvent> allEvents = new();
+    private string searchText = "";
+
+    private List<BlazorFullCalendarEvent> filteredEvents =>
+        allEvents.Where(e =>
+            e.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            e.Description.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+
+    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
+        => Task.CompletedTask;
+}
+```
+
+### Hide Settings Button (`HideSettings`)
+
+When `HideSettings` is `true`, the built-in settings gear button is hidden from the header. You can still drive all settings programmatically through the `Options` parameter.
+
+```razor
+<BlazorFullCalendar Events="myEvents"
+                    HideSettings="true"
+                    Options="calendarOptions"
+                    OnChange="HandleCalendarChange"
+                    @rendermode="InteractiveServer" />
+
+@code {
+    private BlazorFullCalendarOptions calendarOptions = new()
+    {
+        IsDarkMode = true,
+        Use24HourFormat = false,
+        StartOfDayHour = 6
+    };
+}
+```
+
 ### Localization Notes
 
 - The event add/edit dialog uses a custom dropdown date-time picker instead of native browser date inputs.
@@ -219,6 +266,8 @@ When `OnEventClick` is assigned the built-in event details dialog is suppressed 
 | `OnChange` | `EventCallback<BlazorFullCalendarChangeEventArgs>` | — | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`; `Source`: `Dialog`, `Drag`, `Resize`, `Delete`) |
 | `OnAddClick` | `EventCallback<BlazorFullCalendarEvent?>` | — | When assigned, the built-in add dialog is suppressed. Receives a draft event with pre-filled dates from the clicked slot. Show your own creation UI and update `Events` after persisting |
 | `OnEventClick` | `EventCallback<BlazorFullCalendarEvent>` | — | When assigned, the built-in event details dialog is suppressed when an event is clicked. Receives the clicked event so you can show your own details UI |
+| `HideFilters` | `bool` | `false` | When `true`, hides the built-in color and attendee filter dropdowns. Consumers provide their own filter UI and pass pre-filtered events |
+| `HideSettings` | `bool` | `false` | When `true`, hides the built-in settings gear button. Settings can still be driven programmatically through `Options` |
 | `LoadAssets` | `bool` | `true` | When `true` the component automatically injects its CSS and JS into the page on first render. Set to `false` to manage assets manually (see [Asset loading](#4-asset-loading)) |
 
 ---
@@ -290,13 +339,15 @@ public sealed class BlazorFullCalendarChangeEventArgs
 
 ## Customization
 
-The calendar includes built-in settings accessible via the gear icon in the header:
+The calendar includes built-in settings accessible via the gear icon in the header (hidden when `HideSettings="true"`):
 
 - Toggle dark mode
 - Switch between 12/24-hour time format
 - Choose badge style (colored or dot)
 - Set start hour for day/week views
 - Configure agenda view grouping
+
+All of these can also be set programmatically through the `Options` parameter. The built-in color and attendee filter dropdowns can be hidden with `HideFilters="true"` so you can provide your own external filter UI.
 
 ### CSS Customization
 
