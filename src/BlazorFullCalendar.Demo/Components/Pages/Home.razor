@@ -99,7 +99,6 @@
     </div>
     <div class="demo-calendar-container">
         <BlazorFullCalendar Events="_demoEvents"
-                        OnSave="HandleSave"
                         OnChange="HandleCalendarChange" />
     </div>
 </section>
@@ -148,17 +147,6 @@
 
 @code {
     private static readonly List<BlazorFullCalendarEvent> _demoEvents = DemoSampleData.CreateEvents();
-
-    private Task HandleSave(BlazorFullCalendarEvent ev)
-    {
-        var idx = _demoEvents.FindIndex(e => e.Id == ev.Id);
-        if (idx >= 0)
-            _demoEvents[idx] = ev;
-        else
-            _demoEvents.Add(ev);
-
-        return Task.CompletedTask;
-    }
 
     private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args) => Task.CompletedTask;
 }

@@ -50,7 +50,6 @@
                             Theme="_selectedTheme"
                             Texts="@SelectedTexts"
                             EventColorOptions="DemoEventColorOptions"
-                            OnSave="HandleSave"
                             OnChange="HandleCalendarChange" />
         </div>
         @if (_recentChangesPanelVisible)
@@ -178,17 +177,6 @@
         _textsByCulture.TryGetValue(_selectedCultureName, out var texts)
             ? texts
             : _defaultTexts;
-
-    private Task HandleSave(BlazorFullCalendarEvent ev)
-    {
-        var idx = _demoEvents.FindIndex(e => e.Id == ev.Id);
-        if (idx >= 0)
-            _demoEvents[idx] = ev;
-        else
-            _demoEvents.Add(ev);
-
-        return Task.CompletedTask;
-    }
 
     private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
     {

@@ -98,7 +98,6 @@
     [CascadingParameter] public BlazorFullCalendarTexts Texts { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarColorScheme ColorScheme { get; set; } = default!;
     [CascadingParameter] public BlazorFullCalendarChangeNotifier Notifier { get; set; } = default!;
-    [CascadingParameter(Name = "OnSave")] public EventCallback<BlazorFullCalendarEvent> OnSave { get; set; }
     [Parameter] public BlazorFullCalendarEvent? ExistingEvent { get; set; }
     [Parameter] public DateTime? StartDate { get; set; }
     [Parameter] public int? StartHour { get; set; }
@@ -202,17 +201,10 @@
             Attendees = [.. _attendees]
         };
 
-        if (OnSave.HasDelegate)
-        {
-            await OnSave.InvokeAsync(ev);
-        }
+        if (_isEditing)
+            State.UpdateEvent(ev);
         else
-        {
-            if (_isEditing)
-                State.UpdateEvent(ev);
-            else
-                State.AddEvent(ev);
-        }
+            State.AddEvent(ev);
 
         await Notifier.NotifyAsync(new BlazorFullCalendarChangeEventArgs
         {
