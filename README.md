@@ -7,6 +7,7 @@ A feature-rich, interactive calendar component for Blazor applications. Built wi
 - **5 View Modes**: Day, Week, Month, Year, and Agenda views with smooth transitions
 - **Event Management**: Create, edit, and delete events with a polished dialog and form validation
 - **Custom Add/Edit UI (`OnAddOrEditClick`)**: Suppress the built-in dialog entirely and receive a draft or cloned event so you can show your own creation/editing experience
+- **Custom Event Click (`OnEventClick`)**: Suppress the built-in event details dialog and handle event clicks yourself
 - **Culture-Aware Date-Time Picker**: Built-in dropdown date-time picker in add/edit dialogs (no browser-native `datetime-local`) with culture calendar rendering support (including `fa-IR`)
 - **Drag & Drop**: Move events between time slots and dates with native HTML5 drag-and-drop
 - **Resize**: Drag the top or bottom handle of any day/week event block to adjust its start or end time
@@ -158,6 +159,30 @@ When `OnAddOrEditClick` is assigned the built-in add/edit dialog is suppressed e
 }
 ```
 
+### Custom Event Click Example (`OnEventClick`)
+
+When `OnEventClick` is assigned the built-in event details dialog is suppressed when any event is clicked (in all views). The callback receives the clicked `BlazorFullCalendarEvent` so you can show your own details UI.
+
+```razor
+<BlazorFullCalendar Events="myEvents"
+                    OnEventClick="HandleEventClick"
+                    OnChange="HandleCalendarChange"
+                    @rendermode="InteractiveServer" />
+
+@code {
+    private List<BlazorFullCalendarEvent> myEvents = new();
+
+    private Task HandleEventClick(BlazorFullCalendarEvent ev)
+    {
+        // Show your own event details dialog / side panel / navigation
+        return Task.CompletedTask;
+    }
+
+    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
+        => Task.CompletedTask;
+}
+```
+
 ### Localization Notes
 
 - The event add/edit dialog uses a custom dropdown date-time picker instead of native browser date inputs.
@@ -200,6 +225,7 @@ When `OnAddOrEditClick` is assigned the built-in add/edit dialog is suppressed e
 | `EventColorOptions` | `IReadOnlyList<BlazorFullCalendarColorOption>?` | `null` | Ordered list of event colors shown in pickers and filters. When `null` all colors are shown in enum order |
 | `OnChange` | `EventCallback<BlazorFullCalendarChangeEventArgs>` | — | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`; `Source`: `Dialog`, `Drag`, `Resize`, `Delete`) |
 | `OnAddOrEditClick` | `EventCallback<BlazorFullCalendarEvent?>` | — | When assigned, the built-in add/edit dialog is suppressed. Receives a draft event (empty `Id` = create) or a clone of the existing event (edit). Show your own UI and update `Events` after persisting |
+| `OnEventClick` | `EventCallback<BlazorFullCalendarEvent>` | — | When assigned, the built-in event details dialog is suppressed when an event is clicked. Receives the clicked event so you can show your own details UI |
 | `LoadAssets` | `bool` | `true` | When `true` the component automatically injects its CSS and JS into the page on first render. Set to `false` to manage assets manually (see [Asset loading](#4-asset-loading)) |
 
 ---
