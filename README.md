@@ -8,6 +8,7 @@ A feature-rich, interactive calendar component for Blazor applications. Built wi
 - **Event Management**: Create, edit, and delete events with a polished dialog and form validation
 - **Custom Add UI (`OnAddClick`)**: Suppress the built-in add dialog and receive a draft event so you can show your own creation experience
 - **Custom Event Click (`OnEventClick`)**: Suppress the built-in event details dialog and handle event clicks yourself
+- **Date Range Changes (`OnDateChange`)**: React when the visible range changes (prev/next/today navigation or switching views) with inclusive start/end dates and the active view
 - **Culture-Aware Date-Time Picker**: Built-in dropdown date-time picker in add/edit dialogs (no browser-native `datetime-local`) with culture calendar rendering support (including `fa-IR`)
 - **Drag & Drop**: Move events between time slots and dates with native HTML5 drag-and-drop
 - **Resize**: Drag the top or bottom handle of any day/week event block to adjust its start or end time
@@ -177,6 +178,31 @@ When `OnEventClick` is assigned the built-in event details dialog is suppressed 
 }
 ```
 
+### Date Range Change Example (`OnDateChange`)
+
+When `OnDateChange` is assigned, it is invoked after the user moves the calendar to a new visible range: **previous/next/today** in the header, or when **switching views** (day, week, month, year, agenda). The callback receives `BlazorFullCalendarDateChangeEventArgs` with **inclusive** `Start` and `End` dates for that range (for example one day in day view, one week in week view, one month in month/agenda views, one year in year view), plus the current `View`.
+
+```razor
+<BlazorFullCalendar Events="myEvents"
+                    OnDateChange="HandleDateChange"
+                    OnChange="HandleCalendarChange"
+                    @rendermode="InteractiveServer" />
+
+@code {
+    private List<BlazorFullCalendarEvent> myEvents = new();
+
+    private Task HandleDateChange(BlazorFullCalendarDateChangeEventArgs args)
+    {
+        // args.Start, args.End (inclusive), args.View
+        // e.g. load events from an API for this range
+        return Task.CompletedTask;
+    }
+
+    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
+        => Task.CompletedTask;
+}
+```
+
 ### Hide Built-In Filters (`HideFilters`)
 
 When `HideFilters` is `true`, the built-in color and attendee dropdown filters are removed from the calendar header. You can then provide your own external filter UI and pass pre-filtered events to the calendar.
@@ -266,6 +292,7 @@ When `HideSettings` is `true`, the built-in settings gear button is hidden from 
 | `OnChange` | `EventCallback<BlazorFullCalendarChangeEventArgs>` | — | Raised when a user adds, edits, or deletes an event (`Kind`: `Add`, `Edit`, `Delete`; `Source`: `Dialog`, `Drag`, `Resize`, `Delete`) |
 | `OnAddClick` | `EventCallback<BlazorFullCalendarEvent?>` | — | When assigned, the built-in add dialog is suppressed. Receives a draft event with pre-filled dates from the clicked slot. Show your own creation UI and update `Events` after persisting |
 | `OnEventClick` | `EventCallback<BlazorFullCalendarEvent>` | — | When assigned, the built-in event details dialog is suppressed when an event is clicked. Receives the clicked event so you can show your own details UI |
+| `OnDateChange` | `EventCallback<BlazorFullCalendarDateChangeEventArgs>` | — | Raised when the visible date range changes after prev/next/today navigation or a view switch. Payload includes inclusive `Start`/`End` and the active `View` |
 | `HideFilters` | `bool` | `false` | When `true`, hides the built-in color and attendee filter dropdowns. Consumers provide their own filter UI and pass pre-filtered events |
 | `HideSettings` | `bool` | `false` | When `true`, hides the built-in settings gear button. Settings can still be driven programmatically through `Options` |
 | `LoadAssets` | `bool` | `true` | When `true` the component automatically injects its CSS and JS into the page on first render. Set to `false` to manage assets manually (see [Asset loading](#4-asset-loading)) |
@@ -322,6 +349,19 @@ public sealed class BlazorFullCalendarChangeEventArgs
     public BlazorFullCalendarEvent? OldEvent { get; init; }        // previous state (Edit/Delete); null for Add
     public required BlazorFullCalendarChangeKind Kind { get; init; } // Add | Edit | Delete
     public BlazorFullCalendarChangeSource Source { get; init; }      // Dialog | Drag | Resize | Delete
+}
+```
+
+### BlazorFullCalendarDateChangeEventArgs
+
+Passed to `OnDateChange` when the user changes the visible range (header navigation or view tabs).
+
+```csharp
+public sealed class BlazorFullCalendarDateChangeEventArgs
+{
+    public required DateTime Start { get; init; }              // inclusive range start (date)
+    public required DateTime End { get; init; }                // inclusive range end (date)
+    public required BlazorFullCalendarView View { get; init; } // active view when the change occurred
 }
 ```
 
