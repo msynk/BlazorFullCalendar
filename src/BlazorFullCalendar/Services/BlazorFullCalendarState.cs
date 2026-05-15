@@ -30,6 +30,7 @@ public class BlazorFullCalendarState
     public IReadOnlyList<BlazorFullCalendarEvent> AllEvents => _allEvents;
 
     public event Action? OnStateChanged;
+    public event Action<BlazorFullCalendarDateChangeEventArgs>? OnDateRangeChanged;
 
     public void Initialize(List<BlazorFullCalendarEvent> events, CultureInfo? culture = null)
     {
@@ -49,12 +50,14 @@ public class BlazorFullCalendarState
     {
         SelectedDate = date;
         UpdateUI();
+        NotifyDateRangeChanged();
     }
 
     public void SetView(BlazorFullCalendarView view)
     {
         View = view;
         UpdateUI();
+        NotifyDateRangeChanged();
     }
 
     public void SetUse24HourFormat(bool value)
@@ -113,18 +116,21 @@ public class BlazorFullCalendarState
     {
         SelectedDate = BlazorFullCalendarHelpers.NavigateDate(SelectedDate, View, false, Culture);
         UpdateUI();
+        NotifyDateRangeChanged();
     }
 
     public void NavigateNext()
     {
         SelectedDate = BlazorFullCalendarHelpers.NavigateDate(SelectedDate, View, true, Culture);
         UpdateUI();
+        NotifyDateRangeChanged();
     }
 
     public void GoToToday()
     {
         SelectedDate = DateTime.Today;
         UpdateUI();
+        NotifyDateRangeChanged();
     }
 
     /// <summary>
@@ -322,5 +328,17 @@ public class BlazorFullCalendarState
     }
 
     private void NotifyStateChanged() => OnStateChanged?.Invoke();
+
+    private void NotifyDateRangeChanged()
+    {
+        if (OnDateRangeChanged is null) return;
+        var (start, end) = BlazorFullCalendarHelpers.GetDateRange(View, SelectedDate, Culture);
+        OnDateRangeChanged.Invoke(new BlazorFullCalendarDateChangeEventArgs
+        {
+            Start = start,
+            End = end,
+            View = View
+        });
+    }
 }
 

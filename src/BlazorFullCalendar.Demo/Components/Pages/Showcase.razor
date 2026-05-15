@@ -203,12 +203,52 @@
                 </div>
             </div>
         </div>
+
+        <div class="demo-showcase-card">
+            <div class="demo-showcase-card-header">
+                <span style="width:28px;height:28px;border-radius:8px;background:#ecfdf5;color:#059669;display:inline-flex;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </span>
+                <h3>OnDateChange</h3>
+            </div>
+            <div class="demo-showcase-card-body">
+                <p>
+                    Fires when the user navigates (prev/next/today) or switches views.
+                    Receives the inclusive start/end of the new visible range and the active view.
+                </p>
+                <div class="demo-code-block" style="margin:0;">
+                    <div class="demo-code-label">Date change handler</div>
+                    <pre><span class="tag">&lt;BlazorFullCalendar</span>
+    <span class="attr">Events</span>=<span class="str">"events"</span>
+    <span class="attr">OnDateChange</span>=<span class="str">"HandleDateChange"</span> <span class="tag">/&gt;</span>
+
+<span class="kw">@@code</span> {
+    <span class="kw">void</span> HandleDateChange(
+        <span class="type">BlazorFullCalendarDateChangeEventArgs</span> e)
+    {
+        <span class="cmt">// e.Start, e.End, e.View</span>
+    }
+}</pre>
+                </div>
+            </div>
+        </div>
     </div>
+
+    @if (_lastDateChange is not null)
+    {
+        <div style="display:flex;flex-wrap:wrap;gap:12px;padding:0 24px 16px;align-items:center;">
+            <span style="font-size:12px;font-weight:600;color:var(--demo-text-secondary);">OnDateChange:</span>
+            <span style="font-size:12px;background:var(--demo-bg);border:1px solid var(--demo-border);padding:4px 10px;border-radius:6px;">
+                @_lastDateChange.View &mdash; @_lastDateChange.Start.ToString("MMM d, yyyy") to @_lastDateChange.End.ToString("MMM d, yyyy")
+            </span>
+        </div>
+    }
 
     <div class="demo-showcase-calendar">
         <BlazorFullCalendar Events="_handlerDemoEvents"
                         OnEventClick="OnCustomEventClick"
                         OnAddClick="OnCustomAddClick"
+                        OnDateChange="OnDateChange"
                         OnChange="HandleCalendarChange" />
     </div>
 </section>
@@ -588,6 +628,7 @@
     private string? _editError;
     private BlazorFullCalendarEvent? _draftEvent;
     private string? _addEditError;
+    private BlazorFullCalendarDateChangeEventArgs? _lastDateChange;
 
     private static List<BlazorFullCalendarEvent> CreateTemplateDemoEvents()
     {
@@ -724,6 +765,8 @@
     }
 
     private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args) => Task.CompletedTask;
+
+    private void OnDateChange(BlazorFullCalendarDateChangeEventArgs args) => _lastDateChange = args;
 
     // --- Hide filters / custom filter UI demo ---
     private readonly List<BlazorFullCalendarEvent> _filterDemoEventsAll = DemoSampleData.CreateEvents();

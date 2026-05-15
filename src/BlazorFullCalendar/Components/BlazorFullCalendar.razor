@@ -86,6 +86,13 @@
     [Parameter] public EventCallback<BlazorFullCalendarEvent> OnEventClick { get; set; }
 
     /// <summary>
+    /// Raised when the visible date range changes — for example when the user navigates
+    /// with prev/next/today buttons or switches views. The callback receives the inclusive
+    /// start and end dates of the new range together with the active view.
+    /// </summary>
+    [Parameter] public EventCallback<BlazorFullCalendarDateChangeEventArgs> OnDateChange { get; set; }
+
+    /// <summary>
     /// Optional template for customizing event rendering in the day view.
     /// When provided, replaces the default event card content inside the time-grid blocks.
     /// </summary>
@@ -159,6 +166,7 @@
         ApplyOptions();
         _changeNotifier = new BlazorFullCalendarChangeNotifier(State, args => OnChange.InvokeAsync(args));
         State.OnStateChanged += HandleStateChanged;
+        State.OnDateRangeChanged += HandleDateRangeChanged;
     }
 
     protected override void OnParametersSet()
@@ -203,7 +211,14 @@
 
     private void HandleStateChanged() => InvokeAsync(StateHasChanged);
 
-    public void Dispose() => State.OnStateChanged -= HandleStateChanged;
+    private void HandleDateRangeChanged(BlazorFullCalendarDateChangeEventArgs args)
+        => InvokeAsync(() => OnDateChange.InvokeAsync(args));
+
+    public void Dispose()
+    {
+        State.OnStateChanged -= HandleStateChanged;
+        State.OnDateRangeChanged -= HandleDateRangeChanged;
+    }
 
     private const string AssetLoaderScript = """
         (() => {

@@ -539,6 +539,41 @@ public static class BlazorFullCalendarHelpers
         };
     }
 
+    /// <summary>
+    /// Computes the inclusive start/end dates for the visible range of the given view.
+    /// </summary>
+    public static (DateTime Start, DateTime End) GetDateRange(
+        BlazorFullCalendarView view, DateTime selectedDate, CultureInfo? culture = null)
+    {
+        culture ??= CultureInfo.CurrentUICulture;
+        var cal = culture.Calendar;
+
+        return view switch
+        {
+            BlazorFullCalendarView.Day => (selectedDate.Date, selectedDate.Date),
+            BlazorFullCalendarView.Week =>
+            (
+                StartOfWeek(selectedDate, culture),
+                StartOfWeek(selectedDate, culture).AddDays(6)
+            ),
+            BlazorFullCalendarView.Month or BlazorFullCalendarView.Agenda =>
+            (
+                cal.ToDateTime(cal.GetYear(selectedDate), cal.GetMonth(selectedDate), 1, 0, 0, 0, 0),
+                cal.AddMonths(
+                    cal.ToDateTime(cal.GetYear(selectedDate), cal.GetMonth(selectedDate), 1, 0, 0, 0, 0), 1)
+                    .AddDays(-1)
+            ),
+            BlazorFullCalendarView.Year =>
+            (
+                cal.ToDateTime(cal.GetYear(selectedDate), 1, 1, 0, 0, 0, 0),
+                cal.ToDateTime(cal.GetYear(selectedDate), cal.GetMonthsInYear(cal.GetYear(selectedDate)),
+                    cal.GetDaysInMonth(cal.GetYear(selectedDate), cal.GetMonthsInYear(cal.GetYear(selectedDate))),
+                    0, 0, 0, 0)
+            ),
+            _ => (selectedDate.Date, selectedDate.Date)
+        };
+    }
+
     public static string Capitalize(string str)
     {
         if (string.IsNullOrEmpty(str)) return "";
