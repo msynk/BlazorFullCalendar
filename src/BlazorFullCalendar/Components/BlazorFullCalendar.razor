@@ -30,6 +30,12 @@
 </CascadingValue>
 
 @code {
+    /// <summary>
+    /// Events displayed in the calendar. Assign a list from parent state; updates are synced on each
+    /// render when the reference or contents change. User-driven add, edit, and delete actions are
+    /// reported through <see cref="OnChange"/> — update this list (or your backing store) in the handler
+    /// to keep the UI in sync.
+    /// </summary>
     [Parameter] public List<BlazorFullCalendarEvent>? Events { get; set; }
 
     /// <summary>
@@ -45,8 +51,16 @@
     /// Preferred over <see cref="Culture"/> when using @rendermode="InteractiveServer"
     /// because plain strings are safely serialized by Blazor's parameter persistence.
     /// When both are supplied, CultureName takes precedence.
+    /// Blazor WebAssembly hosts must set <c>BlazorWebAssemblyLoadAllGlobalizationData</c> to
+    /// <c>true</c> (or load a custom ICU shard) for cultures outside the default EFIGS/CJK shards.
     /// </summary>
     [Parameter] public string? CultureName { get; set; }
+
+    /// <summary>
+    /// Localized strings for calendar UI labels, buttons, dialogs, filters, and accessibility text.
+    /// Defaults to English; override individual properties on a <see cref="BlazorFullCalendarTexts"/>
+    /// instance to localize the component without replacing built-in dialogs.
+    /// </summary>
     [Parameter] public BlazorFullCalendarTexts Texts { get; set; } = new();
 
     /// <summary>
@@ -62,6 +76,7 @@
     /// When null or empty, all <see cref="BlazorFullCalendarEventColor"/> values are used in enum order.
     /// </summary>
     [Parameter] public IReadOnlyList<BlazorFullCalendarColorOption>? EventColorOptions { get; set; }
+    
     /// <summary>
     /// Raised when a user adds, edits, or deletes an event in the calendar UI.
     /// </summary>
