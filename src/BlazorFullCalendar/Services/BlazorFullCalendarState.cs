@@ -19,6 +19,9 @@ public class BlazorFullCalendarState
     public BlazorFullCalendarAgendaGroupBy AgendaModeGroupBy { get; private set; } = BlazorFullCalendarAgendaGroupBy.Date;
     public bool IsDarkMode { get; private set; }
 
+    /// <summary>Incremented when <see cref="GoToToday"/> is invoked in agenda view so the list can scroll to today.</summary>
+    public ulong AgendaScrollToTodayNonce { get; private set; }
+
     public CultureInfo Culture { get; private set; } = CultureInfo.CurrentUICulture;
     public bool IsRtl => Culture.TextInfo.IsRightToLeft;
 
@@ -129,6 +132,8 @@ public class BlazorFullCalendarState
     public void GoToToday()
     {
         SelectedDate = DateTime.Today;
+        if (View == BlazorFullCalendarView.Agenda)
+            AgendaScrollToTodayNonce++;
         UpdateUI();
         NotifyDateRangeChanged();
     }

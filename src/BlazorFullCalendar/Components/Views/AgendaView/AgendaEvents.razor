@@ -1,5 +1,6 @@
 ﻿@namespace BlazorFullCalendar
 @implements IDisposable
+@inject IJSRuntime JS
 
 @{
     var monthEvents = BlazorFullCalendarHelpers.GetEventsForMonth(State.Events.ToList(), State.SelectedDate, State.Culture);
@@ -11,7 +12,7 @@
             e.Description.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
-    List<(string GroupTitle, List<BlazorFullCalendarEvent> Items)> agendaGroups;
+    List<(string? DateKey, string GroupTitle, List<BlazorFullCalendarEvent> Items)> agendaGroups;
     if (monthEvents.Count == 0)
     {
         agendaGroups = [];
@@ -26,7 +27,7 @@
                 var title = DateTime.TryParse(g.Key, out var dt)
                     ? $"{dt.ToString("dddd", State.Culture)}, {BlazorFullCalendarHelpers.FormatCultureDate(dt, State.Culture)}"
                     : g.Key;
-                return (title, g.ToList());
+                return (DateKey: (string?)g.Key, GroupTitle: title, Items: g.ToList());
             })
             .ToList();
     }
@@ -35,12 +36,12 @@
         agendaGroups = monthEvents
             .GroupBy(e => e.Color)
             .OrderBy(g => ColorScheme.GetSortOrder(g.Key))
-            .Select(g => (ColorScheme.GetPrimaryLabel(g.Key, Texts), g.ToList()))
+            .Select(g => (DateKey: (string?)null, GroupTitle: ColorScheme.GetPrimaryLabel(g.Key, Texts), Items: g.ToList()))
             .ToList();
     }
 }
 
-<div class="bfc-agenda">
+<div id="bfc-agenda-scroll" class="bfc-agenda">
     <div class="bfc-agenda-search">
         <input type="text" placeholder="@Texts.SearchEventsPlaceholder" @bind="_search" @bind:event="oninput" />
     </div>
@@ -51,13 +52,13 @@
     }
     else
     {
-        @foreach (var (groupTitle, items) in agendaGroups)
+        @foreach (var (dateKey, groupTitle, items) in agendaGroups)
         {
-            <div class="bfc-agenda-group">
+            <div class="bfc-agenda-group" data-agenda-date="@dateKey">
                 <div class="bfc-agenda-group-title">@groupTitle</div>
                 @foreach (var ev in items)
                 {
-                    <div class="bfc-agenda-item" @onclick="() => ShowDetails(ev)">
+                    <div class="bfc-agenda-item" data-agenda-date="@ev.StartDate.ToString("yyyy-MM-dd")" @onclick="() => ShowDetails(ev)">
                         <div class="bfc-agenda-avatar @BlazorFullCalendarHelpers.GetBgColorCss(ev.Color)">
                             @(ev.Attendees.Count > 0 ? ev.Attendees[0].Initials : "")
                         </div>
@@ -100,10 +101,21 @@
     private string _search = "";
     private bool _showDetails;
     private BlazorFullCalendarEvent? _selectedEvent;
+    private ulong _lastAgendaScrollNonce;
 
     protected override void OnInitialized() => State.OnStateChanged += Refresh;
     private void Refresh() => InvokeAsync(StateHasChanged);
     public void Dispose() => State.OnStateChanged -= Refresh;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var nonce = State.AgendaScrollToTodayNonce;
+        if (nonce == _lastAgendaScrollNonce)
+            return;
+
+        await AgendaScrollInterop.TryScrollToDateAsync(JS, "bfc-agenda-scroll", DateTime.Today);
+        _lastAgendaScrollNonce = nonce;
+    }
 
     private async Task ShowDetails(BlazorFullCalendarEvent ev)
     {

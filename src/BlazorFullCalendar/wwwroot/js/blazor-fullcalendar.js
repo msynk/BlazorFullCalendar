@@ -11,6 +11,32 @@ window.BlazorFullCalendar = {
         }
     },
 
+    scrollAgendaToDate: function (scrollContainerId, dateIso) {
+        const container = document.getElementById(scrollContainerId);
+        if (!container) return;
+        const nodes = container.querySelectorAll('[data-agenda-date="' + dateIso + '"]');
+        if (!nodes.length) return;
+
+        let target = nodes[0];
+        let bestTop = target.getBoundingClientRect().top;
+        for (let i = 1; i < nodes.length; i++) {
+            const top = nodes[i].getBoundingClientRect().top;
+            if (top < bestTop) {
+                bestTop = top;
+                target = nodes[i];
+            }
+        }
+
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const scrollTop = container.scrollTop + (targetRect.top - containerRect.top);
+        if (typeof container.scrollTo === "function") {
+            container.scrollTo({ top: scrollTop, behavior: "auto" });
+        } else {
+            container.scrollTop = scrollTop;
+        }
+    },
+
     /**
      * Pointer resize for event blocks. Matches the idea of the reference calendar
      * (re-resizable client-side updates): coalesce pointer moves to animation frames,
