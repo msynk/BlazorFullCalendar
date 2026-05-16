@@ -1,3 +1,5 @@
+/* Blazor Full Calendar v-0.6.0 */
+
 window.BlazorFullCalendar = {
     scrollToHour: function (elementId, hour, pixelsPerHour) {
         const el = document.getElementById(elementId);
