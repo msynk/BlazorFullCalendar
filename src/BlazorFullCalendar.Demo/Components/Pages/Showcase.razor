@@ -764,7 +764,31 @@
         }
     }
 
-    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args) => Task.CompletedTask;
+    private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
+    {
+        foreach (var list in new[] { _templateDemoEvents, _handlerDemoEvents, _optionsDemoEvents, _filterDemoEventsAll })
+        {
+            if (args.Kind != BlazorFullCalendarChangeKind.Add && !list.Any(e => e.Id == args.Event.Id))
+                continue;
+
+            if (args.Kind == BlazorFullCalendarChangeKind.Add)
+                list.Add(args.Event);
+            else if (args.Kind == BlazorFullCalendarChangeKind.Edit)
+            {
+                var idx = list.FindIndex(e => e.Id == args.Event.Id);
+                if (idx >= 0) list[idx] = args.Event;
+            }
+            else if (args.Kind == BlazorFullCalendarChangeKind.Delete)
+                list.RemoveAll(e => e.Id == args.Event.Id);
+
+            if (ReferenceEquals(list, _filterDemoEventsAll))
+                ApplyCustomFilters();
+
+            break;
+        }
+
+        return Task.CompletedTask;
+    }
 
     private void OnDateChange(BlazorFullCalendarDateChangeEventArgs args) => _lastDateChange = args;
 

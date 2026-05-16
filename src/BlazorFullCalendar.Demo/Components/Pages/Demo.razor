@@ -181,6 +181,16 @@
 
     private Task HandleCalendarChange(BlazorFullCalendarChangeEventArgs args)
     {
+        if (args.Kind == BlazorFullCalendarChangeKind.Add)
+            _demoEvents.Add(args.Event);
+        else if (args.Kind == BlazorFullCalendarChangeKind.Edit)
+        {
+            var idx = _demoEvents.FindIndex(e => e.Id == args.Event.Id);
+            if (idx >= 0) _demoEvents[idx] = args.Event;
+        }
+        else if (args.Kind == BlazorFullCalendarChangeKind.Delete)
+            _demoEvents.RemoveAll(e => e.Id == args.Event.Id);
+
         _recentChanges.Insert(0, new ChangeLogItem(args.Event.Title, args.Kind, args.Source, DateTime.Now));
         if (_recentChanges.Count > 5)
             _recentChanges.RemoveRange(5, _recentChanges.Count - 5);
