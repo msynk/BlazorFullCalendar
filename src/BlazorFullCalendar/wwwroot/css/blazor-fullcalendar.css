@@ -1,6 +1,6 @@
 /* Blazor Full Calendar v-0.7.0 */
 
-@import url("blazor-fullcalendar.fluent.css");
+@import url("blazor-fullcalendar.fluent.css?v=0.7.0");
 
 /* ===== CSS Variables ===== */
 :root {

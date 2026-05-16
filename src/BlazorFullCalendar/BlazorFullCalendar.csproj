@@ -8,8 +8,8 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
     <IsPackable>true</IsPackable>
     <PackageId>BlazorFullCalendar</PackageId>
-    <Title>Blazor Calendar</Title>
-    <Description>Feature-rich interactive calendar component for Blazor: day, week, month, year, and agenda views; event CRUD; drag-and-drop; culture-aware date handling; and customizable styling.</Description>
+    <Title>Blazor Full Calendar</Title>
+    <Description>Feature-rich interactive full calendar component for Blazor: day, week, month, year, and agenda views; event CRUD; drag-and-drop; culture-aware date handling; and customizable styling.</Description>
     <PackageTags>blazor;calendar;scheduler;events;agenda;razor;wasm;server;component</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
